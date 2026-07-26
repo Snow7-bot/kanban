@@ -1,7 +1,6 @@
 package com.kangban.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -9,28 +8,23 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("chat_sessions")
-public class ChatSession {
-
+@TableName("family_permissions")
+public class FamilyPermission {
     @TableId(type = IdType.AUTO)
     private Long id;
-
-    private Long userId;
-
+    private Long familyId;
     private Long subjectUserId;
-
-    private Long memberId;
-
-    private String title;
-
+    private Long granteeUserId;
+    private Boolean canViewHealth;
+    private Boolean canAddHealth;
+    private Boolean canViewRecords;
+    private Boolean canViewMedications;
+    private Boolean canViewReports;
+    private Boolean canUseAi;
+    private Boolean canModify;
+    private Boolean canDelete;
     private String status;
-
-    private String patientData;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
-
-    @TableField("deleted_at")
-    private LocalDateTime deletedAt;
+    private LocalDateTime revokedAt;
 }

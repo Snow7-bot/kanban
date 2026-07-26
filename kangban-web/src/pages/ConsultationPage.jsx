@@ -9,13 +9,17 @@ import { buildConsultationPayload } from '../api/contracts.js';
 import { Card, IconButton, StatusChip } from '../components/UI.jsx';
 import { getUserDisplayName } from '../data.js';
 
-function hasPersonalizedContext(session, selectedMemberId) {
+function hasPersonalizedContext(session, selectedTarget) {
   if (typeof session?.patientData !== 'string') return false;
   try {
     const context = JSON.parse(session.patientData);
     if (context?.contextVersion !== 'family-agent-v2') return false;
-    if (selectedMemberId == null) return context.selectedMemberId == null;
-    return Number(context.selectedMemberId) === Number(selectedMemberId);
+    if (!selectedTarget) return context.selectedMemberId == null && session.subjectUserId == null;
+    if (selectedTarget.kind === 'account') {
+      return Number(session.subjectUserId) === Number(selectedTarget.subjectUserId)
+        && context.selectedMemberId == null;
+    }
+    return Number(context.selectedMemberId) === Number(selectedTarget.memberId);
   } catch {
     return false;
   }
@@ -53,16 +57,17 @@ export default function ConsultationPage() {
 
   useEffect(() => {
     let active = true;
+    const selectedTarget = familyMembers.find((member) => String(member.id) === String(selectedMemberId)) || null;
     Promise.all([
-      healthApi.getHealthTrends({ metric: 'heart_rate', days: 30, memberId: selectedMemberId }),
-      healthApi.getHealthTrends({ metric: 'blood_pressure', days: 30, memberId: selectedMemberId }),
+      healthApi.getHealthTrends({ metric: 'heart_rate', days: 30, memberId: selectedTarget?.memberId ?? null, subjectUserId: selectedTarget?.subjectUserId ?? null }),
+      healthApi.getHealthTrends({ metric: 'blood_pressure', days: 30, memberId: selectedTarget?.memberId ?? null, subjectUserId: selectedTarget?.subjectUserId ?? null }),
     ]).then(([heart, pressure]) => {
       if (active) setHealthOverview({ heart, pressure });
     }).catch(() => {
       if (active) setHealthOverview({});
     });
     return () => { active = false; };
-  }, [selectedMemberId]);
+  }, [selectedMemberId, familyMembers]);
 
   /* Normalise API response: accept array or { messages: […] } */
   const messages = Array.isArray(messagesData)
@@ -112,9 +117,11 @@ export default function ConsultationPage() {
 
   useEffect(() => {
     let active = true;
-    familyApi.getFamilyMembers()
+    familyApi.getPatientTargets()
       .then((items) => {
-        if (active) setFamilyMembers(Array.isArray(items) ? items : []);
+        if (active) setFamilyMembers(Array.isArray(items)
+          ? items.filter((item) => item.kind !== 'account' || item.permissions?.canUseAi)
+          : []);
       })
       .catch(() => {
         if (active) setFamilyMembers([]);
@@ -122,7 +129,7 @@ export default function ConsultationPage() {
     return () => { active = false; };
   }, []);
 
-  const selectedMember = familyMembers.find((member) => member.id === selectedMemberId) || null;
+  const selectedMember = familyMembers.find((member) => String(member.id) === String(selectedMemberId)) || null;
 
   /* ---- Sessions are isolated by selected patient ---- */
   useEffect(() => {
@@ -148,11 +155,14 @@ export default function ConsultationPage() {
       try {
         const selectedKey = selectedMemberId == null ? 'self' : String(selectedMemberId);
         const shouldAppendSummary = pendingSummaryMemberRef.current === selectedKey;
-        const sessions = await consultApi.getChatSessions(selectedMemberId);
+        const sessions = await consultApi.getChatSessions({
+          memberId: selectedMember?.memberId ?? null,
+          subjectUserId: selectedMember?.subjectUserId ?? null,
+        });
         const existing = Array.isArray(sessions)
           ? sessions.find((session) => (
               session.status === 'active'
-              && hasPersonalizedContext(session, selectedMemberId)
+              && hasPersonalizedContext(session, selectedMember)
             ))
           : null;
         let sid = existing?.id;
@@ -198,7 +208,7 @@ export default function ConsultationPage() {
       setMemberMenuOpen(false);
       return;
     }
-    const nextMember = familyMembers.find((member) => member.id === nextMemberId);
+    const nextMember = familyMembers.find((member) => String(member.id) === String(nextMemberId));
     const nextName = nextMember?.name || '本人';
     const confirmed = window.confirm(
       `即将切换至${nextName}的独立问诊，本次对话不会带入新会话。是否继续？`,
@@ -526,12 +536,12 @@ export default function ConsultationPage() {
                       type="button"
                       role="menuitem"
                       key={member.id}
-                      className={selectedMemberId === member.id ? 'selected' : ''}
+                      className={String(selectedMemberId) === String(member.id) ? 'selected' : ''}
                       onClick={() => handleMemberChange(member.id)}
                     >
                       <span>{member.name?.[0] || '家'}</span>
                       <strong>{member.name}</strong>
-                      <small>{member.relation || '家庭成员'}</small>
+                      <small>{member.kind === 'account' ? `${member.relation || '家庭成员'} · 共享账号` : (member.relation || '家庭成员')}</small>
                     </button>
                   ))}
                 </div>

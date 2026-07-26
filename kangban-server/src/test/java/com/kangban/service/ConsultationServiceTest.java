@@ -26,6 +26,8 @@ class ConsultationServiceTest {
     private ChatMessageMapper messageMapper;
     private AiConsultationClient aiClient;
     private PatientHealthContextService patientHealthContextService;
+    private FamilyAccessService familyAccessService;
+    private AuditService auditService;
     private ConsultationService service;
 
     @BeforeEach
@@ -34,8 +36,16 @@ class ConsultationServiceTest {
         messageMapper = mock(ChatMessageMapper.class);
         aiClient = mock(AiConsultationClient.class);
         patientHealthContextService = mock(PatientHealthContextService.class);
+        familyAccessService = mock(FamilyAccessService.class);
+        auditService = mock(AuditService.class);
+        when(familyAccessService.require(anyLong(), any(), any())).thenAnswer(invocation -> {
+            Long actor = invocation.getArgument(0);
+            Long subject = invocation.getArgument(1);
+            return subject == null ? actor : subject;
+        });
         service = new ConsultationService(
-                sessionMapper, messageMapper, new ObjectMapper(), aiClient, patientHealthContextService);
+                sessionMapper, messageMapper, new ObjectMapper(), aiClient, patientHealthContextService,
+                familyAccessService, auditService);
         ReflectionTestUtils.setField(service, "taskExecutor", (Executor) Runnable::run);
     }
 

@@ -10,8 +10,8 @@ test('本人健康数据使用空 memberId，家庭成员使用稳定 ID', async
     source('./pages/HomePage.jsx'),
     source('./pages/HealthReportPage.jsx'),
   ]);
-  assert.match(recordPage, /memberId,\n\s+metric:/);
-  assert.match(recordPage, /familyApi\.getFamilyMembers/);
+  assert.match(recordPage, /subjectUserId,\n\s+memberId,/);
+  assert.match(recordPage, /familyApi\.getPatientTargets/);
   assert.doesNotMatch(homePage, /member:\s*'自己'/);
   assert.doesNotMatch(reportPage, /setMember\('母亲'\)/);
 });

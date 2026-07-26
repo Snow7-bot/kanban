@@ -155,6 +155,7 @@ CREATE TABLE IF NOT EXISTS dose_records (
 CREATE TABLE IF NOT EXISTS chat_sessions (
     id           BIGINT      AUTO_INCREMENT PRIMARY KEY,
     user_id      BIGINT      NOT NULL,
+    subject_user_id BIGINT,
     member_id    BIGINT,
     title        VARCHAR(200),
     patient_data TEXT,
@@ -176,4 +177,78 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     created_at          TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (reply_to_message_id),
     UNIQUE (user_id, client_message_id)
+);
+
+CREATE TABLE IF NOT EXISTS family_groups (
+    id            BIGINT       AUTO_INCREMENT PRIMARY KEY,
+    name          VARCHAR(100) NOT NULL,
+    owner_user_id BIGINT       NOT NULL,
+    created_at    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    deleted_at    TIMESTAMP    NULL
+);
+
+CREATE TABLE IF NOT EXISTS family_group_members (
+    id         BIGINT      AUTO_INCREMENT PRIMARY KEY,
+    family_id  BIGINT      NOT NULL,
+    user_id    BIGINT      NOT NULL,
+    relation   VARCHAR(20),
+    role       VARCHAR(20) DEFAULT 'member',
+    status     VARCHAR(20) DEFAULT 'active',
+    joined_at  TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (family_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS family_invitations (
+    id                   BIGINT      AUTO_INCREMENT PRIMARY KEY,
+    family_id            BIGINT      NOT NULL,
+    inviter_user_id      BIGINT      NOT NULL,
+    invitee_user_id      BIGINT      NOT NULL,
+    relation             VARCHAR(20),
+    can_view_health      BOOLEAN     DEFAULT TRUE,
+    can_add_health       BOOLEAN     DEFAULT FALSE,
+    can_view_records     BOOLEAN     DEFAULT FALSE,
+    can_view_medications BOOLEAN     DEFAULT FALSE,
+    can_view_reports     BOOLEAN     DEFAULT TRUE,
+    can_use_ai           BOOLEAN     DEFAULT FALSE,
+    can_modify           BOOLEAN     DEFAULT FALSE,
+    can_delete           BOOLEAN     DEFAULT FALSE,
+    status               VARCHAR(20) DEFAULT 'pending',
+    expires_at           TIMESTAMP   NOT NULL,
+    responded_at         TIMESTAMP,
+    created_at           TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    updated_at           TIMESTAMP   DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS family_permissions (
+    id                   BIGINT      AUTO_INCREMENT PRIMARY KEY,
+    family_id            BIGINT      NOT NULL,
+    subject_user_id      BIGINT      NOT NULL,
+    grantee_user_id      BIGINT      NOT NULL,
+    can_view_health      BOOLEAN     DEFAULT FALSE,
+    can_add_health       BOOLEAN     DEFAULT FALSE,
+    can_view_records     BOOLEAN     DEFAULT FALSE,
+    can_view_medications BOOLEAN     DEFAULT FALSE,
+    can_view_reports     BOOLEAN     DEFAULT FALSE,
+    can_use_ai           BOOLEAN     DEFAULT FALSE,
+    can_modify           BOOLEAN     DEFAULT FALSE,
+    can_delete           BOOLEAN     DEFAULT FALSE,
+    status               VARCHAR(20) DEFAULT 'active',
+    created_at           TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    updated_at           TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    revoked_at           TIMESTAMP,
+    UNIQUE (family_id, subject_user_id, grantee_user_id)
+);
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id            BIGINT       AUTO_INCREMENT PRIMARY KEY,
+    user_id       BIGINT,
+    action        VARCHAR(100) NOT NULL,
+    resource_type VARCHAR(50),
+    resource_id   BIGINT,
+    detail        TEXT,
+    ip_address    VARCHAR(50),
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

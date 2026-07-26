@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   Activity, AlertTriangle, CheckCircle2, ChevronRight, Download,
-  Filter, HeartPulse, Minus, MoreHorizontal, Plus,
+  Filter, HeartPulse, Minus, MoreHorizontal, Plus, Users,
 } from 'lucide-react';
 import HealthChart from '../components/HealthChart.jsx';
 import * as healthApi from '../api/health.js';
@@ -9,6 +9,7 @@ import { useAsync } from '../hooks/useAsync.js';
 import { StateBoundary } from '../hooks/StateBoundary.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { DEFAULT_AVATAR_URL, getUserDisplayName } from '../data.js';
+import * as familyApi from '../api/family.js';
 
 const TREND_METRICS = [
   { id: 'blood_pressure', label: '血压', unit: 'mmHg', chartLabel: '收缩压与舒张压' },
@@ -26,14 +27,28 @@ function StatCard({ tone, icon: Icon, title, value, unit }) {
 export default function HealthTrendsPage({ onNavigate }) {
   const { user } = useAuth();
   const [metric, setMetric] = useState('blood_pressure');
+  const [targets, setTargets] = useState([]);
+  const [selectedKey, setSelectedKey] = useState('self');
+  const selectedTarget = targets.find((item) => item.key === selectedKey) || null;
 
   const { data, loading, error, empty, execute } = useAsync(healthApi.getHealthTrends, {
     initialData: null,
   });
 
   useEffect(() => {
-    execute({ metric, days: 30 });
-  }, [metric, execute]);
+    execute({
+      metric,
+      days: 30,
+      memberId: selectedTarget?.memberId ?? null,
+      subjectUserId: selectedTarget?.subjectUserId ?? null,
+    });
+  }, [metric, selectedTarget?.memberId, selectedTarget?.subjectUserId, execute]);
+
+  useEffect(() => {
+    familyApi.getPatientTargets()
+      .then((items) => setTargets(items.filter((item) => item.kind !== 'account' || item.permissions?.canViewHealth)))
+      .catch(() => setTargets([]));
+  }, []);
 
   const records = data?.records || [];
   const stats = data?.stats || {};
@@ -50,10 +65,14 @@ export default function HealthTrendsPage({ onNavigate }) {
   }, []);
 
   const handleAddRecord = useCallback(() => {
+    if (selectedTarget?.kind === 'account' && !selectedTarget.permissions?.canAddHealth) {
+      window.dispatchEvent(new CustomEvent('app:error', { detail: '该家庭成员未授权你录入健康数据' }));
+      return;
+    }
     if (onNavigate) {
       onNavigate('health-record');
     }
-  }, [onNavigate]);
+  }, [onNavigate, selectedTarget]);
 
   const handleError = useCallback(() => {
     window.dispatchEvent(new CustomEvent('app:error', { detail: error }));
@@ -90,7 +109,7 @@ export default function HealthTrendsPage({ onNavigate }) {
           </StateBoundary>
         </div>
         <aside className="trends-right-column">
-          <section className="trends-patient-card"><div className="trends-patient-head"><img src={user?.avatarUrl || DEFAULT_AVATAR_URL} alt={`${getUserDisplayName(user)}头像`} /><div><h2>{getUserDisplayName(user)}</h2><p>ID: {user?.id || '----'}</p></div></div><div className="trends-patient-tags">{user?.age ? <span>{user.age} 岁</span> : null}{user?.gender ? <span>{user.gender}</span> : null}</div><button>查看完整档案</button></section>
+          <section className="trends-patient-card"><div className="trends-patient-head"><img src={selectedTarget?.avatarUrl || user?.avatarUrl || DEFAULT_AVATAR_URL} alt={`${selectedTarget?.name || getUserDisplayName(user)}头像`} /><div><h2>{selectedTarget?.name || getUserDisplayName(user)}</h2><p>{selectedTarget?.kind === 'account' ? '已授权家庭账号' : `ID: ${user?.id || '----'}`}</p></div></div><label className="trends-patient-switch"><Users size={14} /><select aria-label="切换健康档案" value={selectedKey} onChange={(event) => setSelectedKey(event.target.value)}><option value="self">自己</option>{targets.map((target) => <option key={target.key} value={target.key}>{target.name}{target.kind === 'account' ? '（共享）' : ''}</option>)}</select></label><div className="trends-patient-tags">{selectedTarget?.relation ? <span>{selectedTarget.relation}</span> : null}{!selectedTarget && user?.gender ? <span>{user.gender}</span> : null}</div><button>查看完整档案</button></section>
           <section className="trends-records-card"><div className="trends-records-heading"><h2>近期记录</h2><button>查看全部</button></div>
             <StateBoundary loading={loading} error={error} empty={recordsEmpty} loadingRender={recordsLoadingRender} emptyRender={recordsEmptyRender} errorRender={recordsErrorRender}>
               <div className="trends-records-list">{records.map(record => <button key={record.recordedDate || record.id}><i><Activity size={21} /></i><span><strong>{record.value} <em>{record.unit || unit}</em></strong><small>{record.recordedDate || '—'}</small></span><ChevronRight size={21} /></button>)}</div>

@@ -40,6 +40,8 @@ public class ConsultationService {
     private final ObjectMapper objectMapper;
     private final AiConsultationClient aiClient;
     private final PatientHealthContextService patientHealthContextService;
+    private final FamilyAccessService familyAccessService;
+    private final AuditService auditService;
 
     @Resource(name = "taskExecutor")
     private Executor taskExecutor;
@@ -49,13 +51,19 @@ public class ConsultationService {
     /**
      * 获取会话列表
      */
-    public Result<List<ChatSession>> getSessions(Long userId, Long memberId) {
-        // Building the snapshot also verifies that this family member belongs to the user.
-        patientHealthContextService.build(userId, memberId);
+    public Result<List<ChatSession>> getSessions(Long userId, Long requestedSubjectUserId, Long memberId) {
+        Long subjectUserId = familyAccessService.require(
+                userId, requestedSubjectUserId, FamilyAccessService.Scope.USE_AI);
+        patientHealthContextService.build(subjectUserId, memberId);
         LambdaQueryWrapper<ChatSession> query = new LambdaQueryWrapper<ChatSession>()
                 .eq(ChatSession::getUserId, userId)
                 .isNull(ChatSession::getDeletedAt)
                 .orderByDesc(ChatSession::getUpdatedAt);
+        if (userId.equals(subjectUserId)) {
+            query.isNull(ChatSession::getSubjectUserId);
+        } else {
+            query.eq(ChatSession::getSubjectUserId, subjectUserId);
+        }
         if (memberId == null) {
             query.isNull(ChatSession::getMemberId);
         } else {
@@ -70,11 +78,14 @@ public class ConsultationService {
      */
     @Transactional
     public Result<ChatSession> createSession(Long userId, CreateSessionRequest req) {
+        Long subjectUserId = familyAccessService.require(
+                userId, req.getSubjectUserId(), FamilyAccessService.Scope.USE_AI);
         PatientHealthContextService.Snapshot snapshot =
-                patientHealthContextService.build(userId, req.getMemberId());
+                patientHealthContextService.build(subjectUserId, req.getMemberId());
 
         ChatSession session = new ChatSession();
         session.setUserId(userId);
+        session.setSubjectUserId(userId.equals(subjectUserId) ? null : subjectUserId);
         session.setMemberId(req.getMemberId());
         session.setTitle(req.getTitle());
         // Never trust client-provided medical context. Build it from authorized database records.
@@ -92,6 +103,10 @@ public class ConsultationService {
         welcomeMessage.setContent(snapshot.initialMessage());
         welcomeMessage.setCreatedAt(LocalDateTime.now());
         chatMessageMapper.insert(welcomeMessage);
+        if (!userId.equals(subjectUserId)) {
+            auditService.record(userId, "SHARED_AI_SESSION_CREATE", "user",
+                    subjectUserId, "为授权家庭账号创建AI问诊会话");
+        }
 
         return Result.success("创建成功", session);
     }
@@ -110,6 +125,7 @@ public class ConsultationService {
         if (session == null) {
             return Result.error("会话不存在");
         }
+        requireSessionAccess(userId, session);
 
         List<ChatMessage> messages = chatMessageMapper.selectList(
                 new LambdaQueryWrapper<ChatMessage>()
@@ -133,9 +149,10 @@ public class ConsultationService {
         if (session == null) {
             throw BusinessException.notFound("会话不存在");
         }
+        Long subjectUserId = requireSessionAccess(userId, session);
 
         PatientHealthContextService.Snapshot snapshot =
-                patientHealthContextService.build(userId, session.getMemberId());
+                patientHealthContextService.build(subjectUserId, session.getMemberId());
         session.setPatientData(snapshot.contextJson());
         session.setUpdatedAt(LocalDateTime.now());
         chatSessionMapper.updateById(session);
@@ -165,6 +182,7 @@ public class ConsultationService {
         if (session == null) {
             return Result.error("会话不存在");
         }
+        requireSessionAccess(userId, session);
 
         if (req.getClientMessageId() != null && !req.getClientMessageId().isBlank()) {
             ChatMessage existingMessage = chatMessageMapper.selectOne(
@@ -220,6 +238,13 @@ public class ConsultationService {
             failEmitter(emitter, "会话不存在或已失效。");
             return emitter;
         }
+        Long subjectUserId;
+        try {
+            subjectUserId = requireSessionAccess(userId, session);
+        } catch (BusinessException e) {
+            failEmitter(emitter, e.getMessage());
+            return emitter;
+        }
 
         ChatMessage userMsg = chatMessageMapper.selectOne(
                 new LambdaQueryWrapper<ChatMessage>()
@@ -251,8 +276,9 @@ public class ConsultationService {
                 log.info("SSE streaming start: sessionId={}, messageId={}", sessionId, messageId);
                 try {
                     emitter.send(SseEmitter.event().name("thinking").data("正在分析您的症状..."));
+                    familyAccessService.require(userId, subjectUserId, FamilyAccessService.Scope.USE_AI);
                     PatientHealthContextService.Snapshot currentSnapshot =
-                            patientHealthContextService.build(userId, session.getMemberId());
+                            patientHealthContextService.build(subjectUserId, session.getMemberId());
                     session.setPatientData(currentSnapshot.contextJson());
                     session.setUpdatedAt(LocalDateTime.now());
                     chatSessionMapper.updateById(session);
@@ -334,6 +360,12 @@ public class ConsultationService {
         }
     }
 
+    private Long requireSessionAccess(Long userId, ChatSession session) {
+        Long subjectUserId = session.getSubjectUserId() == null
+                ? userId : session.getSubjectUserId();
+        return familyAccessService.require(userId, subjectUserId, FamilyAccessService.Scope.USE_AI);
+    }
+
     /**
      * 获取历史会话（已完成的会话）
      */
@@ -345,7 +377,15 @@ public class ConsultationService {
                         .isNull(ChatSession::getDeletedAt)
                         .orderByDesc(ChatSession::getUpdatedAt)
         );
-        return Result.success(sessions);
+        List<ChatSession> authorizedSessions = sessions.stream().filter(session -> {
+            try {
+                requireSessionAccess(userId, session);
+                return true;
+            } catch (BusinessException exception) {
+                return false;
+            }
+        }).toList();
+        return Result.success(authorizedSessions);
     }
 
     /**
@@ -358,6 +398,7 @@ public class ConsultationService {
                 new LambdaQueryWrapper<ChatSession>()
                         .eq(ChatSession::getUserId, userId)
                         .eq(ChatSession::getStatus, "active")
+                        .isNull(ChatSession::getSubjectUserId)
                         .isNull(ChatSession::getMemberId)
                         .isNull(ChatSession::getDeletedAt)
                         .last("LIMIT 1")

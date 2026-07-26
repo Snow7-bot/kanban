@@ -25,19 +25,23 @@ function chartBars(records) {
 export default function HealthReportPage() {
   const [period, setPeriod] = useState('周');
   const [memberOpen, setMemberOpen] = useState(false);
-  const [memberId, setMemberId] = useState(null);
-  const [members, setMembers] = useState([]);
+  const [selectedKey, setSelectedKey] = useState('self');
+  const [targets, setTargets] = useState([]);
   const [report, setReport] = useState(null);
   const [trends, setTrends] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   const isWeek = period === '周';
-  const selectedMember = members.find((item) => item.id === memberId);
-  const memberName = selectedMember?.name || '自己';
+  const selectedTarget = targets.find((item) => item.key === selectedKey) || null;
+  const memberId = selectedTarget?.memberId ?? null;
+  const subjectUserId = selectedTarget?.subjectUserId ?? null;
+  const memberName = selectedTarget?.name || '自己';
 
   useEffect(() => {
-    familyApi.getFamilyMembers().then(setMembers).catch(() => setMembers([]));
+    familyApi.getPatientTargets()
+      .then((items) => setTargets(items.filter((item) => item.kind !== 'account' || item.permissions?.canViewReports)))
+      .catch(() => setTargets([]));
   }, []);
 
   useEffect(() => {
@@ -46,9 +50,9 @@ export default function HealthReportPage() {
       try {
         const days = isWeek ? 7 : 30;
         const [data, heart, steps] = await Promise.all([
-          healthApi.getHealthReport({ period: isWeek ? 'week' : 'month', memberId }),
-          healthApi.getHealthTrends({ metric: 'heart_rate', days, memberId }),
-          healthApi.getHealthTrends({ metric: 'steps', days, memberId }),
+          healthApi.getHealthReport({ period: isWeek ? 'week' : 'month', memberId, subjectUserId }),
+          healthApi.getHealthTrends({ metric: 'heart_rate', days, memberId, subjectUserId }),
+          healthApi.getHealthTrends({ metric: 'steps', days, memberId, subjectUserId }),
         ]);
         setReport(data);
         setTrends({ heart, steps });
@@ -58,7 +62,7 @@ export default function HealthReportPage() {
         setLoading(false);
       }
     })();
-  }, [period, memberId]);
+  }, [period, memberId, subjectUserId]);
 
   if (loading) return <main className="page-content"><div className="state-loading"><div className="state-spinner" /><p>加载中...</p></div></main>;
   if (error) return <main className="page-content"><div className="state-error"><p>{error}</p></div></main>;
@@ -81,8 +85,8 @@ export default function HealthReportPage() {
             <img src="/stitch/PRD-UI-Prototype-Implementation/health-report/assets/01.jpg" alt="头像" /><span>{memberName}</span><ChevronDown size={15} />
           </button>
           {memberOpen && <div className="report-member-menu">
-            <button onClick={() => { setMemberId(null); setMemberOpen(false); }}><UserRound size={14} />自己</button>
-            {members.map((item) => <button key={item.id} onClick={() => { setMemberId(item.id); setMemberOpen(false); }}><UsersRound size={14} />{item.name}</button>)}
+            <button onClick={() => { setSelectedKey('self'); setMemberOpen(false); }}><UserRound size={14} />自己</button>
+            {targets.map((item) => <button key={item.key} onClick={() => { setSelectedKey(item.key); setMemberOpen(false); }}><UsersRound size={14} />{item.name}{item.kind === 'account' ? '（共享）' : ''}</button>)}
           </div>}
         </div>
         <div className="report-period" role="group" aria-label="报告周期">

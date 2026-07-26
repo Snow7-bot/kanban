@@ -31,9 +31,10 @@ public class ConsultationController {
     @Operation(summary = "获取会话列表")
     @GetMapping("/sessions")
     public Result<List<ChatSession>> getSessions(@AuthenticationPrincipal UserDetails user,
+                                                 @RequestParam(required = false) Long subjectUserId,
                                                  @RequestParam(required = false) Long memberId) {
         Long userId = Long.parseLong(user.getUsername());
-        return consultationService.getSessions(userId, memberId);
+        return consultationService.getSessions(userId, subjectUserId, memberId);
     }
 
     @Operation(summary = "创建新会话")
