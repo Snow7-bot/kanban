@@ -1,0 +1,365 @@
+<!DOCTYPE html><html lang="zh-CN" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#faf8ff",
+                        "primary-container": "#db313f",
+                        "on-tertiary-fixed-variant": "#404940",
+                        "secondary": "#485f84",
+                        "outline-variant": "#e4bebc",
+                        "on-primary": "#ffffff",
+                        "status-warning": "#FFB703",
+                        "on-background": "#131b2e",
+                        "surface-container-low": "#f2f3ff",
+                        "secondary-fixed-dim": "#b0c7f1",
+                        "outline": "#8f6f6e",
+                        "on-secondary-fixed": "#001b3c",
+                        "background": "#faf8ff",
+                        "on-tertiary-container": "#f6fff3",
+                        "surface": "#faf8ff",
+                        "on-secondary": "#ffffff",
+                        "surface-bg": "#F8FAFC",
+                        "on-secondary-container": "#445a7f",
+                        "tertiary-fixed-dim": "#c0c9be",
+                        "tertiary-container": "#6e776d",
+                        "on-secondary-fixed-variant": "#30476a",
+                        "surface-tint": "#bb152c",
+                        "tertiary": "#565e55",
+                        "primary-fixed-dim": "#ffb3b1",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#fffbff",
+                        "secondary-fixed": "#d5e3ff",
+                        "surface-container": "#eaedff",
+                        "surface-container-highest": "#dae2fd",
+                        "status-critical": "#E63946",
+                        "primary-fixed": "#ffdad8",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e2e7ff",
+                        "inverse-primary": "#ffb3b1",
+                        "on-tertiary-fixed": "#161d16",
+                        "on-primary-fixed-variant": "#92001c",
+                        "surface-card": "#FFFFFF",
+                        "surface-dim": "#d2d9f4",
+                        "on-surface": "#131b2e",
+                        "on-surface-variant": "#5b403f",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#dce5d9",
+                        "inverse-on-surface": "#eef0ff",
+                        "inverse-surface": "#283044",
+                        "on-primary-fixed": "#410007",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#dae2fd",
+                        "secondary-container": "#bbd3fd",
+                        "primary": "#b7102a",
+                        "status-success": "#2D6A4F"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "card-gap": "24px",
+                        "gutter": "24px",
+                        "touch-target": "48px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "elderly-body": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "elderly-body": ["22px", {"lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    }catch(_e){}</script></head><body class="bg-surface-bg text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-gutter py-4 w-full max-w-container-max mx-auto bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm">
+<div class="flex items-center gap-8">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary">康伴</h1>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-200" href="#">仪表盘</a>
+<a class="text-primary font-bold border-b-2 border-primary font-label-md text-label-md" href="#">患者列表</a>
+<a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-200" href="#">数据分析</a>
+<a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-200" href="#">档案记录</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A professional medical assistant profile portrait in a high-key studio setting. The subject is a woman in her 30s with a kind expression, wearing a minimalist white lab coat. The background is a soft, blurred clinical environment with clean white and light grey tones, maintaining a professional and trustworthy healthcare aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsr3OWnuYYk-tJ6z55pzaCcUveGAEo6zEXx3uuoSCuu-NFHTRI_MbiEdmZ_nNqajmbFTlcx80OODwlPKNFyfQIVv2p-MLKX-WOBXozpHc6mhaCYYghK2vyDDEKfoacLcoPoYaIEMAm9PZUCVewD64gtqmD_8AzSYjiNYJ6o7e5E6Seg138lom7Zf6TrNt8rFiJM4aYtRf7AvbYLh455o8JAidKAdS1yQtMOnSPeBGzWwe2_3JCbXKnFA">
+</div>
+</div>
+</header>
+<div class="flex-1 flex max-w-container-max mx-auto w-full relative">
+<!-- SideNavBar -->
+<aside class="hidden lg:flex flex-col h-[calc(100vh-80px)] w-64 sticky top-20 p-4 space-y-2 bg-surface-container-lowest border-r border-outline-variant/20">
+<div class="mb-6 px-3">
+<p class="font-headline-md text-headline-md font-extrabold text-primary">患者中心</p>
+<p class="font-label-md text-label-md text-on-surface-variant opacity-70">医疗助手 v2.1</p>
+</div>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest transition-all duration-300 rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">grid_view</span> 首页
+            </a><a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest transition-all duration-300 rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">person</span> 个人资料
+            </a><a class="bg-primary-container text-on-primary-container rounded-xl flex items-center gap-3 p-3 font-label-md text-label-md shadow-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span> 家庭成员
+            </a>
+
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest transition-all duration-300 rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">monitoring</span> 健康指标
+            </a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest transition-all duration-300 rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">folder_open</span> 病历管理
+            </a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest transition-all duration-300 rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">calendar_today</span> 预约
+            </a>
+
+<div class="mt-auto space-y-2 pt-4 border-t border-outline-variant/30">
+
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest transition-all duration-300 rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">help</span> 帮助
+                </a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest transition-all duration-300 rounded-xl font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">logout</span> 退出登录
+                </a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 p-gutter md:p-margin-desktop overflow-hidden">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">家庭成员</h2>
+<p class="text-on-surface-variant font-body-md mt-1">统一管理您家人的健康档案与监测数据。</p>
+</div>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-full font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all">
+<span class="material-symbols-outlined">person_add</span>
+<span class="">添加成员</span>
+</button>
+</div>
+<!-- Members Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-card-gap">
+<!-- Self Card -->
+<div class="bento-card bg-surface-card rounded-3xl p-6 border border-outline-variant/20 shadow-[0_4px_20px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col group">
+<div class="absolute top-4 right-4 flex gap-2">
+<span class="bg-status-success/10 text-status-success text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">活跃</span>
+</div>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-16 h-16 rounded-2xl overflow-hidden ring-4 ring-primary/5">
+<img class="w-full h-full object-cover" data-alt="A detailed portrait of a modern 30-year-old male with a friendly expression. He is wearing a casual navy blue sweater. The lighting is soft and natural, suggesting a home or professional environment. The visual style is clean, sharp, and high-fidelity, matching a premium medical application aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFyMzL-ItPUiDRHaRDEyzhqTsHoGfnUQS6OGXZa8WjQzGWxUYyrEBAJb8Rc9iWN8Z7PByAT3rTW-iUnwREq99-toVSXYk-BB2oTqUjxcAw1aS83BGsR9jh9aklyLeivKOz2ZKoPyb4ZDUXPA4mrtgNvGvZrWWPcQbITua1h242gCComV8ho8yd2zt67G08dJnuL52VKEsIoT-P-pEvKWGQrKd0sAaxujuIQTH6UNUUoicVulQD-7tabw">
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">张伟</h3>
+<p class="text-on-surface-variant font-label-md">自己 • 32岁</p>
+</div>
+</div>
+<div class="space-y-4 flex-1">
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<div class="flex justify-between items-center mb-2">
+<span class="text-on-surface-variant text-label-md">心率</span>
+<span class="text-status-success font-bold">72 bpm</span>
+</div>
+<div class="w-full bg-outline-variant/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-success h-full w-[70%]"></div>
+</div>
+</div>
+<p class="text-on-surface-variant text-body-md line-clamp-2">整体健康状况稳定。保持规律的晨跑。上周血压略高于平均水平。</p>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant/20 flex justify-between items-center">
+<button class="text-primary font-bold text-label-md flex items-center gap-1 group-hover:gap-2 transition-all">
+                            查看档案 <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">edit_note</span>
+</div>
+</div>
+<!-- Mother Card -->
+<div class="bento-card bg-surface-card rounded-3xl p-6 border border-outline-variant/20 shadow-[0_4px_20px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col group">
+<div class="absolute top-4 right-4 flex gap-2">
+<span class="bg-status-critical/10 text-status-critical text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-status-critical rounded-full active-dot"></span> 需要关注
+                        </span>
+</div>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-16 h-16 rounded-2xl overflow-hidden ring-4 ring-primary/5">
+<img class="w-full h-full object-cover" data-alt="A portrait of a graceful elderly Chinese woman in her 60s. She has a serene and healthy appearance, wearing a soft pastel pink cardigan. The background is a bright, sun-filled living room with a modern, minimalist aesthetic. The lighting is warm and welcoming, conveying comfort and high-quality care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvzQ3AfTqXiRtfouxSB8_Ct4fDW5gAN_owU7JNtxSYCXStVASsM6OBpOdaDGu8bgNXlbOK2ATGm5Vc__ShNjCaIIIE_v4l9AoRksfe9r3K7i3-NUe_WZrmYEDOga0PH8ugCN7Kphq2siBkr2BEwIoMdPjCGcPQqlBiF5BAEHnm6zL8dHv1trdksf7YsWq8LapmuCqJamVxXaljC7L9Icpv5l3rwQ-1heZnSYgaAV6xGPFUcp5WIU-YvQ">
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">林芳</h3>
+<p class="text-on-surface-variant font-label-md">母亲 • 64岁</p>
+</div>
+</div>
+<div class="space-y-4 flex-1">
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<div class="flex justify-between items-center mb-2">
+<span class="text-on-surface-variant text-label-md">血糖水平</span>
+<span class="text-status-critical font-bold">142 mg/dL</span>
+</div>
+<div class="w-full bg-outline-variant/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-critical h-full w-[85%]"></div>
+</div>
+</div>
+<div class="flex items-center gap-2 text-status-critical font-bold text-label-md bg-status-critical/5 p-2 rounded-lg">
+<span class="material-symbols-outlined text-sm">event</span> 预约: 明天上午 9:00
+                        </div>
+<p class="text-on-surface-variant text-body-md line-clamp-2">注意到早餐后血糖飙升。需要监测接下来的48小时。服药依从性良好。</p>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant/20 flex justify-between items-center">
+<button class="text-primary font-bold text-label-md flex items-center gap-1 group-hover:gap-2 transition-all">
+                            查看档案 <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">edit_note</span>
+</div>
+</div>
+<!-- Son Card -->
+<div class="bento-card bg-surface-card rounded-3xl p-6 border border-outline-variant/20 shadow-[0_4px_20px_rgba(0,0,0,0.04)] relative overflow-hidden flex flex-col group">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-16 h-16 rounded-2xl overflow-hidden ring-4 ring-primary/5">
+<img class="w-full h-full object-cover" data-alt="A portrait of a cheerful 6-year-old boy with a bright smile. He is wearing a colorful striped t-shirt. The setting is a clean, bright outdoor park area with soft greenery in the background. The visual style is energetic, vibrant, and captures a sense of vitality and growth, fitting the warm clinical brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGxaFjGgE1qzHmSgEAqGTT8DmirJNnLU3aRuh7IrC7AH5n_Wbocqq7hNaGvdDcu1_9LxkdEN3fO8nrfyy9KoN3ycG3GolAPmiRsxj8n2xyHwooTHjGOnTyNvFW2dkL_93H6ZkW7hV1eNCFcbbVVRXk6-Dv4ltEJ5blU2ePYbJj5_1ojA0NTEWdAab2WsOjZtyIWOb30aLSCsFKBei0VoF93nRdDEkGSjPMqhgIirDJdMwfZLwj9dZYzA">
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">张小明</h3>
+<p class="text-on-surface-variant font-label-md">儿子 • 6岁</p>
+</div>
+</div>
+<div class="space-y-4 flex-1">
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<div class="flex justify-between items-center mb-2">
+<span class="text-on-surface-variant text-label-md">疫苗接种进度</span>
+<span class="text-status-success font-bold">90%</span>
+</div>
+<div class="w-full bg-outline-variant/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-success h-full w-[90%]"></div>
+</div>
+</div>
+<p class="text-on-surface-variant text-body-md line-clamp-2">已达到正常的成长里程碑。近期身高增长：2厘米。上个月有轻微的季节性过敏。</p>
+</div>
+<div class="mt-6 pt-4 border-t border-outline-variant/20 flex justify-between items-center">
+<button class="text-primary font-bold text-label-md flex items-center gap-1 group-hover:gap-2 transition-all">
+                            查看档案 <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">edit_note</span>
+</div>
+</div>
+<!-- Add Member Placeholder -->
+<div class="bento-card bg-surface-container-low rounded-3xl p-6 border-2 border-dashed border-outline-variant/40 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-surface-container-high transition-all group min-h-[300px]">
+<div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl">add</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">添加新成员</h3>
+<p class="text-on-surface-variant font-body-md mt-2 max-w-[200px]">扩大家庭健康圈，开始健康监测。</p>
+</div>
+</div>
+<!-- Secondary Section: Quick Insights -->
+<section class="mt-12 bg-inverse-surface rounded-[2rem] p-8 text-on-primary-container relative overflow-hidden">
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/20 rounded-full blur-[100px]"></div>
+<div class="relative z-10 grid md:grid-cols-2 gap-8 items-center">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-white mb-4">家庭健康脉搏</h3>
+<p class="text-surface-dim font-body-md mb-6">家庭成员医疗状态汇总。我们检测到 1 个待处理预约和 2 个待完成健康目标。</p>
+<div class="flex gap-4">
+<div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl flex-1 border border-white/10">
+<p class="text-white/60 text-label-md">预约</p>
+<p class="text-2xl font-bold text-white">01</p>
+</div>
+<div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl flex-1 border border-white/10">
+<p class="text-white/60 text-label-md">提醒</p>
+<p class="text-2xl font-bold text-status-critical">01</p>
+</div>
+</div>
+</div>
+<div class="bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10">
+<div class="flex justify-between items-center mb-4">
+<span class="text-white font-bold">周活动度</span>
+<span class="text-white/40 text-xs">最近 7 天</span>
+</div>
+<div class="flex items-end gap-2 h-32">
+<div class="bg-primary/40 w-full h-[40%] rounded-t-lg"></div>
+<div class="bg-primary/60 w-full h-[60%] rounded-t-lg"></div>
+<div class="bg-primary/80 w-full h-[45%] rounded-t-lg"></div>
+<div class="bg-primary w-full h-[90%] rounded-t-lg"></div>
+<div class="bg-primary/70 w-full h-[55%] rounded-t-lg"></div>
+<div class="bg-primary/90 w-full h-[75%] rounded-t-lg"></div>
+<div class="bg-white w-full h-[30%] rounded-t-lg"></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Mobile Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-md px-6 py-3 flex justify-between items-center border-t border-outline-variant/20 z-[60]">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="text-[10px] font-bold">首页</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">groups</span>
+<span class="text-[10px] font-bold">家庭</span>
+</button>
+<button class="w-12 h-12 bg-primary rounded-full text-white flex items-center justify-center shadow-lg -mt-8 border-4 border-surface">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="text-[10px] font-bold">健康</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold">个人资料</span>
+</button>
+</nav>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant w-full p-8 mt-auto">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex flex-col items-center md:items-start">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">康伴</span>
+<p class="text-on-surface-variant font-body-md opacity-70 mt-1">© 2025 康伴医疗系统 (Rythea Medical Systems). 高品质患者护理。</p>
+</div>
+<div class="flex gap-8">
+<a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-colors" href="#">隐私政策</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-colors" href="#">服务条款</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-colors" href="#">合规与安全</a>
+</div>
+</div>
+</footer>
+<script class="">
+        // Simple micro-interactions
+        document.querySelectorAll('.bento-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-6px) scale(1.01)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body></html>

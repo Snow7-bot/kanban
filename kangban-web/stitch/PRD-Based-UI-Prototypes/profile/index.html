@@ -1,0 +1,377 @@
+<!DOCTYPE html><html class="light" lang="zh-CN"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "surface-container-lowest": "#ffffff",
+                "surface-bright": "#faf8ff",
+                "primary-container": "#db313f",
+                "on-tertiary-fixed-variant": "#404940",
+                "secondary": "#485f84",
+                "outline-variant": "#e4bebc",
+                "on-primary": "#ffffff",
+                "status-warning": "#FFB703",
+                "on-background": "#131b2e",
+                "surface-container-low": "#f2f3ff",
+                "secondary-fixed-dim": "#b0c7f1",
+                "outline": "#8f6f6e",
+                "on-secondary-fixed": "#001b3c",
+                "background": "#faf8ff",
+                "on-tertiary-container": "#f6fff3",
+                "surface": "#faf8ff",
+                "on-secondary": "#ffffff",
+                "surface-bg": "#F8FAFC",
+                "on-secondary-container": "#445a7f",
+                "tertiary-fixed-dim": "#c0c9be",
+                "tertiary-container": "#6e776d",
+                "on-secondary-fixed-variant": "#30476a",
+                "surface-tint": "#bb152c",
+                "tertiary": "#565e55",
+                "primary-fixed-dim": "#ffb3b1",
+                "error": "#ba1a1a",
+                "error-container": "#ffdad6",
+                "on-primary-container": "#fffbff",
+                "secondary-fixed": "#d5e3ff",
+                "surface-container": "#eaedff",
+                "surface-container-highest": "#dae2fd",
+                "status-success": "#2D6A4F",
+                "primary-fixed": "#ffdad8",
+                "on-error": "#ffffff",
+                "surface-container-high": "#e2e7ff",
+                "inverse-primary": "#ffb3b1",
+                "on-tertiary-fixed": "#161d16",
+                "on-primary-fixed-variant": "#92001c",
+                "surface-card": "#FFFFFF",
+                "surface-dim": "#d2d9f4",
+                "on-surface": "#131b2e",
+                "on-tertiary": "#ffffff",
+                "tertiary-fixed": "#dce5d9",
+                "inverse-on-surface": "#eef0ff",
+                "inverse-surface": "#283044",
+                "on-surface-variant": "#5b403f",
+                "on-primary-fixed": "#410007",
+                "on-error-container": "#93000a",
+                "surface-variant": "#dae2fd",
+                "secondary-container": "#bbd3fd",
+                "primary": "#b7102a",
+                "status-success": "#2D6A4F"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "2xl": "1rem",
+                "3xl": "1.5rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "container-max": "1440px",
+                "card-gap": "24px",
+                "gutter": "24px",
+                "touch-target": "48px",
+                "margin-mobile": "20px",
+                "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                "label-md": ["Inter"],
+                "display-lg": ["Plus Jakarta Sans"],
+                "headline-lg-mobile": ["Plus Jakarta Sans"],
+                "elderly-body": ["Inter"],
+                "body-lg": ["Inter"],
+                "headline-md": ["Plus Jakarta Sans"],
+                "body-md": ["Inter"],
+                "headline-lg": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                "elderly-body": ["22px", {"lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    }catch(_e){}</script></head><body class="font-body-md text-on-surface overflow-x-hidden">
+    <!-- TopNavBar -->
+    <header class="sticky top-0 z-50 flex justify-between items-center px-gutter py-4 w-full max-w-container-max mx-auto bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm">
+        <div class="flex items-center gap-8">
+            <span class="font-headline-lg text-headline-lg font-bold text-primary">康伴</span>
+            <nav class="hidden md:flex items-center gap-6">
+                <a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-200" href="#">控制台</a>
+                <a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-200" href="#">患者列表</a>
+                <a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-200" href="#">数据分析</a>
+                <a class="text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-200" href="#">医疗档案</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="p-2 text-on-surface-variant hover:bg-surface-container-low transition-colors duration-200 rounded-full">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="p-2 text-on-surface-variant hover:bg-surface-container-low transition-colors duration-200 rounded-full">
+                <span class="material-symbols-outlined">settings</span>
+            </button>
+            <div class="h-10 w-10 rounded-full overflow-hidden border border-outline-variant/50">
+                <img class="w-full h-full object-cover" data-alt="Close up professional portrait of a medical assistant with a warm and friendly expression. The background is a clean, softly lit clinic with warm white tones and subtle crimson accents, maintaining a high-fidelity patient care aesthetic. The lighting is soft and even, highlighting a professional and caring demeanor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKrpes2W_WRZ0Kuu2WNMRevClKgQc8Z3VX_kAwLz5KxZqe6_KCgf6003i9RTyGdr7g8N5CuLymczMZf0NpNwwi4QAVw18y1-CuUFvA41myVN7LSKxJ5OKRCRdKhnCrZgWi7jeJp4pyfT80umT_KXxwYDaYual7t5UfonSfyWg6FNDRuZLTFtE66Zw_RWvKqo9EyWg0r362rY7HvaGVIMxstpcwDd0BRiCdMZMrK5iBSB4eG6ezhJjOnA">
+            </div>
+        </div>
+    </header>
+
+    <div class="flex max-w-container-max mx-auto min-h-[calc(100vh-80px)]">
+        <!-- SideNavBar -->
+        <aside class="hidden lg:flex flex-col h-full w-64 p-4 space-y-2 border-r border-outline-variant/20 bg-surface-container-lowest">
+            <div class="mb-6 px-3">
+                <h2 class="font-headline-md text-headline-md font-extrabold text-primary">患者门户</h2>
+                <p class="text-on-surface-variant opacity-60 font-label-md text-label-md">康伴智能医疗助手 v2.1</p>
+            </div>
+            <nav class="space-y-1">
+                <a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300 rounded-xl" href="#">
+                    <span class="material-symbols-outlined">grid_view</span>
+                    <span class="font-label-md text-label-md">首页</span>
+                </a>
+                <a class="bg-primary-container text-on-primary-container rounded-xl flex items-center gap-3 p-3 shadow-md" href="#">
+                    <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">person</span>
+                    <span class="font-label-md text-label-md">个人资料</span>
+                </a><a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300 rounded-xl" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">家庭成员</span>
+</a>
+                <a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300 rounded-xl" href="#">
+                    <span class="material-symbols-outlined">monitoring</span>
+                    <span class="font-label-md text-label-md">健康指标</span>
+                </a>
+                <a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300 rounded-xl" href="#">
+                    <span class="material-symbols-outlined">folder_open</span>
+                    <span class="font-label-md text-label-md">病历管理</span>
+                </a>
+                <a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300 rounded-xl" href="#">
+                    <span class="material-symbols-outlined">calendar_today</span>
+                    <span class="font-label-md text-label-md">预约</span>
+                </a>
+            </nav>
+            <div class="mt-auto pt-4 border-t border-outline-variant/10 space-y-1">
+                <a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300 rounded-xl" href="#">
+                    <span class="material-symbols-outlined">help</span>
+                    <span class="font-label-md text-label-md">帮助</span>
+                </a>
+                <a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-highest transition-all duration-300 rounded-xl" href="#">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span class="font-label-md text-label-md">退出登录</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10 bg-surface-bg relative overflow-hidden">
+            <!-- Decorative Shader Background (Atmospheric) -->
+            <div class="absolute -top-40 -right-40 w-96 h-96 opacity-10 pointer-events-none"></div>
+            
+            <div class="max-w-4xl mx-auto space-y-8 relative z-10">
+                <!---->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h1 class="font-display-lg text-display-lg text-on-background mb-2">个人资料</h1>
+                        <p class="text-on-surface-variant font-body-lg text-body-lg max-w-xl">
+                            管理您的健康身份。准确的信息可确保精确的临床护理和个性化的健康建议。
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 px-4 py-2 bg-status-success/10 text-status-success rounded-full font-label-md text-label-md">
+                        <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                        已验证患者档案
+                    </div>
+                </div>
+
+                <!-- Form Section (Bento Grid Style) -->
+                <form class="grid grid-cols-1 md:grid-cols-12 gap-card-gap" id="profileForm">
+                    <!-- Profile Identity Card -->
+                    <div class="md:col-span-12 lg:col-span-4 flex flex-col items-center justify-center p-8 bg-surface-card card-shadow rounded-3xl border border-outline-variant/10">
+                        <div class="relative group cursor-pointer">
+                            <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/10 mb-4 group-hover:border-primary transition-all duration-300">
+                                <img class="w-full h-full object-cover" data-alt="Detailed photo of a sophisticated digital avatar for a patient profile. The aesthetic is clean and modern, using soft lighting and a light gray background. The subject has a gentle, neutral expression. The image style is polished, clinical but friendly, fitting the Rythea medical systems visual language." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJUfjs5bIozK7HFugZMgcI_z80LhMcHAHrP-_Xxp74u0joqXVZVhwbZrLA0E-zUHMmiNQpcc9eNwem945ylVgxkOOl1dALYwdgkHfn8-itwOBvvOnyKvQVxmSCzSrIJh8EN4cKePOusw_Pmfrp2U03XhlIUcgdtZbD7R8wrsgewWeUB8n7XV1IFLI4pup7vpp-qc6xo4VOHe9j-dUrj9iuJYnHT07J8eA8jxgQ7TJhsrXx_xdUwbho_A">
+                            </div>
+                            <div class="absolute bottom-4 right-0 bg-primary text-white p-2 rounded-full shadow-lg">
+                                <span class="material-symbols-outlined text-[20px]">photo_camera</span>
+                            </div>
+                        </div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface mb-1">Aris Thorne 医生</h3>
+                        <p class="text-on-surface-variant font-label-md text-label-md mb-6">患者 ID: #RT-99420</p>
+                        <div class="w-full space-y-3 pt-6 border-t border-outline-variant/20">
+                            <div class="flex justify-between items-center">
+                                <span class="text-on-surface-variant font-label-md text-label-md">账号状态</span>
+                                <span class="bg-primary/5 text-primary px-3 py-1 rounded-full text-[12px] font-bold">已激活</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-on-surface-variant font-label-md text-label-md">最后更新</span>
+                                <span class="text-on-surface font-label-md text-label-md">2024年10月24日</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Core Info Card -->
+                    <div class="md:col-span-12 lg:col-span-8 p-8 bg-surface-card card-shadow rounded-3xl border border-outline-variant/10">
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined">badge</span>
+                            </div>
+                            <h2 class="font-headline-md text-headline-md text-on-surface">核心信息</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="font-label-md text-label-md text-on-surface-variant ml-1" for="nickname">昵称</label>
+                                <input class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 outline-none bg-surface-bg/50" id="nickname" type="text" value="Aris">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="font-label-md text-label-md text-on-surface-variant ml-1" for="gender">性别</label>
+                                <select class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 outline-none bg-surface-bg/50 appearance-none" id="gender">
+                                    <option selected="" value="male">男</option>
+                                    <option value="female">女</option>
+                                    <option value="non-binary">非二元性别</option>
+                                    <option value="other">不便透露</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="font-label-md text-label-md text-on-surface-variant ml-1" for="dob">出生日期</label>
+                                <div class="relative">
+                                    <input class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 outline-none bg-surface-bg/50" id="dob" type="date" value="1988-06-15">
+                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant pointer-events-none">calendar_month</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="font-label-md text-label-md text-on-surface-variant ml-1" for="bloodType">血型</label>
+                                <select class="w-full px-4 py-3 rounded-2xl border border-outline-variant/50 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 outline-none bg-surface-bg/50 appearance-none" id="bloodType">
+                                    <option value="A+">A+</option>
+                                    <option selected="" value="O+">O+</option>
+                                    <option value="B+">B+</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info Card -->
+                    <div class="md:col-span-12 p-8 bg-surface-card card-shadow rounded-3xl border border-outline-variant/10">
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined">contact_phone</span>
+                            </div>
+                            <h2 class="font-headline-md text-headline-md text-on-surface">联系方式</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="space-y-2">
+                                <label class="font-label-md text-label-md text-on-surface-variant ml-1" for="email">电子邮箱</label>
+                                <div class="relative">
+                                    <input class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/50 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 outline-none bg-surface-bg/50" id="email" type="email" value="aris.thorne@medical-hub.com">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant">mail</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="font-label-md text-label-md text-on-surface-variant ml-1" for="phone">手机号码</label>
+                                <div class="relative">
+                                    <input class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/50 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 outline-none bg-surface-bg/50" id="phone" type="tel" value="+1 (555) 012-3456">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant">call</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="font-label-md text-label-md text-on-surface-variant ml-1" for="emergency">紧急联系人</label>
+                                <div class="relative">
+                                    <input class="w-full pl-12 pr-4 py-3 rounded-2xl border border-outline-variant/50 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 outline-none bg-surface-bg/50" id="emergency" type="text" value="Sarah Thorne (配偶)">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant">contact_emergency</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-8 pt-8 border-t border-outline-variant/20 flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div class="flex items-center gap-4 text-on-surface-variant">
+                                <div class="flex -space-x-2">
+                                    <div class="w-8 h-8 rounded-full bg-surface-container border border-white flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-[14px]">shield</span>
+                                    </div>
+                                    <div class="w-8 h-8 rounded-full bg-surface-container border border-white flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-[14px]">lock</span>
+                                    </div>
+                                </div>
+                                <p class="text-[12px] font-body-md">您的数据已加密并符合 HIPAA 标准。</p>
+                            </div>
+                            <div class="flex items-center gap-4 w-full md:w-auto">
+                                <button class="flex-1 md:flex-none px-8 py-3 rounded-2xl border border-outline-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-low transition-colors duration-200" type="button">
+                                    放弃修改
+                                </button>
+                                <button class="flex-1 md:flex-none px-12 py-3 rounded-2xl bg-primary text-white font-label-md text-label-md shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2" id="saveButton" type="submit">
+                                    <span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">save</span>
+                                    保存资料
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Additional Settings Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap pb-12">
+                    <div class="p-6 bg-surface-card/60 backdrop-blur-sm border border-outline-variant/10 rounded-3xl flex items-start gap-4 hover:bg-surface-card transition-colors duration-300">
+                        <div class="w-12 h-12 rounded-2xl bg-secondary-container flex items-center justify-center text-on-secondary-container">
+                            <span class="material-symbols-outlined">notifications_active</span>
+                        </div>
+                        <div>
+                            <h4 class="font-headline-md text-[18px] text-on-surface mb-1">通知设置</h4>
+                            <p class="text-on-surface-variant text-[14px]">管理您接收警报和报告的方式。</p>
+                        </div>
+                        <span class="material-symbols-outlined ml-auto text-on-surface-variant">chevron_right</span>
+                    </div>
+                    <div class="p-6 bg-surface-card/60 backdrop-blur-sm border border-outline-variant/10 rounded-3xl flex items-start gap-4 hover:bg-surface-card transition-colors duration-300">
+                        <div class="w-12 h-12 rounded-2xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+                            <span class="material-symbols-outlined">security</span>
+                        </div>
+                        <div class="">
+                            <h4 class="font-headline-md text-[18px] text-on-surface mb-1">隐私与安全</h4>
+                            <p class="text-on-surface-variant text-[14px]">更新您的密码和双因素认证设置。</p>
+                        </div>
+                        <span class="material-symbols-outlined ml-auto text-on-surface-variant">chevron_right</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-low border-t border-outline-variant py-8 mt-auto">
+        <div class="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <span class="font-headline-md text-headline-md font-bold text-on-surface">康伴</span>
+                <span class="text-on-surface-variant font-body-md">|</span>
+                <span class="text-on-surface-variant font-body-md text-body-md">© 2025 康伴智能医疗系统。高品质患者护理。</span>
+            </div>
+            <div class="flex gap-6">
+                <a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-all" href="#">隐私政策</a>
+                <a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-all" href="#">服务条款</a>
+                <a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-all" href="#">合规性</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success Toast (Interaction Logic) -->
+    <div class="fixed bottom-10 left-1/2 -translate-x-1/2 glass-panel border border-status-success/30 px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3 translate-y-32 opacity-0 transition-all duration-500 z-[100]" id="successToast">
+        <div class="w-8 h-8 bg-status-success rounded-full flex items-center justify-center text-white">
+            <span class="material-symbols-outlined text-[20px]">check</span>
+        </div>
+        <span class="font-label-md text-label-md text-on-surface">资料已成功更新！</span>
+    </div>
+
+    <script class="">
+        // Simple Interaction Logic for the Save Button
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveButton');
+            const toast = document.getElementById('successToast');
+            
+            // Animation for button
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> 保存中...';
+            btn.classList.add('opacity-80');
+            
+            setTimeout(() => {
+                btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">save</span> 保存资料';
+                btn.classList</script></body></html>

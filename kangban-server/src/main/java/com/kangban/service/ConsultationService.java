@@ -1,0 +1,398 @@
+package com.kangban.service;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kangban.common.BusinessException;
+import com.kangban.common.Result;
+import com.kangban.dto.request.CreateSessionRequest;
+import com.kangban.dto.request.SendMessageRequest;
+import com.kangban.dto.request.UpdatePatientRequest;
+import com.kangban.client.AiConsultationClient;
+import com.kangban.client.AiClientException;
+import com.kangban.entity.ChatMessage;
+import com.kangban.entity.ChatSession;
+import com.kangban.mapper.ChatMessageMapper;
+import com.kangban.mapper.ChatSessionMapper;
+import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ConsultationService {
+
+    private final ChatSessionMapper chatSessionMapper;
+    private final ChatMessageMapper chatMessageMapper;
+    private final ObjectMapper objectMapper;
+    private final AiConsultationClient aiClient;
+    private final PatientHealthContextService patientHealthContextService;
+
+    @Resource(name = "taskExecutor")
+    private Executor taskExecutor;
+
+    private final Set<Long> activeMessageIds = ConcurrentHashMap.newKeySet();
+
+    /**
+     * 获取会话列表
+     */
+    public Result<List<ChatSession>> getSessions(Long userId, Long memberId) {
+        // Building the snapshot also verifies that this family member belongs to the user.
+        patientHealthContextService.build(userId, memberId);
+        LambdaQueryWrapper<ChatSession> query = new LambdaQueryWrapper<ChatSession>()
+                .eq(ChatSession::getUserId, userId)
+                .isNull(ChatSession::getDeletedAt)
+                .orderByDesc(ChatSession::getUpdatedAt);
+        if (memberId == null) {
+            query.isNull(ChatSession::getMemberId);
+        } else {
+            query.eq(ChatSession::getMemberId, memberId);
+        }
+        List<ChatSession> sessions = chatSessionMapper.selectList(query);
+        return Result.success(sessions);
+    }
+
+    /**
+     * 创建新会话
+     */
+    @Transactional
+    public Result<ChatSession> createSession(Long userId, CreateSessionRequest req) {
+        PatientHealthContextService.Snapshot snapshot =
+                patientHealthContextService.build(userId, req.getMemberId());
+
+        ChatSession session = new ChatSession();
+        session.setUserId(userId);
+        session.setMemberId(req.getMemberId());
+        session.setTitle(req.getTitle());
+        // Never trust client-provided medical context. Build it from authorized database records.
+        session.setPatientData(snapshot.contextJson());
+        session.setStatus("active");
+        session.setCreatedAt(LocalDateTime.now());
+        session.setUpdatedAt(LocalDateTime.now());
+        chatSessionMapper.insert(session);
+
+        // The first agent message is a deterministic, database-backed personalized summary.
+        ChatMessage welcomeMessage = new ChatMessage();
+        welcomeMessage.setSessionId(session.getId());
+        welcomeMessage.setUserId(userId);
+        welcomeMessage.setRole("assistant");
+        welcomeMessage.setContent(snapshot.initialMessage());
+        welcomeMessage.setCreatedAt(LocalDateTime.now());
+        chatMessageMapper.insert(welcomeMessage);
+
+        return Result.success("创建成功", session);
+    }
+
+    /**
+     * 获取会话消息列表
+     */
+    public Result<List<ChatMessage>> getMessages(Long userId, Long sessionId) {
+        // Verify session belongs to user
+        ChatSession session = chatSessionMapper.selectOne(
+                new LambdaQueryWrapper<ChatSession>()
+                        .eq(ChatSession::getId, sessionId)
+                        .eq(ChatSession::getUserId, userId)
+                        .isNull(ChatSession::getDeletedAt)
+        );
+        if (session == null) {
+            return Result.error("会话不存在");
+        }
+
+        List<ChatMessage> messages = chatMessageMapper.selectList(
+                new LambdaQueryWrapper<ChatMessage>()
+                        .eq(ChatMessage::getSessionId, sessionId)
+                        .orderByAsc(ChatMessage::getCreatedAt)
+        );
+        return Result.success(messages);
+    }
+
+    /**
+     * Rebuild and append the selected patient's latest database-backed health summary.
+     */
+    @Transactional
+    public Result<ChatMessage> appendPatientSummary(Long userId, Long sessionId) {
+        ChatSession session = chatSessionMapper.selectOne(
+                new LambdaQueryWrapper<ChatSession>()
+                        .eq(ChatSession::getId, sessionId)
+                        .eq(ChatSession::getUserId, userId)
+                        .isNull(ChatSession::getDeletedAt)
+        );
+        if (session == null) {
+            throw BusinessException.notFound("会话不存在");
+        }
+
+        PatientHealthContextService.Snapshot snapshot =
+                patientHealthContextService.build(userId, session.getMemberId());
+        session.setPatientData(snapshot.contextJson());
+        session.setUpdatedAt(LocalDateTime.now());
+        chatSessionMapper.updateById(session);
+
+        ChatMessage summary = new ChatMessage();
+        summary.setSessionId(sessionId);
+        summary.setUserId(userId);
+        summary.setRole("assistant");
+        summary.setContent(snapshot.initialMessage());
+        summary.setCreatedAt(LocalDateTime.now());
+        chatMessageMapper.insert(summary);
+        return Result.success("健康概况已更新", summary);
+    }
+
+    /**
+     * 发送消息
+     */
+    @Transactional
+    public Result<Map<String, Object>> sendMessage(Long userId, Long sessionId, SendMessageRequest req) {
+        // Verify session belongs to user
+        ChatSession session = chatSessionMapper.selectOne(
+                new LambdaQueryWrapper<ChatSession>()
+                        .eq(ChatSession::getId, sessionId)
+                        .eq(ChatSession::getUserId, userId)
+                        .isNull(ChatSession::getDeletedAt)
+        );
+        if (session == null) {
+            return Result.error("会话不存在");
+        }
+
+        if (req.getClientMessageId() != null && !req.getClientMessageId().isBlank()) {
+            ChatMessage existingMessage = chatMessageMapper.selectOne(
+                    new LambdaQueryWrapper<ChatMessage>()
+                            .eq(ChatMessage::getUserId, userId)
+                            .eq(ChatMessage::getSessionId, sessionId)
+                            .eq(ChatMessage::getClientMessageId, req.getClientMessageId())
+                            .eq(ChatMessage::getRole, "user")
+                            .last("LIMIT 1")
+            );
+            if (existingMessage != null) {
+                Map<String, Object> existingResult = new LinkedHashMap<>();
+                existingResult.put("userMessage", existingMessage);
+                return Result.success(existingResult);
+            }
+        }
+
+        // Insert user message
+        ChatMessage userMessage = new ChatMessage();
+        userMessage.setSessionId(sessionId);
+        userMessage.setUserId(userId);
+        userMessage.setRole("user");
+        userMessage.setContent(req.getContent());
+        userMessage.setAttachmentUrl(req.getAttachmentUrl());
+        userMessage.setClientMessageId(req.getClientMessageId());
+        userMessage.setCreatedAt(LocalDateTime.now());
+        chatMessageMapper.insert(userMessage);
+
+        // Update session
+        session.setUpdatedAt(LocalDateTime.now());
+        chatSessionMapper.updateById(session);
+
+        // The SSE endpoint performs the single AI call and persists its response.
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("userMessage", userMessage);
+
+        return Result.success(result);
+    }
+
+    /**
+     * 流式生成AI回复 — SSE 端点使用。
+     */
+    public SseEmitter streamAiResponse(Long userId, Long sessionId, Long messageId) {
+        SseEmitter emitter = new SseEmitter(120_000L);
+
+        ChatSession session = chatSessionMapper.selectOne(
+                new LambdaQueryWrapper<ChatSession>()
+                        .eq(ChatSession::getId, sessionId)
+                        .eq(ChatSession::getUserId, userId)
+                        .isNull(ChatSession::getDeletedAt)
+        );
+        if (session == null) {
+            failEmitter(emitter, "会话不存在或已失效。");
+            return emitter;
+        }
+
+        ChatMessage userMsg = chatMessageMapper.selectOne(
+                new LambdaQueryWrapper<ChatMessage>()
+                        .eq(ChatMessage::getId, messageId)
+                        .eq(ChatMessage::getSessionId, sessionId)
+                        .eq(ChatMessage::getUserId, userId)
+                        .eq(ChatMessage::getRole, "user")
+                        .last("LIMIT 1")
+        );
+        if (userMsg == null) {
+            failEmitter(emitter, "消息不存在或无权访问。");
+            return emitter;
+        }
+
+        ChatMessage existingReply = findReply(messageId);
+        if (existingReply != null) {
+            replayCompletedResponse(emitter, existingReply.getContent());
+            return emitter;
+        }
+
+        if (!activeMessageIds.add(messageId)) {
+            failEmitter(emitter, "该消息正在生成回复，请稍后重试。");
+            return emitter;
+        }
+
+        try {
+            taskExecutor.execute(() -> {
+                long start = System.currentTimeMillis();
+                log.info("SSE streaming start: sessionId={}, messageId={}", sessionId, messageId);
+                try {
+                    emitter.send(SseEmitter.event().name("thinking").data("正在分析您的症状..."));
+                    PatientHealthContextService.Snapshot currentSnapshot =
+                            patientHealthContextService.build(userId, session.getMemberId());
+                    session.setPatientData(currentSnapshot.contextJson());
+                    session.setUpdatedAt(LocalDateTime.now());
+                    chatSessionMapper.updateById(session);
+                    String fullResponse = aiClient.consult(
+                            sessionId, userMsg.getContent(), currentSnapshot.contextJson());
+
+                    // Save first: if the browser disconnects, retry can replay the same reply.
+                    ChatMessage completedReply = findReply(messageId);
+                    if (completedReply != null) {
+                        fullResponse = completedReply.getContent();
+                    } else {
+                        ChatMessage aiMessage = new ChatMessage();
+                        aiMessage.setSessionId(sessionId);
+                        aiMessage.setUserId(userId);
+                        aiMessage.setRole("assistant");
+                        aiMessage.setContent(fullResponse);
+                        aiMessage.setReplyToMessageId(messageId);
+                        aiMessage.setCreatedAt(LocalDateTime.now());
+                        chatMessageMapper.insert(aiMessage);
+                    }
+
+                    emitter.send(SseEmitter.event().name("thinking_done").data(""));
+                    emitter.send(SseEmitter.event().name("token").data(fullResponse));
+                    emitter.send(SseEmitter.event().name("done").data(fullResponse));
+                    emitter.complete();
+
+                    long elapsed = System.currentTimeMillis() - start;
+                    log.info("SSE streaming done: sessionId={}, messageId={}, elapsed={}ms",
+                            sessionId, messageId, elapsed);
+                } catch (AiClientException e) {
+                    log.warn("SSE AI provider failure: sessionId={}, messageId={}", sessionId, messageId);
+                    failEmitter(emitter, e.getUserMessage());
+                } catch (IOException e) {
+                    log.warn("SSE client disconnected: sessionId={}, messageId={}", sessionId, messageId);
+                    emitter.complete();
+                } catch (Exception e) {
+                    log.error("SSE stream failed: sessionId={}, messageId={}, errorType={}",
+                            sessionId, messageId, e.getClass().getSimpleName());
+                    failEmitter(emitter, "AI 服务暂时不可用，请稍后重试。");
+                } finally {
+                    activeMessageIds.remove(messageId);
+                }
+            });
+        } catch (RejectedExecutionException e) {
+            activeMessageIds.remove(messageId);
+            log.warn("SSE task rejected: sessionId={}, messageId={}", sessionId, messageId);
+            failEmitter(emitter, "当前请求较多，请稍后重试。");
+        }
+
+        return emitter;
+    }
+
+    private ChatMessage findReply(Long messageId) {
+        return chatMessageMapper.selectOne(
+                new LambdaQueryWrapper<ChatMessage>()
+                        .eq(ChatMessage::getReplyToMessageId, messageId)
+                        .eq(ChatMessage::getRole, "assistant")
+                        .last("LIMIT 1")
+        );
+    }
+
+    private void replayCompletedResponse(SseEmitter emitter, String response) {
+        try {
+            emitter.send(SseEmitter.event().name("thinking_done").data(""));
+            emitter.send(SseEmitter.event().name("token").data(response));
+            emitter.send(SseEmitter.event().name("done").data(response));
+            emitter.complete();
+        } catch (IOException e) {
+            emitter.complete();
+        }
+    }
+
+    private void failEmitter(SseEmitter emitter, String message) {
+        try {
+            emitter.send(SseEmitter.event().name("ai_error").data(message));
+            emitter.complete();
+        } catch (IOException e) {
+            emitter.complete();
+        }
+    }
+
+    /**
+     * 获取历史会话（已完成的会话）
+     */
+    public Result<List<ChatSession>> getHistory(Long userId) {
+        List<ChatSession> sessions = chatSessionMapper.selectList(
+                new LambdaQueryWrapper<ChatSession>()
+                        .eq(ChatSession::getUserId, userId)
+                        .eq(ChatSession::getStatus, "completed")
+                        .isNull(ChatSession::getDeletedAt)
+                        .orderByDesc(ChatSession::getUpdatedAt)
+        );
+        return Result.success(sessions);
+    }
+
+    /**
+     * 更新患者信息
+     */
+    @Transactional
+    public void updatePatientProfile(Long userId, UpdatePatientRequest req) {
+        // Update the active session's patient data
+        ChatSession activeSession = chatSessionMapper.selectOne(
+                new LambdaQueryWrapper<ChatSession>()
+                        .eq(ChatSession::getUserId, userId)
+                        .eq(ChatSession::getStatus, "active")
+                        .isNull(ChatSession::getMemberId)
+                        .isNull(ChatSession::getDeletedAt)
+                        .last("LIMIT 1")
+        );
+
+        if (activeSession == null) {
+            throw new BusinessException("没有活跃的会话");
+        }
+
+        Map<String, Object> patientData = readPatientData(activeSession.getPatientData());
+        if (req.getName() != null) patientData.put("name", req.getName());
+        if (req.getAge() != null) patientData.put("age", req.getAge());
+        if (req.getGender() != null) patientData.put("gender", req.getGender());
+        if (req.getChiefComplaint() != null) patientData.put("chiefComplaint", req.getChiefComplaint());
+        if (req.getMedicalHistory() != null) patientData.put("medicalHistory", req.getMedicalHistory());
+        if (req.getAllergyHistory() != null) patientData.put("allergyHistory", req.getAllergyHistory());
+
+        try {
+            activeSession.setPatientData(objectMapper.writeValueAsString(patientData));
+        } catch (JsonProcessingException exception) {
+            throw new BusinessException("患者资料保存失败");
+        }
+        activeSession.setUpdatedAt(LocalDateTime.now());
+        chatSessionMapper.updateById(activeSession);
+    }
+
+    private Map<String, Object> readPatientData(String rawPatientData) {
+        if (rawPatientData == null || rawPatientData.isBlank()) {
+            return new LinkedHashMap<>();
+        }
+        try {
+            return objectMapper.readValue(rawPatientData, new TypeReference<LinkedHashMap<String, Object>>() {});
+        } catch (JsonProcessingException ignored) {
+            return new LinkedHashMap<>();
+        }
+    }
+
+}

@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+app:
+  base-url: http://localhost:5173
+  ai:
+    # Real provider is opt-in so local development and tests never make paid calls.
+    provider: ${APP_AI_PROVIDER:qwen}
+    api-url: ${APP_AI_API_URL:https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions}
+    api-key: ${APP_AI_API_KEY:}
+    ai-model: ${APP_AI_AI_MODEL:qwen3.7-plus-2026-05-26}
+    ocr-model: ${APP_AI_OCR_MODEL:qwen3.5-ocr}
+    connect-timeout: ${APP_AI_CONNECT_TIMEOUT:10000}
+    read-timeout: ${APP_AI_READ_TIMEOUT:60000}
+
+spring:
+  application:
+    name: kangban-server
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html

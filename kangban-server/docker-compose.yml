@@ -1,0 +1,80 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: kangban-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${KANGBAN_DB_PASSWORD}
+      MYSQL_DATABASE: kangban
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  redis:
+    image: redis:7-alpine
+    container_name: kangban-redis
+    command: redis-server --requirepass ${KANGBAN_REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio
+    container_name: kangban-minio
+    environment:
+      MINIO_ROOT_USER: ${KANGBAN_MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${KANGBAN_MINIO_SECRET_KEY}
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: kangban-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/kangban?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${KANGBAN_DB_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PASSWORD: ${KANGBAN_REDIS_PASSWORD}
+      KANGBAN_MINIO_ENDPOINT: http://minio:9000
+      KANGBAN_MINIO_ACCESS_KEY: ${KANGBAN_MINIO_ACCESS_KEY}
+      KANGBAN_MINIO_SECRET_KEY: ${KANGBAN_MINIO_SECRET_KEY}
+      KANGBAN_JWT_SECRET: ${KANGBAN_JWT_SECRET}
+      APP_AI_PROVIDER: ${APP_AI_PROVIDER:-qwen}
+      APP_AI_API_KEY: ${APP_AI_API_KEY:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+  redis-data:
+  minio-data:

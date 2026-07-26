@@ -1,0 +1,41 @@
+.stitch-trends { min-height: 100vh; display: flex; flex-direction: column; color: #131b2e; background: #f8fafc; font-family: var(--font-body); }
+.trends-main { width: 100%; max-width: 1440px; flex: 1; margin: 0 auto; padding: 48px 40px; }
+.trends-page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.trends-page-header h1 { font: 700 48px/56px var(--font-head); letter-spacing: -.02em; }
+.trends-page-header p { margin-top: 8px; color: #5b403f; font-size: 18px; line-height: 28px; }
+.trends-tabs { display: flex; gap: 0; padding: 4px; overflow: auto; background: #f2f3ff; border: 1px solid rgba(228,190,188,.2); border-radius: 16px; box-shadow: 0 1px 3px rgba(19,27,46,.06); }
+.trends-tabs button { min-width: 84px; min-height: 44px; padding: 0 24px; color: #5b403f; background: transparent; border-radius: 12px; font-size: 14px; font-weight: 600; letter-spacing: .05em; white-space: nowrap; }
+.trends-tabs button.active { color: #b7102a; background: #fff; box-shadow: 0 1px 3px rgba(19,27,46,.09); }
+.trends-dashboard { display: grid; grid-template-columns: minmax(0,2fr) minmax(340px,1fr); gap: 24px; margin-top: 40px; }
+.trends-left-column, .trends-right-column { display: flex; flex-direction: column; gap: 24px; }
+.trends-chart-card, .trends-stat-card, .trends-patient-card, .trends-records-card { position: relative; overflow: hidden; background: #fff; border: 1px solid rgba(228,190,188,.1); box-shadow: 0 4px 20px -2px rgba(0,0,0,.04); }
+.trends-chart-card, .trends-patient-card, .trends-records-card { padding: 24px; border-radius: 32px; }
+.trends-dot-pattern { position: absolute; inset: 0; pointer-events: none; opacity: .1; background-image: radial-gradient(#5b403f 1px,transparent 1px); background-size: 8px 8px; }
+.trends-chart-heading { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+.trends-chart-heading h2, .trends-patient-card h2, .trends-records-heading h2 { font: 600 24px/32px var(--font-head); }
+.trends-chart-heading p { color: #5b403f; font-size: 16px; line-height: 24px; }
+.trends-chart-heading > div:last-child { display: flex; gap: 8px; }
+.trends-chart-heading button { width: 42px; height: 42px; display: grid; place-items: center; color: #5b403f; background: #fff; border: 1px solid rgba(228,190,188,.5); border-radius: 12px; }
+.trends-chart { position: relative; z-index: 1; height: 320px; display: flex; flex-direction: column; justify-content: space-between; padding: 24px; background: #f8fafc; border: 1px solid rgba(228,190,188,.1); border-radius: 16px; }
+.trends-chart-empty { display: grid; place-items: center; color: #5b403f; }
+.trends-chart-canvas { min-height: 0; flex: 1; position: relative; padding-left: 16px; }
+.trends-chart-canvas svg { width: 100%; height: 100%; }
+.trends-y-axis { position: absolute; inset: 0 auto 0 -8px; display: flex; flex-direction: column; justify-content: space-between; color: #5b403f; font-size: 10px; font-weight: 600; }
+.trends-x-axis { display: flex; justify-content: space-between; margin-top: 16px; color: #5b403f; font-size: 12px; font-weight: 600; }
+.trends-stats { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; }
+.trends-stat-card { min-height: 199px; padding: 24px; border-radius: 20px; }
+.trends-stat-label { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; color: #5b403f; font-size: 14px; font-weight: 600; }
+.trends-stat-label i { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; }
+.trends-stat-label i.red { color: #b7102a; background: rgba(219,49,63,.2); }.trends-stat-label i.blue { color: #485f84; background: rgba(187,211,253,.3); }.trends-stat-label i.warning { color: #e63946; background: rgba(255,218,214,.3); }
+.trends-stat-value { display: flex; align-items: baseline; gap: 8px; }.trends-stat-value strong { font: 700 32px/40px var(--font-head); }.trends-stat-value span { color: #5b403f; font-size: 16px; }
+.trends-stat-note { min-height: 28px; display: flex; align-items: center; gap: 8px; margin-top: 16px; color: #5b403f; font-size: 16px; }.trends-stat-note.success { width: fit-content; padding: 4px 8px; color: #2d6a4f; background: rgba(45,106,79,.1); border-radius: 6px; font-size: 14px; font-weight: 600; }.trends-stat-note .down { color: #ffb703; }
+.trends-patient-head { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }.trends-patient-head img { width: 64px; height: 64px; object-fit: cover; border: 1px solid rgba(228,190,188,.3); border-radius: 50%; }.trends-patient-head p { color: #5b403f; font-size: 16px; }
+.trends-patient-tags { display: flex; gap: 8px; margin-bottom: 16px; }.trends-patient-tags span { padding: 4px 12px; background: #e2e7ff; border-radius: 999px; font-size: 14px; font-weight: 600; }.trends-patient-card > button { width: 100%; min-height: 48px; color: #485f84; background: #fff; border: 2px solid #485f84; border-radius: 12px; font-size: 14px; font-weight: 600; }
+.trends-records-card { flex: 1; }.trends-records-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }.trends-records-heading > button { color: #b7102a; background: transparent; font-size: 14px; font-weight: 600; }
+.trends-records-list { display: grid; gap: 16px; }.trends-records-list > button { min-height: 80px; display: flex; align-items: center; gap: 16px; padding: 16px; color: #131b2e; background: transparent; border: 1px solid transparent; border-radius: 16px; text-align: left; }.trends-records-list > button > i { width: 48px; height: 48px; display: grid; place-items: center; flex: 0 0 48px; color: #5b403f; background: #e2e7ff; border-radius: 12px; }.trends-records-list > button.warning > i { color: #e63946; background: rgba(255,218,214,.2); }.trends-records-list > button > span { min-width: 0; flex: 1; }.trends-records-list strong, .trends-records-list small { display: block; }.trends-records-list strong { font: 600 16px var(--font-head); }.trends-records-list strong em { color: #5b403f; font: 400 14px var(--font-body); font-style: normal; }.trends-records-list small { margin-top: 4px; color: #5b403f; font-size: 14px; }.trends-records-list > button.warning small { color: #e63946; }
+.trends-add { width: 100%; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 24px; color: #fff; background: #b7102a; border-radius: 12px; font-size: 14px; font-weight: 600; }
+.trends-footer { padding: 32px; background: #f2f3ff; border-top: 1px solid #e4bebc; }.trends-footer > div { max-width: 1440px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; }.trends-footer-logo { display: flex; align-items: center; gap: 8px; }.trends-footer-logo strong { font: 700 24px var(--font-head); }.trends-footer p, .trends-footer a { color: #5b403f; font-size: 14px; }.trends-footer-links { display: flex; gap: 24px; }
+@media (max-width: 1280px) { .trends-stat-value { gap: 4px; }.trends-stat-value strong { font: 700 28px/36px var(--font-head); }.trends-stat-value span { font-size: 14px; } }
+@media (max-width: 1040px) { .trends-dashboard { grid-template-columns: 1fr; }.trends-right-column { display: grid; grid-template-columns: 1fr 1.5fr; }.trends-records-card { grid-row: span 2; } }
+@media (max-width: 800px) { .trends-main { padding: 32px 20px; }.trends-page-header { align-items: flex-start; flex-direction: column; }.trends-tabs { width: 100%; }.trends-tabs button { flex: 1; }.trends-stats { grid-template-columns: 1fr; }.trends-right-column { display: flex; }.trends-footer > div { flex-direction: column; text-align: center; } }
+@media (max-width: 520px) { .trends-page-header h1 { font-size: 38px; line-height: 46px; }.trends-chart-card { padding: 18px; }.trends-chart-heading { align-items: flex-start; }.trends-chart-heading > div:last-child button { width: 36px; height: 36px; }.trends-chart-heading > div:last-child button:nth-child(2) { display: none; }.trends-chart { height: 270px; padding: 16px; }.trends-x-axis span:nth-child(even) { display: none; }.trends-footer { padding: 24px 20px; } }

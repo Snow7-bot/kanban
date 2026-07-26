@@ -1,0 +1,18 @@
+# Local secrets
+kangban-server/.env
+kangban-web/.env.local
+
+# Local editor and OS files
+.DS_Store
+**/.DS_Store
+.idea/
+**/.idea/
+*.iml
+*.log
+
+# Build outputs
+kangban-server/target/
+kangban-web/dist/
+
+# Dependencies
+kangban-web/node_modules/

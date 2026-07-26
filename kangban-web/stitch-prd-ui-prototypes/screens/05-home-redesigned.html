@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>康伴智能医疗助手 - 首页</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf8ff",
+                        "on-background": "#131b2e",
+                        "primary-fixed": "#ffdad8",
+                        "on-primary-fixed": "#410007",
+                        "on-secondary-container": "#445a7f",
+                        "surface-bg": "#faf8ff",
+                        "on-tertiary": "#ffffff",
+                        "surface-card": "#FFFFFF",
+                        "outline": "#8f6f6e",
+                        "on-tertiary-fixed": "#161d16",
+                        "on-primary-fixed-variant": "#92001c",
+                        "on-tertiary-container": "#f6fff3",
+                        "inverse-surface": "#283044",
+                        "on-surface-variant": "#5b403f",
+                        "surface-container-high": "#e2e7ff",
+                        "secondary-fixed-dim": "#b0c7f1",
+                        "primary-fixed-dim": "#ffb3b1",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#c0c9be",
+                        "error": "#ba1a1a",
+                        "primary-container": "#db313f",
+                        "surface-variant": "#dae2fd",
+                        "surface-container-highest": "#dae2fd",
+                        "primary": "#E63946",
+                        "on-primary-container": "#fffbff",
+                        "tertiary-fixed": "#dce5d9",
+                        "surface-dim": "#d2d9f4",
+                        "surface-bright": "#faf8ff",
+                        "tertiary-container": "#6e776d",
+                        "secondary-fixed": "#d5e3ff",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#eef0ff",
+                        "tertiary": "#565e55",
+                        "surface-tint": "#bb152c",
+                        "inverse-primary": "#ffb3b1",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#bbd3fd",
+                        "on-secondary-fixed-variant": "#30476a",
+                        "background": "#faf8ff",
+                        "on-secondary-fixed": "#001b3c",
+                        "status-warning": "#FFB703",
+                        "on-surface": "#131b2e",
+                        "on-error-container": "#93000a",
+                        "status-critical": "#E63946",
+                        "outline-variant": "#e4bebc",
+                        "surface-container": "#eaedff",
+                        "status-success": "#2D6A4F",
+                        "secondary": "#485f84",
+                        "on-tertiary-fixed-variant": "#404940",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f2f3ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "4xl": "2rem",
+                        "5xl": "2.5rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1600px",
+                        "card-gap": "24px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "40px",
+                        "touch-target": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "elderly-body": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        .dot-matrix {
+            background-image: radial-gradient(circle, currentColor 2px, transparent 2px);
+            background-size: 6px 6px;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-surface-bg text-on-surface antialiased min-h-screen flex">
+<!-- Left Side Navigation -->
+<aside class="hidden lg:flex flex-col w-[280px] bg-surface-container-lowest border-r border-outline-variant/10 fixed h-full z-40 shrink-0">
+<div class="p-8 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary filled-icon text-3xl" data-icon="coronavirus">coronavirus</span>
+<span class="font-headline-lg text-2xl font-bold text-on-surface">康伴</span>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 bg-surface-container-low text-primary rounded-2xl transition-colors" href="#">
+<span class="material-symbols-outlined filled-icon" data-icon="grid_view">grid_view</span>
+<span class="font-label-md font-medium">仪表盘</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-2xl transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-label-md font-medium">健康指标</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-2xl transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+<span class="font-label-md font-medium">病历记录</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-2xl transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-md font-medium">预约</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface rounded-2xl transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+<span class="font-label-md font-medium">消息</span>
+</a>
+</nav>
+<div class="p-6 mt-auto">
+<div class="flex items-center gap-3 p-4 bg-surface rounded-3xl border border-outline-variant/20 shadow-sm cursor-pointer hover:shadow-md transition-shadow">
+<img alt="User" class="w-10 h-10 rounded-full object-cover" src="assets/asset-01.jpg"/>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold text-on-surface truncate">李明</p>
+<p class="text-xs text-on-surface-variant truncate">自己</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 lg:ml-[280px] flex flex-col xl:flex-row min-h-screen">
+<!-- Center Column (Main Canvas) -->
+<main class="flex-1 p-6 lg:p-10 lg:pr-6 space-y-8 max-w-5xl">
+<!-- Top Bar Mobile -->
+<div class="flex lg:hidden justify-between items-center mb-8">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary filled-icon text-3xl" data-icon="coronavirus">coronavirus</span>
+<span class="font-headline-lg text-2xl font-bold text-on-surface">康伴</span>
+</div>
+<button class="p-2 bg-surface-card rounded-full shadow-sm">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+<!-- Header -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="font-display-lg text-4xl lg:text-5xl font-bold text-on-surface mb-2 tracking-tight">你好, 李明</h1>
+<p class="text-on-surface-variant text-lg">今天感觉怎么样？</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="bg-surface-card px-4 py-2 rounded-full shadow-sm border border-outline-variant/10 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-status-success"></span>
+<span class="text-sm font-medium text-on-surface">设备已连接</span>
+</div>
+<button class="w-10 h-10 bg-surface-card rounded-full shadow-sm border border-outline-variant/10 flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="w-10 h-10 bg-surface-card rounded-full shadow-sm border border-outline-variant/10 flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border border-surface-card"></span>
+</button>
+</div>
+</header>
+<!-- AI Consultation Hero -->
+<section class="bg-primary rounded-[2rem] p-8 lg:p-10 text-on-primary relative overflow-hidden shadow-lg flex items-center justify-between group cursor-pointer hover:bg-primary/95 transition-colors">
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+<div class="absolute -left-10 -bottom-10 w-40 h-40 bg-black/10 rounded-full blur-2xl"></div>
+<div class="relative z-10 max-w-lg">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+</div>
+<span class="font-medium text-white/90">AI 智能助理</span>
+</div>
+<h2 class="text-3xl lg:text-4xl font-bold mb-3 leading-tight">开始智能问诊</h2>
+<p class="text-white/80 text-lg">描述您的症状，获取初步建议或快速预约医生。</p>
+</div>
+<div class="relative z-10 hidden sm:flex w-16 h-16 bg-white text-primary rounded-full items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</section>
+<!-- Health Metrics Grid -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-bold text-on-surface">健康指标</h3>
+<button class="text-primary font-medium text-sm flex items-center gap-1 hover:underline">
+                        查看全部 <span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- ECG/Heart Rate Card -->
+<div class="bg-surface-card rounded-[2rem] p-6 shadow-sm border border-outline-variant/10 hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between h-[280px]">
+<div class="flex justify-between items-start mb-4">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-sm filled-icon" data-icon="favorite">favorite</span>
+<h4 class="font-semibold text-on-surface">心率 (ECG)</h4>
+</div>
+<p class="text-xs text-on-surface-variant">上次检查 • 今天 08:30</p>
+</div>
+<button class="w-8 h-8 rounded-full hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<div class="flex items-baseline gap-1 mt-2 z-10 relative">
+<span class="text-5xl font-bold tracking-tighter text-on-surface">89</span>
+<span class="text-sm font-medium text-on-surface-variant">次/分</span>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-32 px-4 pb-4">
+<!-- Simulated Dot Matrix Graph using CSS -->
+<div class="w-full h-full relative">
+<div class="absolute bottom-0 w-full h-full bg-[radial-gradient(circle,#E63946_2px,transparent_2px)] bg-[length:6px_6px] opacity-80" style="clip-path: polygon(0 80%, 10% 75%, 20% 85%, 25% 40%, 30% 90%, 35% 80%, 45% 80%, 50% 60%, 55% 85%, 60% 80%, 70% 80%, 75% 20%, 80% 90%, 85% 75%, 90% 85%, 100% 80%, 100% 100%, 0 100%);"></div>
+</div>
+</div>
+</div>
+<!-- Blood Pressure Card -->
+<div class="bg-surface-card rounded-[2rem] p-6 shadow-sm border border-outline-variant/10 hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between h-[280px]">
+<div class="flex justify-between items-start mb-4">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-secondary text-sm filled-icon" data-icon="bloodtype">bloodtype</span>
+<h4 class="font-semibold text-on-surface">血压</h4>
+</div>
+<p class="text-xs text-on-surface-variant">上次检查 • 昨天 19:45</p>
+</div>
+<button class="w-8 h-8 rounded-full hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<div class="flex items-baseline gap-1 mt-2 z-10 relative">
+<span class="text-5xl font-bold tracking-tighter text-on-surface">120<span class="text-2xl text-on-surface-variant">/80</span></span>
+<span class="text-sm font-medium text-on-surface-variant">mmHg</span>
+</div>
+<div class="mt-auto z-10 bg-surface-container-low p-3 rounded-xl inline-flex items-center gap-2 w-fit">
+<span class="w-2 h-2 rounded-full bg-status-success"></span>
+<span class="text-xs font-medium text-on-surface">正常范围</span>
+</div>
+<!-- Decorative subtle graph background -->
+<div class="absolute bottom-0 right-0 w-3/4 h-32 opacity-20 bg-[radial-gradient(circle,#485f84_2px,transparent_2px)] bg-[length:6px_6px]" style="clip-path: polygon(0 100%, 20% 60%, 40% 70%, 60% 40%, 80% 50%, 100% 20%, 100% 100%);"></div>
+</div>
+<!-- Blood Glucose Card -->
+<div class="bg-surface-card rounded-[2rem] p-6 shadow-sm border border-outline-variant/10 hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between h-[280px]">
+<div class="flex justify-between items-start mb-4">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-tertiary text-sm filled-icon" data-icon="water_drop">water_drop</span>
+<h4 class="font-semibold text-on-surface">血糖</h4>
+</div>
+<p class="text-xs text-on-surface-variant">上次检查 • 今天 07:00 (空腹)</p>
+</div>
+<button class="w-8 h-8 rounded-full hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<div class="flex items-baseline gap-1 mt-2 z-10 relative">
+<span class="text-5xl font-bold tracking-tighter text-on-surface">5.2</span>
+<span class="text-sm font-medium text-on-surface-variant">mmol/L</span>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-32 px-4 pb-4">
+<!-- Simulated Dot Matrix Graph using CSS -->
+<div class="w-full h-full relative">
+<div class="absolute bottom-0 w-full h-full bg-[radial-gradient(circle,#565e55_2px,transparent_2px)] bg-[length:6px_6px] opacity-40" style="clip-path: polygon(0 50%, 20% 55%, 40% 45%, 60% 50%, 80% 40%, 100% 45%, 100% 100%, 0 100%);"></div>
+</div>
+</div>
+</div>
+<!-- Device Status Card -->
+<div class="bg-inverse-surface text-on-primary rounded-[2rem] p-6 shadow-sm flex flex-col justify-between h-[280px] relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+<div class="flex justify-between items-start relative z-10">
+<div>
+<h4 class="font-semibold text-white/90">Apple Watch Series X</h4>
+<p class="text-xs text-white/60 mt-1">已连接 • 电量 80%</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
+</button>
+</div>
+<div class="relative z-10 flex-1 flex items-center justify-center mt-4">
+<img class="h-32 object-contain mix-blend-screen opacity-90" data-alt="Apple Watch minimal graphic" src="assets/asset-04.jpg"/>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Right Sidebar -->
+<aside class="w-full xl:w-[360px] bg-surface-bg xl:border-l border-outline-variant/10 p-6 lg:p-10 space-y-8 shrink-0">
+<!-- Patient Info Snippet -->
+<div class="bg-surface-card rounded-[2rem] p-6 shadow-sm border border-outline-variant/10 text-center">
+<img class="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-surface" data-alt="Patient avatar" src="assets/asset-05.jpg"/>
+<h3 class="text-xl font-bold text-on-surface mb-1">李明 (自己)</h3>
+<p class="text-sm text-on-surface-variant mb-4">39岁 • 男 • 1986/07/20</p>
+<div class="flex justify-center gap-2">
+<span class="px-3 py-1 bg-surface-container-low text-xs font-medium rounded-full text-on-surface">身高: 178cm</span>
+<span class="px-3 py-1 bg-surface-container-low text-xs font-medium rounded-full text-on-surface">体重: 72kg</span>
+</div>
+</div>
+<!-- Medications -->
+<div>
+<div class="flex items-center justify-between mb-4">
+<h4 class="text-lg font-bold text-on-surface">用药提醒</h4>
+<button class="w-8 h-8 rounded-full bg-surface-card border border-outline-variant/20 flex items-center justify-center text-on-surface hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</button>
+</div>
+<div class="space-y-3">
+<div class="bg-surface-card p-4 rounded-2xl shadow-sm border border-outline-variant/10 flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="medication">medication</span>
+</div>
+<div class="flex-1">
+<p class="font-medium text-on-surface text-sm">阿托伐他汀钙片</p>
+<p class="text-xs text-on-surface-variant mt-0.5">每日一次 • 10mg</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-on-surface">20:00</p>
+<span class="text-[10px] px-2 py-0.5 bg-surface-container-low rounded text-on-surface-variant">饭后</span>
+</div>
+</div>
+<div class="bg-surface-card p-4 rounded-2xl shadow-sm border border-outline-variant/10 flex items-center gap-4 opacity-60">
+<div class="w-12 h-12 bg-surface-container-high text-on-surface-variant rounded-xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="medication">medication</span>
+</div>
+<div class="flex-1">
+<p class="font-medium text-on-surface text-sm line-through">复合维生素</p>
+<p class="text-xs text-on-surface-variant mt-0.5">每日一次 • 1片</p>
+</div>
+<div class="text-right">
+<span class="material-symbols-outlined text-status-success" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Records / OCR Status -->
+<div>
+<div class="flex items-center justify-between mb-4">
+<h4 class="text-lg font-bold text-on-surface">近期报告</h4>
+<button class="text-primary font-medium text-xs hover:underline">查看全部</button>
+</div>
+<div class="bg-surface-card p-4 rounded-2xl shadow-sm border border-outline-variant/10">
+<div class="flex gap-4">
+<div class="w-12 h-14 bg-surface-container-low rounded-lg flex flex-col items-center justify-center shrink-0 border border-outline-variant/20">
+<span class="text-xs font-bold text-primary">2月</span>
+<span class="text-lg font-bold text-on-surface">10</span>
+</div>
+<div class="flex-1">
+<p class="font-medium text-on-surface text-sm mb-1">年度体检报告</p>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container text-[10px] rounded font-medium">已解析 (OCR)</span>
+<span class="text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="attach_file">attach_file</span> 1 附件
+                                </span>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-outline-variant/10">
+<button class="w-full py-2 bg-surface-container-low hover:bg-surface-container text-primary rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="document_scanner">document_scanner</span> 上传新报告
+                        </button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Mobile Bottom Navigation (Hidden on Desktop) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full bg-surface-container-lowest/90 backdrop-blur-lg border-t border-outline-variant/20 shadow-lg z-50 pb-safe">
+<div class="flex justify-around items-center p-3">
+<button class="flex flex-col items-center gap-1 text-primary">
+<div class="bg-primary/10 text-primary px-4 py-1 rounded-full">
+<span class="material-symbols-outlined filled-icon" data-icon="grid_view">grid_view</span>
+</div>
+<span class="font-label-md text-[10px] font-medium">首页</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant hover:text-primary transition-colors px-4 py-1">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-label-md text-[10px] font-medium">指标</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant hover:text-primary transition-colors px-4 py-1">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span class="font-label-md text-[10px] font-medium">问诊</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant hover:text-primary transition-colors px-4 py-1">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+<span class="font-label-md text-[10px] font-medium">记录</span>
+</button>
+</div>
+</nav>
+</body></html>

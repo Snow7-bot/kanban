@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:kangban_test;MODE=MySQL;NON_KEYWORDS=VALUE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+      schema-locations: classpath:schema.sql
+  flyway:
+    enabled: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
+minio:
+  endpoint: http://localhost:9000
+  access-key: test
+  secret-key: testtest
+  bucket: test-bucket
+
+jwt:
+  secret: dGVzdC1zZWNyZXQta2V5LWZvci1qd3Qtc2lnbmluZy1pbi10ZXN0cy0yMDI2
+  expiration: 3600000
+  refresh-expiration: 86400000
+
+app:
+  base-url: http://localhost:5173
+  ai:
+    provider: mock
+
+logging:
+  level:
+    com.kangban: INFO

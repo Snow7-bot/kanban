@@ -1,0 +1,519 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>用药管理 - 康伴</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#e4bebc",
+                    "secondary-container": "#bbd3fd",
+                    "inverse-surface": "#283044",
+                    "on-surface-variant": "#5b403f",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-highest": "#dae2fd",
+                    "on-background": "#131b2e",
+                    "secondary-fixed": "#d5e3ff",
+                    "on-primary-fixed": "#410007",
+                    "error-container": "#ffdad6",
+                    "inverse-on-surface": "#eef0ff",
+                    "on-tertiary-fixed-variant": "#404940",
+                    "tertiary-fixed": "#dce5d9",
+                    "surface-card": "#FFFFFF",
+                    "tertiary": "#565e55",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#c0c9be",
+                    "surface-bright": "#faf8ff",
+                    "surface-container": "#eaedff",
+                    "secondary": "#485f84",
+                    "on-secondary-container": "#445a7f",
+                    "error": "#ba1a1a",
+                    "primary-container": "#db313f",
+                    "on-secondary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-tint": "#bb152c",
+                    "on-surface": "#131b2e",
+                    "status-critical": "#E63946",
+                    "surface-container-low": "#f2f3ff",
+                    "tertiary-container": "#6e776d",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#92001c",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#b0c7f1",
+                    "on-tertiary-fixed": "#161d16",
+                    "background": "#faf8ff",
+                    "primary-fixed": "#ffdad8",
+                    "surface": "#faf8ff",
+                    "primary": "#b7102a",
+                    "surface-dim": "#d2d9f4",
+                    "outline": "#8f6f6e",
+                    "inverse-primary": "#ffb3b1",
+                    "primary-fixed-dim": "#ffb3b1",
+                    "status-success": "#2D6A4F",
+                    "on-tertiary-container": "#f6fff3",
+                    "on-secondary-fixed": "#001b3c",
+                    "on-primary-container": "#fffbff",
+                    "surface-variant": "#dae2fd",
+                    "surface-container-high": "#e2e7ff",
+                    "surface-bg": "#F8FAFC",
+                    "on-secondary-fixed-variant": "#30476a",
+                    "status-warning": "#FFB703"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "container-max": "1440px",
+                    "card-gap": "24px",
+                    "margin-mobile": "20px",
+                    "margin-desktop": "40px",
+                    "touch-target": "48px"
+            },
+            "fontFamily": {
+                    "headline-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "headline-lg-mobile": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "elderly-body": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "elderly-body": [
+                            "22px",
+                            {
+                                    "lineHeight": "32px",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .custom-shadow {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        /* ECharts-style dot matrix placeholder background */
+        .dot-matrix-bg {
+            background-image: radial-gradient(#b7102a 1px, transparent 1px);
+            background-size: 8px 8px;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body class="bg-surface-bg text-on-surface font-body-md antialiased h-screen overflow-hidden flex">
+<!-- SideNavBar (From JSON Blueprint) -->
+<nav class="bg-surface-container-lowest dark:bg-inverse-surface text-primary dark:text-inverse-primary h-screen w-64 fixed left-0 top-0 shadow-lg flex flex-col h-full p-4 space-y-2 z-40 hidden md:flex transition-all duration-300 ease-in-out">
+<!-- Brand Header -->
+<div class="mb-8 px-3 pt-4 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">coronavirus</span>
+<div>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary tracking-tight">康伴</h1>
+<p class="font-label-md text-label-md text-on-surface-variant opacity-70">医疗助手 v2.1</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 space-y-1">
+<a class="text-on-surface-variant dark:text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest dark:hover:bg-tertiary-container/20 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-md text-label-md">主页</span>
+</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest dark:hover:bg-tertiary-container/20 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-label-md text-label-md">健康指标</span>
+</a>
+<!-- Active State: Clinical Records (Maps to Medication Management) -->
+<a class="bg-primary-container dark:bg-primary-container text-on-primary-container rounded-xl flex items-center gap-3 p-3 transition-colors shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">folder_open</span>
+<span class="font-label-md text-label-md font-bold">临床记录</span>
+</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest dark:hover:bg-tertiary-container/20 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md">预约</span>
+</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest dark:hover:bg-tertiary-container/20 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="font-label-md text-label-md">消息</span>
+</a>
+</div>
+<!-- CTA & Footer -->
+<div class="mt-auto space-y-4">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md rounded-xl py-3 px-4 flex items-center justify-center gap-2 hover:bg-surface-tint transition-colors shadow-md min-h-[48px]">
+<span class="material-symbols-outlined">add</span>
+                新建咨询
+            </button>
+<div class="border-t border-outline-variant/30 pt-4 space-y-1">
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">帮助</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">退出登录</span>
+</a>
+</div>
+<!-- User Profile Snippet -->
+<div class="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl mt-4">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A professional, warm portrait of a medical assistant or doctor in a brightly lit, modern clinical environment. The lighting is soft and flattering, emphasizing a trustworthy and calm demeanor. The background features blurred, high-tech medical equipment in a pristine white and gray setting, adhering to a light mode aesthetic." src="assets/asset-06.jpg">
+<div class="overflow-hidden">
+<p class="font-label-md text-label-md text-on-surface truncate">Sarah Jenkins 医生</p>
+<p class="text-xs text-on-surface-variant truncate">患者中心</p>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 h-full overflow-y-auto bg-surface-bg">
+<div class="max-w-container-max mx-auto p-margin-mobile md:p-margin-desktop pt-8">
+<!-- Page Header -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+<div>
+<div class="flex items-center gap-2 text-primary mb-2">
+<span class="material-symbols-outlined text-sm">prescriptions</span>
+<span class="font-label-md text-label-md uppercase tracking-wider">临床记录</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface tracking-tight">用药管理</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-1 max-w-2xl">查看当前处方，检查药物相互作用，并计算儿科患者的精确剂量。</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-surface-card text-on-surface border border-outline-variant hover:border-primary hover:text-primary font-label-md text-label-md px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors h-[48px]">
+<span class="material-symbols-outlined">print</span>
+                        打印方案
+                    </button>
+<button class="bg-primary text-on-primary hover:bg-surface-tint font-label-md text-label-md px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm transition-all h-[48px]">
+<span class="material-symbols-outlined">add_circle</span>
+                        添加药物
+                    </button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-card-gap">
+<!-- Visual Alert Panel (Spans full width top if critical, or fits in grid) -->
+<div class="col-span-1 md:col-span-12 bg-error-container border border-[#ffb4ab] rounded-xl p-4 flex items-start gap-4 shadow-sm relative overflow-hidden">
+<div class="absolute inset-0 dot-matrix-bg pointer-events-none"></div>
+<div class="bg-primary rounded-full p-2 text-on-primary flex-shrink-0 z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="z-10 w-full">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-headline-md text-on-error-container text-lg">检测到相互作用警告</h3>
+<button class="text-on-error-container hover:bg-white/20 p-1 rounded-full transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<p class="font-body-md text-body-md text-on-primary-fixed-variant mt-1">在<strong>华法林 (5mg)</strong> 和新开的<strong>阿司匹林 (81mg)</strong>之间发现高风险相互作用。出血风险增加。请立即调整剂量或考虑替代方案。</p>
+<div class="mt-3 flex gap-3">
+<button class="bg-surface-card text-primary font-label-md text-label-md px-4 py-2 rounded-lg shadow-sm hover:bg-surface-container-lowest transition-colors text-sm">查看替代方案</button>
+<button class="bg-transparent border border-primary text-on-error-container font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors text-sm">确认</button>
+</div>
+</div>
+</div>
+<!-- Current Medications List (Large Card) -->
+<div class="col-span-1 md:col-span-12 bg-surface-card rounded-xl custom-shadow p-6 border border-outline-variant/20 mb-6">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<h3 class="font-headline-md text-headline-md text-on-surface text-lg">今日用药时间轴</h3>
+</div>
+<span class="text-xs font-label-md text-on-surface-variant bg-surface-container px-2 py-1 rounded-full">2023年10月27日</span>
+</div>
+<div class="relative h-24 mt-8">
+<!-- Timeline Base Line -->
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-outline-variant/30 -translate-y-1/2"></div>
+<!-- Time Markers (00:00 - 24:00) -->
+<div class="absolute top-1/2 left-0 w-full flex justify-between px-2 -translate-y-1/2">
+<div class="flex flex-col items-center">
+<div class="w-1 h-3 bg-outline-variant/50 mb-8"></div>
+<span class="text-[10px] text-on-surface-variant">00:00</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-1 h-3 bg-outline-variant/50 mb-8"></div>
+<span class="text-[10px] text-on-surface-variant">06:00</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-1 h-3 bg-outline-variant/50 mb-8"></div>
+<span class="text-[10px] text-on-surface-variant">12:00</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-1 h-3 bg-outline-variant/50 mb-8"></div>
+<span class="text-[10px] text-on-surface-variant">18:00</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-1 h-3 bg-outline-variant/50 mb-8"></div>
+<span class="text-[10px] text-on-surface-variant">24:00</span>
+</div>
+</div>
+<!-- Current Time Indicator -->
+<div class="absolute top-0 bottom-0 left-[45%] w-0.5 bg-primary z-10">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] px-1.5 py-0.5 rounded font-bold whitespace-nowrap">现在</div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full ring-4 ring-primary/20"></div>
+</div>
+<!-- Medication Markers -->
+<!-- 08:00 Lisinopril (Taken) -->
+<div class="absolute top-1/2 left-[33.3%] -translate-y-1/2 -translate-x-1/2 group cursor-pointer">
+<div class="w-8 h-8 bg-status-success text-white rounded-full flex items-center justify-center shadow-sm border-2 border-white">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<div class="absolute top-10 left-1/2 -translate-x-1/2 whitespace-nowrap text-center">
+<p class="text-[11px] font-bold text-on-surface">08:00</p>
+<p class="text-[10px] text-on-surface-variant">赖诺普利</p>
+</div>
+</div>
+<!-- 20:00 Warfarin (Pending) -->
+<div class="absolute top-1/2 left-[83.3%] -translate-y-1/2 -translate-x-1/2 group cursor-pointer">
+<div class="w-8 h-8 bg-white text-primary border-2 border-primary rounded-full flex items-center justify-center shadow-sm animate-pulse">
+<span class="material-symbols-outlined text-sm">medication</span>
+</div>
+<div class="absolute top-10 left-1/2 -translate-x-1/2 whitespace-nowrap text-center">
+<p class="text-[11px] font-bold text-primary">20:00</p>
+<p class="text-[10px] text-on-surface-variant">华法林</p>
+</div>
+</div>
+<!-- 22:00 Atorvastatin (Pending) -->
+<div class="absolute top-1/2 left-[91.6%] -translate-y-1/2 -translate-x-1/2 group cursor-pointer">
+<div class="w-8 h-8 bg-white text-primary border-2 border-primary rounded-full flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-sm">vaccines</span>
+</div>
+<div class="absolute top-10 left-1/2 -translate-x-1/2 whitespace-nowrap text-center">
+<p class="text-[11px] font-bold text-on-surface">22:00</p>
+<p class="text-[10px] text-on-surface-variant">阿托伐他汀</p>
+</div>
+</div>
+</div>
+</div><div class="col-span-1 md:col-span-8 bg-surface-card rounded-xl custom-shadow p-6 border border-outline-variant/20 flex flex-col h-[500px]">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface text-xl">当前用药方案</h3>
+<button class="text-primary hover:bg-primary-container/20 p-2 rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+<div class="overflow-y-auto flex-1 pr-2 space-y-3">
+<!-- Med Item 1 -->
+<div class="group border border-outline-variant/40 rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all bg-surface-bg/50 hover:bg-surface-container-lowest flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-status-success rounded-l-lg"></div>
+<div class="flex gap-4 items-center">
+<div class="bg-surface-container-high p-3 rounded-full text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pill</span>
+</div>
+<div>
+<h4 class="font-headline-md text-label-md text-on-surface text-base">赖诺普利</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">10mg • 片剂</p>
+</div>
+</div>
+<div class="flex flex-col md:items-end gap-1 w-full md:w-auto">
+<span class="bg-surface-container-highest text-on-surface font-label-md text-xs px-2.5 py-1 rounded-full whitespace-nowrap">每日一次 (早晨)</span>
+<p class="font-body-md text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 下次服药：明天 08:00
+                                </p>
+</div>
+<button class="hidden md:flex opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary absolute right-4 top-1/2 -translate-y-1/2">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Med Item 2 (Warning state) -->
+<div class="group border border-error/40 rounded-lg p-4 hover:border-error hover:shadow-md transition-all bg-error-container/10 hover:bg-error-container/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-status-critical rounded-l-lg"></div>
+<div class="flex gap-4 items-center">
+<div class="bg-error-container p-3 rounded-full text-error">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">medication</span>
+</div>
+<div>
+<h4 class="font-headline-md text-label-md text-on-surface text-base flex items-center gap-2">华法林 <span class="material-symbols-outlined text-error text-[16px]" title="Interaction Risk">warning</span></h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">5mg • 片剂</p>
+</div>
+</div>
+<div class="flex flex-col md:items-end gap-1 w-full md:w-auto">
+<span class="bg-surface-container-highest text-on-surface font-label-md text-xs px-2.5 py-1 rounded-full whitespace-nowrap">每日一次 (晚上)</span>
+<p class="font-body-md text-xs text-status-critical font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">science</span> 需要化验
+                                </p>
+</div>
+<button class="hidden md:flex opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary absolute right-4 top-1/2 -translate-y-1/2">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Med Item 3 -->
+<div class="group border border-outline-variant/40 rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all bg-surface-bg/50 hover:bg-surface-container-lowest flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-status-success rounded-l-lg"></div>
+<div class="flex gap-4 items-center">
+<div class="bg-surface-container-high p-3 rounded-full text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">vaccines</span>
+</div>
+<div>
+<h4 class="font-headline-md text-label-md text-on-surface text-base">阿托伐他汀</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">20mg • 片剂</p>
+</div>
+</div>
+<div class="flex flex-col md:items-end gap-1 w-full md:w-auto">
+<span class="bg-surface-container-highest text-on-surface font-label-md text-xs px-2.5 py-1 rounded-full whitespace-nowrap">每日一次 (睡前)</span>
+<p class="font-body-md text-xs text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 下次服药：今晚 22:00
+                                </p>
+</div>
+</div>
+</div>
+<button class="mt-4 w-full text-center text-primary font-label-md text-label-md hover:underline py-2">
+                        查看完整病史
+                    </button>
+</div>
+<!-- Right Column Stack -->
+<div class="col-span-1 md:col-span-4 flex flex-col gap-card-gap h-[500px]">
+<!-- Interaction Checker -->
+<div class="bg-surface-card rounded-xl custom-shadow p-5 border border-outline-variant/20 flex-1 flex flex-col">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">sync_problem</span>
+<h3 class="font-headline-md text-headline-md text-on-surface text-lg">检查相互作用</h3>
+</div>
+<div class="space-y-3 flex-1">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-surface-bg border border-outline-variant rounded-lg py-2 pl-9 pr-3 font-body-md text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="搜索药物..." type="text">
+</div>
+<!-- Mock selected tags to check against current regimen -->
+<div class="flex flex-wrap gap-2 pt-2">
+<span class="bg-surface-container flex items-center gap-1 px-2 py-1 rounded-md text-xs text-on-surface border border-outline-variant/50">
+                                    阿司匹林 <button class="hover:text-primary"><span class="material-symbols-outlined text-[12px]">close</span></button>
+</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant/30">
+<button class="w-full bg-surface-container-low text-primary border border-primary/20 hover:bg-primary hover:text-white font-label-md text-label-md py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm">analytics</span> 运行安全报告
+                            </button>
+</div>
+</div>
+<!-- Children's Dosage Calculator -->
+<div class="bg-inverse-surface rounded-xl custom-shadow p-5 border border-outline-variant/10 text-on-primary flex-1 flex flex-col relative overflow-hidden">
+<!-- Abstract bg element for depth -->
+<div class="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex items-center gap-2 mb-4 relative z-10">
+<span class="material-symbols-outlined text-inverse-primary">child_care</span>
+<h3 class="font-headline-md text-headline-md text-on-primary text-lg">儿科剂量</h3>
+</div>
+<div class="space-y-4 flex-1 relative z-10">
+<div class="flex gap-3">
+<div class="flex-1">
+<label class="block font-label-md text-xs text-inverse-primary mb-1">体重</label>
+<div class="relative">
+<input class="w-full bg-on-surface/50 border border-outline-variant/30 text-white rounded-lg py-2 px-3 font-body-md text-sm focus:outline-none focus:ring-2 focus:ring-inverse-primary transition-all placeholder-white/30" placeholder="0.0" type="number">
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 text-xs font-label-md">kg</span>
+</div>
+</div>
+<div class="flex-1">
+<label class="block font-label-md text-xs text-inverse-primary mb-1">药物</label>
+<select class="w-full bg-on-surface/50 border border-outline-variant/30 text-white rounded-lg py-2 px-3 font-body-md text-sm focus:outline-none focus:ring-2 focus:ring-inverse-primary transition-all appearance-none">
+<option class="text-black" disabled="" selected="" value="">选择...</option>
+<option class="text-black" value="amox">阿莫西林</option>
+<option class="text-black" value="ibu">布洛芬</option>
+</select>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-white/10 relative z-10 flex items-center justify-between">
+<span class="font-label-md text-xs text-inverse-primary">计算剂量：</span>
+<div class="text-right">
+<span class="font-headline-md text-2xl font-bold text-white tracking-tight">--</span>
+<span class="font-label-md text-sm text-white/70 ml-1">ml</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom spacing -->
+<div class="h-12"></div>
+</div>
+</main>
+</body></html>

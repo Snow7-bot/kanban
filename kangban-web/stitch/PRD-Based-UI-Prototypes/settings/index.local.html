@@ -1,0 +1,277 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#faf8ff",
+                    "primary-container": "#db313f",
+                    "on-tertiary-fixed-variant": "#404940",
+                    "secondary": "#485f84",
+                    "outline-variant": "#e4bebc",
+                    "on-primary": "#ffffff",
+                    "status-warning": "#FFB703",
+                    "on-background": "#131b2e",
+                    "surface-container-low": "#f2f3ff",
+                    "secondary-fixed-dim": "#b0c7f1",
+                    "outline": "#8f6f6e",
+                    "on-secondary-fixed": "#001b3c",
+                    "background": "#faf8ff",
+                    "on-tertiary-container": "#f6fff3",
+                    "surface": "#faf8ff",
+                    "on-secondary": "#ffffff",
+                    "surface-bg": "#F8FAFC",
+                    "on-secondary-container": "#445a7f",
+                    "tertiary-fixed-dim": "#c0c9be",
+                    "tertiary-container": "#6e776d",
+                    "on-secondary-fixed-variant": "#30476a",
+                    "surface-tint": "#bb152c",
+                    "tertiary": "#565e55",
+                    "primary-fixed-dim": "#ffb3b1",
+                    "error": "#ba1a1a",
+                    "error-container": "#ffdad6",
+                    "on-primary-container": "#fffbff",
+                    "secondary-fixed": "#d5e3ff",
+                    "surface-container": "#eaedff",
+                    "surface-container-highest": "#dae2fd",
+                    "status-critical": "#E63946",
+                    "primary-fixed": "#ffdad8",
+                    "on-error": "#ffffff",
+                    "surface-container-high": "#e2e7ff",
+                    "inverse-primary": "#ffb3b1",
+                    "on-tertiary-fixed": "#161d16",
+                    "on-primary-fixed-variant": "#92001c",
+                    "surface-card": "#FFFFFF",
+                    "surface-dim": "#d2d9f4",
+                    "on-surface": "#131b2e",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#dce5d9",
+                    "inverse-on-surface": "#eef0ff",
+                    "inverse-surface": "#283044",
+                    "on-surface-variant": "#5b403f",
+                    "on-primary-fixed": "#410007",
+                    "on-error-container": "#93000a",
+                    "surface-variant": "#dae2fd",
+                    "secondary-container": "#bbd3fd",
+                    "primary": "#b7102a",
+                    "status-success": "#2D6A4F"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "card-gap": "24px",
+                    "gutter": "24px",
+                    "touch-target": "48px",
+                    "margin-mobile": "20px",
+                    "margin-desktop": "40px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "elderly-body": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "elderly-body": ["22px", {"lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    }catch(_e){}</script></head><body class="font-body-md text-on-surface">
+    <header class="sticky top-0 z-50 bg-surface/80 dark:bg-surface-container/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm flex justify-between items-center px-gutter py-4 w-full max-w-container-max mx-auto">
+        <div class="flex items-center gap-4">
+            <h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed">康伴</h1>
+            <nav class="hidden md:flex gap-6 ml-8">
+                <a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-200" href="#">首页</a>
+                <a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-200" href="#">患者</a>
+                <a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-200" href="#">分析</a>
+                <a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors duration-200" href="#">记录</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container-low rounded-full transition-colors">notifications</button>
+            <button class="material-symbols-outlined text-primary font-bold border-b-2 border-primary p-2 hover:bg-surface-container-low transition-colors">settings</button>
+            <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary">
+                <img class="w-full h-full object-cover" data-alt="A professional medical assistant portrait for a health application profile." src="assets/01.jpg">
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-12 md:py-16 min-h-[calc(100vh-180px)]">
+        <div class="mb-12">
+            <h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">设置</h2>
+            <p class="font-body-md text-on-surface-variant">管理您的账户偏好和应用体验。</p>
+        </div>
+
+        <div class="space-y-6" id="settings-canvas">
+            <!-- Accessibility Section -->
+            <section class="bg-surface-card rounded-xl custom-shadow p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary">accessibility_new</span>
+                    <h3 class="font-headline-md text-headline-md">辅助功能</h3>
+                </div>
+                <div class="flex items-center justify-between py-4 border-b border-outline-variant/20">
+                    <div>
+                        <p class="font-body-lg text-body-lg font-semibold" id="mode-label">老年模式 (Elderly Mode)</p>
+                        <p class="font-body-md text-on-surface-variant">更大的文字、高对比度和简化导航，提升易读性。</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input class="sr-only peer" id="elderly-toggle" type="checkbox">
+                        <div class="toggle-bg w-14 h-8 bg-surface-container-highest rounded-full transition-colors"></div>
+                        <div class="toggle-dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full shadow-md transition-transform"></div>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Storage & Data -->
+            <section class="bg-surface-card rounded-xl custom-shadow p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary">database</span>
+                    <h3 class="font-headline-md text-headline-md">存储与数据</h3>
+                </div>
+                <div class="flex items-center justify-between py-4 border-b border-outline-variant/20">
+                    <div>
+                        <p class="font-body-lg text-body-lg font-semibold">清除缓存</p>
+                        <p class="font-body-md text-on-surface-variant">释放由临时文件占用的 124MB 本地存储空间。</p>
+                    </div>
+                    <button class="px-6 py-2 border border-outline text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container-low transition-colors duration-200">
+                        立即清除
+                    </button>
+                </div>
+                <div class="flex items-center justify-between py-4">
+                    <div>
+                        <p class="font-body-lg text-body-lg font-semibold">数据同步</p>
+                        <p class="font-body-md text-on-surface-variant">最后同步时间：2分钟前</p>
+                    </div>
+                    <span class="material-symbols-outlined text-status-success">check_circle</span>
+                </div>
+            </section>
+
+            <!-- Legal & Privacy -->
+            <section class="bg-surface-card rounded-xl custom-shadow p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary">policy</span>
+                    <h3 class="font-headline-md text-headline-md">隐私与法律</h3>
+                </div>
+                <div class="space-y-2">
+                    <a class="flex items-center justify-between py-4 border-b border-outline-variant/20 hover:px-2 transition-all duration-200 group" href="#">
+                        <span class="font-body-lg text-body-lg group-hover:text-primary transition-colors">隐私协议</span>
+                        <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+                    </a>
+                    <a class="flex items-center justify-between py-4 border-b border-outline-variant/20 hover:px-2 transition-all duration-200 group" href="#">
+                        <span class="font-body-lg text-body-lg group-hover:text-primary transition-colors">服务条款</span>
+                        <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+                    </a>
+                    <a class="flex items-center justify-between py-4 hover:px-2 transition-all duration-200 group" href="#">
+                        <span class="font-body-lg text-body-lg group-hover:text-primary transition-colors">合规说明</span>
+                        <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Danger Zone -->
+            
+        </div>
+    </main>
+
+    <footer class="bg-surface-container-low border-t border-outline-variant p-8 mt-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center max-w-container-max mx-auto gap-4">
+            <div class="flex flex-col items-center md:items-start">
+                <p class="font-headline-md text-headline-md font-bold text-on-surface">康伴</p>
+                <p class="font-body-md text-body-md text-on-surface-variant">© 2025 康伴医疗系统。高质量患者护理。</p>
+            </div>
+            <div class="flex gap-8">
+                <a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-colors" href="#">隐私协议</a>
+                <a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-colors" href="#">服务条款</a>
+                <a class="text-on-surface-variant font-label-md text-label-md hover:underline hover:text-primary transition-colors" href="#">安全合规</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const elderlyToggle = document.getElementById('elderly-toggle');
+        const settingsCanvas = document.getElementById('settings-canvas');
+        const body = document.body;
+        const modeLabel = document.getElementById('mode-label');
+
+        elderlyToggle.addEventListener('change', () => {
+            if (elderlyToggle.checked) {
+                // Apply Elderly Mode Styles
+                body.classList.add('elderly-active');
+                
+                // Increase font sizes globally for the main content
+                const textElements = settingsCanvas.querySelectorAll('.font-body-md, .font-body-lg, .font-headline-md, .font-label-md');
+                textElements.forEach(el => {
+                    el.classList.replace('text-body-md', 'text-elderly-body');
+                    el.classList.replace('font-body-md', 'font-elderly-body');
+                    el.classList.replace('text-body-lg', 'text-elderly-body');
+                    el.classList.replace('font-body-lg', 'font-elderly-body');
+                    el.classList.replace('text-label-md', 'text-elderly-body');
+                    el.classList.replace('font-label-md', 'font-elderly-body');
+                });
+                
+                // Increase card spacing
+                settingsCanvas.classList.replace('space-y-6', 'space-y-12');
+                
+                // Change UI cues
+                modeLabel.textContent = "老年模式 (Elderly Mode: 已开启)";
+                modeLabel.classList.add('text-primary');
+            } else {
+                // Revert to Normal Mode
+                body.classList.remove('elderly-active');
+                
+                const textElements = settingsCanvas.querySelectorAll('.font-elderly-body');
+                textElements.forEach(el => {
+                    if (el.tagName === 'P') {
+                        el.classList.replace('text-elderly-body', 'text-body-md');
+                        el.classList.replace('font-elderly-body', 'font-body-md');
+                    } else if (el.tagName === 'SPAN' || el.tagName === 'A') {
+                        el.classList.replace('text-elderly-body', 'text-label-md');
+                        el.classList.replace('font-elderly-body', 'font-label-md');
+                    } else {
+                        el.classList.replace('text-elderly-body', 'text-body-lg');
+                        el.classList.replace('font-elderly-body', 'font-body-lg');
+                    }
+                });
+                
+                settingsCanvas.classList.replace('space-y-12', 'space-y-6');
+                modeLabel.textContent = "老年模式 (Elderly Mode)";
+                modeLabel.classList.remove('text-primary');
+            }
+        });
+
+        // Simple interaction for buttons
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.opacity = '0.8';
+                el.style.transform = 'scale(0.99)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.opacity = '1';
+                el.style.transform = 'scale(1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.opacity = '1';
+                el.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+
+</body></html>

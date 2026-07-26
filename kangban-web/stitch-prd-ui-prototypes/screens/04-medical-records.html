@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>病历管理 - 康伴医疗系统</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "outline-variant": "#e4bebc",
+                            "secondary-container": "#bbd3fd",
+                            "inverse-surface": "#283044",
+                            "on-surface-variant": "#5b403f",
+                            "on-tertiary": "#ffffff",
+                            "surface-container-highest": "#dae2fd",
+                            "on-background": "#131b2e",
+                            "secondary-fixed": "#d5e3ff",
+                            "on-primary-fixed": "#410007",
+                            "error-container": "#ffdad6",
+                            "inverse-on-surface": "#eef0ff",
+                            "on-tertiary-fixed-variant": "#404940",
+                            "tertiary-fixed": "#dce5d9",
+                            "surface-card": "#FFFFFF",
+                            "tertiary": "#565e55",
+                            "on-error-container": "#93000a",
+                            "tertiary-fixed-dim": "#c0c9be",
+                            "surface-bright": "#faf8ff",
+                            "surface-container": "#eaedff",
+                            "secondary": "#485f84",
+                            "on-secondary-container": "#445a7f",
+                            "error": "#ba1a1a",
+                            "primary-container": "#db313f",
+                            "on-secondary": "#ffffff",
+                            "on-primary": "#ffffff",
+                            "surface-tint": "#bb152c",
+                            "on-surface": "#131b2e",
+                            "status-critical": "#E63946",
+                            "surface-container-low": "#f2f3ff",
+                            "tertiary-container": "#6e776d",
+                            "surface-container-lowest": "#ffffff",
+                            "on-primary-fixed-variant": "#92001c",
+                            "on-error": "#ffffff",
+                            "secondary-fixed-dim": "#b0c7f1",
+                            "on-tertiary-fixed": "#161d16",
+                            "background": "#faf8ff",
+                            "primary-fixed": "#ffdad8",
+                            "surface": "#faf8ff",
+                            "primary": "#b7102a",
+                            "surface-dim": "#d2d9f4",
+                            "outline": "#8f6f6e",
+                            "inverse-primary": "#ffb3b1",
+                            "primary-fixed-dim": "#ffb3b1",
+                            "status-success": "#2D6A4F",
+                            "on-tertiary-container": "#f6fff3",
+                            "on-secondary-fixed": "#001b3c",
+                            "on-primary-container": "#fffbff",
+                            "surface-variant": "#dae2fd",
+                            "surface-container-high": "#e2e7ff",
+                            "surface-bg": "#F8FAFC",
+                            "on-secondary-fixed-variant": "#30476a",
+                            "status-warning": "#FFB703"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "gutter": "24px",
+                            "container-max": "1440px",
+                            "card-gap": "24px",
+                            "margin-mobile": "20px",
+                            "margin-desktop": "40px",
+                            "touch-target": "48px"
+                    },
+                    "fontFamily": {
+                            "headline-md": [
+                                    "Plus Jakarta Sans"
+                            ],
+                            "label-md": [
+                                    "Inter"
+                            ],
+                            "headline-lg-mobile": [
+                                    "Plus Jakarta Sans"
+                            ],
+                            "display-lg": [
+                                    "Plus Jakarta Sans"
+                            ],
+                            "headline-lg": [
+                                    "Plus Jakarta Sans"
+                            ],
+                            "elderly-body": [
+                                    "Inter"
+                            ],
+                            "body-lg": [
+                                    "Inter"
+                            ],
+                            "body-md": [
+                                    "Inter"
+                            ]
+                    },
+                    "fontSize": {
+                            "headline-md": [
+                                    "24px",
+                                    {
+                                            "lineHeight": "32px",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "label-md": [
+                                    "14px",
+                                    {
+                                            "lineHeight": "20px",
+                                            "letterSpacing": "0.05em",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "headline-lg-mobile": [
+                                    "24px",
+                                    {
+                                            "lineHeight": "32px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "display-lg": [
+                                    "48px",
+                                    {
+                                            "lineHeight": "56px",
+                                            "letterSpacing": "-0.02em",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "headline-lg": [
+                                    "32px",
+                                    {
+                                            "lineHeight": "40px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "elderly-body": [
+                                    "22px",
+                                    {
+                                            "lineHeight": "32px",
+                                            "letterSpacing": "0.01em",
+                                            "fontWeight": "500"
+                                    }
+                            ],
+                            "body-lg": [
+                                    "18px",
+                                    {
+                                            "lineHeight": "28px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "body-md": [
+                                    "16px",
+                                    {
+                                            "lineHeight": "24px",
+                                            "fontWeight": "400"
+                                    }
+                            ]
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.04)',
+                        'float': '0 12px 30px -4px rgba(0, 0, 0, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.surface-bg');
+            color: theme('colors.on-surface');
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .record-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .record-card:hover {
+            transform: translateY(-2px);
+            box-shadow: theme('boxShadow.float');
+        }
+        
+        .drag-active {
+            border-color: theme('colors.primary');
+            background-color: theme('colors.primary-fixed');
+        }
+
+        /* Material Symbols Outline Settings */
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 300,
+            'GRAD' 0,
+            'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Custom Scrollbar for inner elements */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: theme('colors.outline-variant');
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline');
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar (from JSON) -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest shadow-xl z-40 p-4 space-y-2">
+<div class="mb-8 px-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl icon-fill">medical_services</span>
+<div>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary">康伴</h1>
+<p class="font-label-md text-label-md text-on-surface-variant text-xs">医疗助手 v2.1</p>
+</div>
+</div>
+<div class="flex-1 space-y-2">
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl Transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-md text-label-md">主页</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl Transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-label-md text-label-md">健康指标</span>
+</a>
+<a class="bg-primary-container text-on-primary-container rounded-xl flex items-center gap-3 p-3 Transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined icon-fill">folder_open</span>
+<span class="font-label-md text-label-md font-bold">病历管理</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl Transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md">预约</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl Transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="font-label-md text-label-md">消息</span>
+</a>
+</div>
+<div class="mt-auto space-y-4">
+<button class="w-full bg-status-critical text-on-primary py-3 px-4 rounded-xl font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-primary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-lg">add</span>
+                新建问诊
+            </button>
+<div class="pt-4 border-t border-outline-variant/30 space-y-2">
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl Transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">帮助</span>
+</a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl Transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">退出登录</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar Mobile / Search Header Desktop -->
+<header class="sticky top-0 z-30 bg-surface-bg/90 backdrop-blur-md border-b border-outline-variant/20 px-gutter py-4">
+<div class="max-w-container-max mx-auto flex items-center justify-between gap-4">
+<!-- Mobile Menu Button -->
+<button class="md:hidden p-2 -ml-2 text-on-surface rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface flex-1">病历管理</h2>
+<!-- Search & Actions -->
+<div class="flex items-center gap-4">
+<div class="hidden md:flex relative items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant/30 rounded-full focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm font-body-md w-64 transition-all" placeholder="搜索记录..." type="text"/>
+</div>
+<button class="p-2 text-on-surface-variant rounded-full hover:bg-surface-container-high transition-colors relative min-w-[48px] min-h-[48px] flex items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-status-critical rounded-full"></span>
+</button>
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden border border-outline-variant/30 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a female medical assistant in her 30s, wearing clean blue scrubs, smiling gently against a bright, clinical white background with soft, inviting lighting indicative of a modern healthcare facility." src="assets/asset-03.jpg"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="flex-1 p-gutter max-w-container-max mx-auto w-full">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-card-gap">
+<!-- Left Column: Upload & List -->
+<div class="lg:col-span-4 flex flex-col gap-card-gap h-full">
+<!-- Upload Zone -->
+<div class="bg-surface-card rounded-xl p-6 border-2 border-dashed border-outline-variant/50 flex flex-col items-center justify-center text-center gap-3 transition-colors hover:border-primary hover:bg-surface-container-low cursor-pointer shadow-soft" id="drop-zone">
+<div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary mb-2">
+<span class="material-symbols-outlined text-3xl">cloud_upload</span>
+</div>
+<h3 class="font-headline-md text-base font-semibold text-on-surface">上传新记录</h3>
+<p class="font-body-md text-sm text-on-surface-variant">将 PDF、JPG 或 DICOM 文件拖放到此处，或点击浏览。</p>
+<button class="mt-2 text-primary font-label-md text-sm hover:underline">选择文件</button>
+</div>
+<!-- Records List -->
+<div class="bg-surface-card rounded-xl shadow-soft flex-1 flex flex-col overflow-hidden border border-outline-variant/20">
+<div class="p-4 border-b border-outline-variant/20 flex items-center justify-between bg-surface-container-lowest">
+<h3 class="font-headline-md text-lg text-on-surface">近期文件</h3>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">filter_list</span></button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
+<!-- Record Item: Analyzed (Active) -->
+<div class="record-card p-3 rounded-lg border border-primary/30 bg-primary-container/5 cursor-pointer flex gap-3 items-start relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-md text-sm text-on-surface truncate pr-2">Lab_Results_Oct2023.pdf</h4>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-success/10 text-status-success font-label-md text-[10px] uppercase tracking-wider shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span> 已分析
+                                        </span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant truncate">综合代谢检测</p>
+<p class="font-body-md text-[10px] text-outline mt-1">2023年10月12日 • 2.4 MB</p>
+</div>
+</div>
+<!-- Record Item: Processing -->
+<div class="record-card p-3 rounded-lg border border-outline-variant/30 hover:bg-surface-container-low cursor-pointer flex gap-3 items-start">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined">image</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-md text-sm text-on-surface truncate pr-2">XRay_Chest_PA.jpg</h4>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-warning/10 text-status-warning font-label-md text-[10px] uppercase tracking-wider shrink-0">
+<span class="material-symbols-outlined text-[10px] animate-spin">sync</span> 处理中
+                                        </span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant truncate">等待 AI 分析</p>
+<p class="font-body-md text-[10px] text-outline mt-1">今天, 09:41 AM • 4.1 MB</p>
+</div>
+</div>
+<!-- Record Item: Failed -->
+<div class="record-card p-3 rounded-lg border border-outline-variant/30 hover:bg-surface-container-low cursor-pointer flex gap-3 items-start opacity-75">
+<div class="w-10 h-10 rounded bg-error-container flex items-center justify-center text-error shrink-0">
+<span class="material-symbols-outlined">scan_delete</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-md text-sm text-on-surface truncate pr-2">Scanned_Notes_Unclear.pdf</h4>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-critical/10 text-status-critical font-label-md text-[10px] uppercase tracking-wider shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-status-critical"></span> 失败
+                                        </span>
+</div>
+<p class="font-body-md text-xs text-error truncate">OCR 错误: 分辨率过低</p>
+<p class="font-body-md text-[10px] text-outline mt-1">昨天 • 1.2 MB</p>
+</div>
+</div>
+<!-- Record Item: Analyzed -->
+<div class="record-card p-3 rounded-lg border border-outline-variant/30 hover:bg-surface-container-low cursor-pointer flex gap-3 items-start">
+<div class="w-10 h-10 rounded bg-surface-container flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined">monitor_heart</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-md text-sm text-on-surface truncate pr-2">ECG_Report_Q3.pdf</h4>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-success/10 text-status-success font-label-md text-[10px] uppercase tracking-wider shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span> 已分析
+                                        </span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant truncate">常规体检</p>
+<p class="font-body-md text-[10px] text-outline mt-1">2023年9月5日 • 3.0 MB</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Detail View & Timeline -->
+<div class="lg:col-span-8 flex flex-col gap-card-gap h-[calc(100vh-140px)]">
+<!-- Detailed View -->
+<div class="bg-surface-card rounded-xl shadow-soft border border-outline-variant/20 flex-1 flex flex-col overflow-hidden relative">
+<!-- Top actions -->
+<div class="absolute top-4 right-4 flex gap-2 z-10">
+<button class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-on-surface hover:text-primary transition-colors min-h-[48px] min-w-[48px]">
+<span class="material-symbols-outlined">print</span>
+</button>
+<button class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-on-surface hover:text-primary transition-colors min-h-[48px] min-w-[48px]">
+<span class="material-symbols-outlined">download</span>
+</button>
+<button class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-on-surface hover:text-primary transition-colors min-h-[48px] min-w-[48px]">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+<!-- Content Area (Split Grid) -->
+<div class="flex-1 grid grid-cols-1 md:grid-cols-2 h-full overflow-hidden">
+<!-- Original Document Preview -->
+<div class="bg-surface-container-lowest border-r border-outline-variant/20 p-6 flex flex-col overflow-y-auto custom-scrollbar">
+<h4 class="font-label-md text-sm text-on-surface-variant uppercase tracking-wider mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">visibility</span> 源文档
+                                </h4>
+<div class="flex-1 bg-white border border-outline-variant/30 rounded shadow-sm p-4 relative min-h-[400px]">
+<!-- Faux Document Content -->
+<div class="space-y-4 opacity-80">
+<div class="h-6 w-1/3 bg-surface-variant rounded"></div>
+<div class="h-4 w-1/4 bg-surface-variant rounded mb-8"></div>
+<div class="space-y-2">
+<div class="h-3 w-full bg-surface-variant rounded"></div>
+<div class="h-3 w-full bg-surface-variant rounded"></div>
+<div class="h-3 w-5/6 bg-surface-variant rounded"></div>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-6">
+<div class="p-3 border border-outline-variant/20 rounded bg-surface-container-lowest">
+<div class="h-3 w-20 bg-surface-variant rounded mb-2"></div>
+<div class="h-8 w-24 bg-secondary-container rounded"></div>
+</div>
+<div class="p-3 border border-outline-variant/20 rounded bg-surface-container-lowest">
+<div class="h-3 w-20 bg-surface-variant rounded mb-2"></div>
+<div class="h-8 w-24 bg-error-container rounded"></div>
+</div>
+</div>
+</div>
+<!-- Scanning overlay effect -->
+<div class="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-primary/5 to-transparent h-20 w-full animate-[scan_3s_ease-in-out_infinite]"></div>
+</div>
+</div>
+<!-- AI Extraction & Summary -->
+<div class="p-6 flex flex-col overflow-y-auto custom-scrollbar bg-surface-card">
+<h4 class="font-label-md text-sm text-primary uppercase tracking-wider mb-4 flex items-center gap-2 font-bold">
+<span class="material-symbols-outlined text-sm icon-fill">auto_awesome</span> AI 分析与提取
+                                </h4>
+<div class="space-y-6">
+<!-- Summary Card -->
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant/30">
+<h5 class="font-headline-md text-base text-on-surface mb-2">执行摘要</h5>
+<p class="font-body-md text-sm text-on-surface-variant leading-relaxed">
+                                            患者空腹血糖轻度升高。肝肾功能指标在正常参考范围内。建议6个月后复查血脂，并调整饮食。
+                                        </p>
+</div>
+<!-- Extracted Entities (Bento style) -->
+<div>
+<h5 class="font-label-md text-sm text-on-surface mb-3">提取的关键指标</h5>
+<div class="grid grid-cols-2 gap-3">
+<!-- Metric 1: Flagged -->
+<div class="border border-status-critical/30 bg-error-container/20 rounded-lg p-3 relative overflow-hidden group">
+<div class="absolute right-0 top-0 w-8 h-8 bg-status-critical/10 rounded-bl-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-status-critical text-sm">priority_high</span>
+</div>
+<p class="font-body-md text-xs text-on-surface-variant">空腹血糖</p>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-md text-xl text-status-critical">112</span>
+<span class="font-body-md text-xs text-status-critical">mg/dL</span>
+</div>
+<p class="font-body-md text-[10px] text-outline mt-2 border-t border-outline-variant/30 pt-1">参考值: 70-99</p>
+</div>
+<!-- Metric 2: Normal -->
+<div class="border border-outline-variant/30 bg-surface-container-lowest rounded-lg p-3">
+<p class="font-body-md text-xs text-on-surface-variant">肌酐</p>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-md text-xl text-on-surface">0.9</span>
+<span class="font-body-md text-xs text-on-surface-variant">mg/dL</span>
+</div>
+<p class="font-body-md text-[10px] text-outline mt-2 border-t border-outline-variant/30 pt-1">参考值: 0.6-1.2</p>
+</div>
+<!-- Metric 3: Normal -->
+<div class="border border-outline-variant/30 bg-surface-container-lowest rounded-lg p-3">
+<p class="font-body-md text-xs text-on-surface-variant">钙</p>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-md text-xl text-on-surface">9.4</span>
+<span class="font-body-md text-xs text-on-surface-variant">mg/dL</span>
+</div>
+<p class="font-body-md text-[10px] text-outline mt-2 border-t border-outline-variant/30 pt-1">参考值: 8.6-10.3</p>
+</div>
+<!-- Confidence Score -->
+<div class="border border-primary/20 bg-primary-container/5 rounded-lg p-3 flex flex-col justify-center items-center text-center">
+<div class="w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center mb-1">
+<span class="font-label-md text-sm text-primary font-bold">98%</span>
+</div>
+<p class="font-body-md text-[10px] text-on-surface-variant">OCR 准确率</p>
+</div>
+</div>
+</div>
+<!-- Actionable Tags -->
+<div>
+<h5 class="font-label-md text-sm text-on-surface mb-2">自动分类</h5>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container rounded-full font-label-md text-xs text-secondary border border-outline-variant/30">代谢</span>
+<span class="px-3 py-1 bg-surface-container rounded-full font-label-md text-xs text-secondary border border-outline-variant/30">常规血液检查</span>
+<span class="px-3 py-1 bg-error-container/50 rounded-full font-label-md text-xs text-status-critical border border-status-critical/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">flag</span> 需要复核
+                                             </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Horizontal View -->
+<div class="bg-surface-card rounded-xl shadow-soft border border-outline-variant/20 p-5 h-48 flex flex-col shrink-0">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline-md text-base text-on-surface">患者病历时间轴</h3>
+<button class="text-primary font-label-md text-sm hover:underline">查看完整历史记录</button>
+</div>
+<div class="relative flex-1 flex items-center px-4">
+<!-- Timeline line -->
+<div class="absolute left-4 right-4 h-0.5 bg-outline-variant/40 top-1/2 -translate-y-1/2 z-0"></div>
+<!-- Timeline Nodes -->
+<div class="flex justify-between w-full relative z-10">
+<!-- Node 1 (Past) -->
+<div class="flex flex-col items-center group cursor-pointer">
+<div class="w-4 h-4 rounded-full bg-surface-container-high border-2 border-outline-variant mb-2 group-hover:border-primary transition-colors"></div>
+<div class="bg-surface-container-lowest p-2 rounded shadow-sm text-center border border-outline-variant/30 group-hover:border-primary/50 transition-colors w-24">
+<p class="font-label-md text-[10px] text-on-surface-variant">2022年6月14日</p>
+<p class="font-body-md text-[11px] text-on-surface truncate">基础心电图</p>
+</div>
+</div>
+<!-- Node 2 (Past) -->
+<div class="flex flex-col items-center group cursor-pointer">
+<div class="w-4 h-4 rounded-full bg-surface-container-high border-2 border-outline-variant mb-2 group-hover:border-primary transition-colors"></div>
+<div class="bg-surface-container-lowest p-2 rounded shadow-sm text-center border border-outline-variant/30 group-hover:border-primary/50 transition-colors w-24">
+<p class="font-label-md text-[10px] text-on-surface-variant">2023年1月5日</p>
+<p class="font-body-md text-[11px] text-on-surface truncate">血脂分析</p>
+</div>
+</div>
+<!-- Node 3 (Selected/Current context) -->
+<div class="flex flex-col items-center group cursor-pointer -mt-2">
+<div class="bg-primary text-on-primary text-[10px] px-2 py-0.5 rounded-full mb-1 font-bold">已选定</div>
+<div class="w-5 h-5 rounded-full bg-primary border-4 border-primary-container/30 shadow-sm mb-2"></div>
+<div class="bg-primary-container/5 p-2 rounded shadow-md text-center border border-primary w-28">
+<p class="font-label-md text-[10px] text-primary">2023年10月12日</p>
+<p class="font-body-md text-[11px] font-semibold text-on-surface truncate">综合代谢检测</p>
+</div>
+</div>
+<!-- Node 4 (Future/Scheduled) -->
+<div class="flex flex-col items-center opacity-50">
+<div class="w-4 h-4 rounded-full bg-surface-bg border-2 border-dashed border-outline-variant mb-2"></div>
+<div class="bg-transparent p-2 text-center w-24">
+<p class="font-label-md text-[10px] text-on-surface-variant">2024年4月</p>
+<p class="font-body-md text-[11px] text-on-surface-variant italic">计划随访</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar for Mobile (Hidden on MD+) -->
+<nav class="md:hidden fixed bottom-0 w-full bg-surface/90 backdrop-blur-md border-t border-outline-variant/30 flex justify-around items-center p-2 z-40 pb-safe shadow-lg">
+<a class="flex flex-col items-center p-2 text-on-surface-variant hover:text-primary transition-colors min-w-[48px] min-h-[48px]" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="text-[10px] font-label-md mt-1">主页</span>
+</a>
+<a class="flex flex-col items-center p-2 text-on-surface-variant hover:text-primary transition-colors min-w-[48px] min-h-[48px]" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="text-[10px] font-label-md mt-1">指标</span>
+</a>
+<a class="flex flex-col items-center p-2 text-primary font-bold min-w-[48px] min-h-[48px]" href="#">
+<span class="material-symbols-outlined icon-fill">folder_open</span>
+<span class="text-[10px] font-label-md mt-1">记录</span>
+</a>
+<a class="flex flex-col items-center p-2 text-on-surface-variant hover:text-primary transition-colors min-w-[48px] min-h-[48px]" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="text-[10px] font-label-md mt-1">聊天</span>
+</a>
+</nav>
+<script>
+        // Simple drag and drop visual feedback
+        const dropZone = document.getElementById('drop-zone');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('drag-active');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('drag-active');
+        }
+    </script>
+</body></html>

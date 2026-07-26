@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>病历详情 - 康伴 (KangBan)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-surface": "#291715",
+                "surface-container-lowest": "#ffffff",
+                "on-primary-fixed": "#410001",
+                "secondary-fixed-dim": "#c6c6c6",
+                "primary-container": "#e2241f",
+                "primary-fixed": "#ffdad5",
+                "on-error-container": "#93000a",
+                "outline-variant": "#e7bdb7",
+                "on-secondary-container": "#646464",
+                "tertiary": "#00647f",
+                "tertiary-fixed-dim": "#68d3fc",
+                "on-tertiary": "#ffffff",
+                "secondary-container": "#e2e2e2",
+                "on-error": "#ffffff",
+                "surface-container-high": "#ffe2dd",
+                "surface-container": "#ffe9e6",
+                "outline": "#926f6a",
+                "inverse-surface": "#402b29",
+                "surface-container-highest": "#fcdbd6",
+                "background": "#fff8f7",
+                "surface-container-low": "#fff0ee",
+                "on-tertiary-container": "#fafdff",
+                "medical-red": "#FF3B30",
+                "glass-fill": "rgba(255, 255, 255, 0.7)",
+                "error-container": "#ffdad6",
+                "surface-bright": "#fff8f7",
+                "on-primary-container": "#fffbff",
+                "on-secondary-fixed": "#1b1b1b",
+                "secondary-fixed": "#e2e2e2",
+                "secondary": "#5e5e5e",
+                "on-tertiary-fixed": "#001f29",
+                "on-primary-fixed-variant": "#930005",
+                "error": "#ba1a1a",
+                "border-subtle": "#E5E5EA",
+                "on-primary": "#ffffff",
+                "surface-variant": "#fcdbd6",
+                "inverse-on-surface": "#ffedea",
+                "surface": "#fff8f7",
+                "on-tertiary-fixed-variant": "#004d63",
+                "primary": "#bc000a",
+                "text-muted": "#8E8E93",
+                "tertiary-container": "#007fa0",
+                "surface-gray": "#F5F5F7",
+                "inverse-primary": "#ffb4aa",
+                "on-surface-variant": "#5d3f3b",
+                "on-secondary": "#ffffff",
+                "on-secondary-fixed-variant": "#474747",
+                "surface-tint": "#c0000a",
+                "primary-fixed-dim": "#ffb4aa",
+                "on-background": "#291715",
+                "surface-dim": "#f4d3ce",
+                "tertiary-fixed": "#bbe9ff"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "section-margin": "48px",
+                "card-gap": "20px",
+                "unit": "8px",
+                "gutter": "24px",
+                "container-padding": "32px"
+        },
+        "fontFamily": {
+                "body-sm": [
+                        "Inter"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "headline-lg-mobile": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "data-display": [
+                        "JetBrains Mono"
+                ],
+                "display-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "label-caps": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Plus Jakarta Sans"
+                ]
+        },
+        "fontSize": {
+                "body-sm": [
+                        "14px",
+                        {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "1.5",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "28px",
+                        {
+                                "lineHeight": "1.2",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "1.2",
+                                "fontWeight": "600"
+                        }
+                ],
+                "data-display": [
+                        "48px",
+                        {
+                                "lineHeight": "1",
+                                "letterSpacing": "-0.05em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "display-lg": [
+                        "40px",
+                        {
+                                "lineHeight": "1.1",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-caps": [
+                        "12px",
+                        {
+                                "lineHeight": "1",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "1.3",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background flex h-screen overflow-hidden antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Side Navigation -->
+<nav class="hidden md:flex flex-col h-screen w-64 left-0 top-0 bg-surface dark:bg-surface-dim border-r border-border-subtle dark:border-outline-variant py-6 px-4 shrink-0 transition-all duration-200 ease-in-out z-20">
+<div class="mb-8 px-4 flex items-center gap-3">
+<div class="h-10 w-10 rounded-xl bg-[#dc2626] flex items-center justify-center text-white shrink-0">
+<span class="material-symbols-outlined icon-filled">add</span>
+</div>
+<div>
+<h1 class="font-headline-md text-body-lg font-bold text-[#dc2626]">患者中心</h1>
+<p class="font-body-sm text-[11px] text-text-muted mt-0.5">康伴医疗助手 v2.1</p>
+</div>
+</div>
+<div class="overflow-y-auto flex-grow flex flex-col">
+<ul class="flex flex-col gap-1">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container group" href="#">
+<span class="material-symbols-outlined text-[22px]">grid_view</span>
+<span class="font-body-md text-body-md">首页</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container group" href="#">
+<span class="material-symbols-outlined text-[22px]">person</span>
+<span class="font-body-md text-body-md">个人资料</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container group" href="#">
+<span class="material-symbols-outlined text-[22px]">group</span>
+<span class="font-body-md text-body-md">家庭成员</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container group" href="#">
+<span class="material-symbols-outlined text-[22px]">edit_note</span>
+<span class="font-body-md text-body-md">记录指标</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container group" href="#">
+<span class="material-symbols-outlined text-[22px]">show_chart</span>
+<span class="font-body-md text-body-md">健康指标</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#dc2626] text-white font-medium shadow-md group" href="#">
+<span class="material-symbols-outlined text-[22px]">description</span>
+<span class="font-body-md text-body-md">病历管理</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container group" href="#">
+<span class="material-symbols-outlined text-[22px]">chat_bubble</span>
+<span class="font-body-md text-body-md">AI 问诊</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container group" href="#">
+<span class="material-symbols-outlined text-[22px]">medication</span>
+<span class="font-body-md text-body-md">用药管理</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container group" href="#">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="font-body-md text-body-md">设置</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto pt-6">
+<ul class="flex flex-col gap-1">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container group" href="#">
+<span class="material-symbols-outlined text-[22px]">help</span>
+<span class="font-body-md text-body-md">帮助</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-error transition-colors hover:bg-error-container/30 group" href="#">
+<span class="material-symbols-outlined text-[22px]">logout</span>
+<span class="font-body-md text-body-md">退出登录</span>
+</a>
+</li>
+</ul>
+</div>
+</div>
+<!-- User Profile -->
+<div class="mt-4 pt-4 border-t border-border-subtle px-2">
+<div class="flex items-center justify-between p-2 rounded-xl hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-3">
+<img alt="User Avatar" class="h-10 w-10 rounded-full object-cover border border-border-subtle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgcsKFPKamqyBr6uEGA5N27U9YiT03f_hVm5c5DhvtLXWWpLpPJrljmSON7N7QCw-UOo-_3X6AhVg2zPAgnZIUP-M46jReh0dZDwns2L_PRy5Aj7Vm41OZIkV9gUIVBEv83lsO7QVOymqUXuzyq-l8cxQ9fnexUvwmVjTv4aoCmSw-vtjlSTnK0Ax0G8ueaQEIVXROZEAL_LoOpQKe9ovQmGEqECzMGuWSObz65QklyzzJvNWBhlWI"/>
+<div>
+<p class="font-body-md text-[14px] font-semibold text-on-surface">李明 (自己)</p>
+<p class="font-body-sm text-[12px] text-text-muted">个人账户</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-[20px]">menu</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col h-full overflow-hidden relative">
+<!-- Header -->
+<header class="flex-none px-8 py-6 flex items-center justify-between border-b border-border-subtle bg-surface/80 backdrop-blur-md sticky top-0 z-10">
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container transition-colors text-secondary">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">病历详情</h2>
+<p class="font-body-sm text-body-sm text-text-muted mt-1">2023年10月24日 • 门诊病历</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2 rounded-full border border-border-subtle hover:bg-surface-container transition-colors text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                    编辑
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full border border-border-subtle hover:bg-surface-container transition-colors text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+                    重新解析
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-gray hover:bg-error-container hover:text-on-error-container transition-colors text-error font-body-sm text-body-sm ml-2">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-8 bg-[#FBFBFB]">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: AI Parsed Content (Bento Grid) -->
+<div class="lg:col-span-8 flex flex-col gap-card-gap">
+<!-- Metadata Bar -->
+<div class="bg-white rounded-xl border border-border-subtle p-6 flex flex-wrap gap-8 items-center">
+<div>
+<p class="font-label-caps text-label-caps text-text-muted mb-1">就诊医院</p>
+<p class="font-body-md text-body-md font-medium text-on-surface">北京协和医院</p>
+</div>
+<div class="w-px h-8 bg-border-subtle hidden sm:block"></div>
+<div>
+<p class="font-label-caps text-label-caps text-text-muted mb-1">就诊科室</p>
+<p class="font-body-md text-body-md font-medium text-on-surface">心血管内科</p>
+</div>
+<div class="w-px h-8 bg-border-subtle hidden sm:block"></div>
+<div>
+<p class="font-label-caps text-label-caps text-text-muted mb-1">主治医师</p>
+<p class="font-body-md text-body-md font-medium text-on-surface">张建国 (副主任医师)</p>
+</div>
+</div>
+<!-- Diagnosis Section -->
+<div class="bg-white rounded-xl border border-border-subtle p-6">
+<div class="flex items-center gap-2 mb-6">
+<div class="w-8 h-8 rounded-full bg-primary-fixed/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px] icon-filled">medical_services</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">AI 结构化诊断</h3>
+<div class="ml-auto flex items-center gap-2 px-3 py-1 bg-surface-container-low rounded-full border border-border-subtle">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="font-body-sm text-body-sm text-secondary text-[12px]">解析置信度 98%</span>
+</div>
+</div>
+<div class="space-y-6">
+<div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface mb-2">主诉</h4>
+<p class="font-body-md text-body-md text-on-surface-variant bg-surface-gray p-4 rounded-lg">阵发性心悸伴胸闷2月余，加重3天。</p>
+</div>
+<div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface mb-2">临床诊断</h4>
+<ul class="space-y-3">
+<li class="flex items-start gap-3 bg-error-container/30 p-4 rounded-lg border border-error-container">
+<span class="material-symbols-outlined text-primary mt-0.5">vital_signs</span>
+<div>
+<p class="font-body-md text-body-md font-medium text-on-surface">心律失常：频发室性期前收缩</p>
+<p class="font-body-sm text-body-sm text-text-muted mt-1">需密切关注，建议复查24小时动态心电图 (Holter)。</p>
+</div>
+</li>
+<li class="flex items-start gap-3 bg-surface-gray p-4 rounded-lg">
+<span class="material-symbols-outlined text-secondary mt-0.5">info</span>
+<div>
+<p class="font-body-md text-body-md font-medium text-on-surface">高血压 2级 (极高危)</p>
+<p class="font-body-sm text-body-sm text-text-muted mt-1">目前血压控制尚可，继续按原方案服药。</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Medications & Advice (Split Row) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap">
+<!-- Medications -->
+<div class="bg-white rounded-xl border border-border-subtle p-6">
+<div class="flex items-center gap-2 mb-6">
+<div class="w-8 h-8 rounded-full bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined text-[20px] icon-filled">pill</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-[20px]">处方用药</h3>
+</div>
+<div class="space-y-4">
+<div class="border border-border-subtle rounded-lg p-4 hover:border-tertiary-container transition-colors">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">富马酸比索洛尔片</h4>
+<span class="font-body-sm text-body-sm text-text-muted bg-surface-gray px-2 py-0.5 rounded text-[12px]">5mg × 14片</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">用法：口服，每日1次，每次半片 (2.5mg)，晨起顿服。</p>
+</div>
+<div class="border border-border-subtle rounded-lg p-4 hover:border-tertiary-container transition-colors">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">硝苯地平控释片</h4>
+<span class="font-body-sm text-body-sm text-text-muted bg-surface-gray px-2 py-0.5 rounded text-[12px]">30mg × 7片</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">用法：口服，每日1次，每次1片 (30mg)。</p>
+</div>
+</div>
+</div>
+<!-- Doctor's Advice -->
+<div class="bg-white rounded-xl border border-border-subtle p-6">
+<div class="flex items-center gap-2 mb-6">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[20px] icon-filled">favorite</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-[20px]">医嘱与随访</h3>
+</div>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-text-muted text-[20px] mt-0.5">check_circle</span>
+<p class="font-body-md text-body-md text-on-surface-variant">注意休息，避免劳累及情绪激动，忌浓茶、咖啡。</p>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-text-muted text-[20px] mt-0.5">monitor_heart</span>
+<p class="font-body-md text-body-md text-on-surface-variant">自测血压、心率，记录日常变化。</p>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-medical-red text-[20px] mt-0.5">calendar_month</span>
+<p class="font-body-md text-body-md text-on-surface-variant font-medium">1周后复诊心内科专科门诊，完善24小时动态心电图。</p>
+</li>
+</ul>
+<button class="w-full mt-6 py-3 rounded-full bg-primary text-on-primary font-body-md text-body-md font-medium hover:opacity-90 transition-opacity shadow-[0_4px_20px_rgba(226,36,31,0.15)] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">alarm_add</span>
+                                添加随访提醒
+                            </button>
+</div>
+</div>
+</div>
+<!-- Right Column: Original Document Preview (Glassmorphism) -->
+<div class="lg:col-span-4 h-[800px] lg:h-auto">
+<div class="bg-white rounded-xl border border-border-subtle h-full flex flex-col overflow-hidden relative group">
+<!-- Document Header -->
+<div class="p-4 border-b border-border-subtle bg-surface-gray flex justify-between items-center z-10 relative">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">image</span>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">原件扫描副本</span>
+</div>
+<button class="p-1.5 rounded-md hover:bg-border-subtle transition-colors text-secondary">
+<span class="material-symbols-outlined text-[20px]">zoom_in</span>
+</button>
+</div>
+<!-- Image Container with Scrim -->
+<div class="flex-1 relative bg-[#E5E5EA] overflow-hidden flex justify-center p-4">
+<!-- Placeholder for scanned document image -->
+<img class="max-w-full h-auto object-contain shadow-sm rounded-sm bg-white" data-alt="A highly realistic, well-lit photograph of a printed Chinese medical record document lying flat on a clean white desk. The document has formal hospital letterhead (mockup style), structured tables, and handwritten notes in blue ink. The lighting is soft and professional, emphasizing the paper texture and text legibility. The style is clean, clinical, and objective." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS_K2UH4Bbqxm6McoLlH3ssTkpej0WoYhvJDJX0BnLPbYRGM06RVolWsld6_0b1C2oATPEH7M9NGIE7OEngktGeoNjtgLOsfClwdnrNsjQGpmYU999AXyMsiOSU565COCTt9AmKnEhMy5fvqxL24Mrhq_WJPR2z0LbA-3eFzebjEnSvlQaySN6_tKCBP0hlXgaM7lYCPF4bddntPyuRM3SSCULxpnr8ojWogov_xAVnTHNCijpPX9M" style="filter: contrast(1.05);"/>
+<!-- Overlay Scrim for focus -->
+<div class="absolute inset-0 pointer-events-none shadow-[inset_0_0_40px_rgba(0,0,0,0.05)]"></div>
+</div>
+<!-- Processing State Indicator (Absolute bottom) -->
+<div class="absolute bottom-4 left-4 right-4 p-3 bg-glass-fill backdrop-blur-xl rounded-lg border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] flex items-center gap-3">
+<span class="material-symbols-outlined text-primary animate-pulse">document_scanner</span>
+<div>
+<p class="font-body-sm text-body-sm font-medium text-on-surface text-[13px]">康伴 AI 视觉引擎</p>
+<p class="font-body-sm text-body-sm text-text-muted text-[11px]">已完成OCR识别与医学语义解析</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

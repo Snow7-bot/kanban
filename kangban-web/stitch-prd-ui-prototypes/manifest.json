@@ -1,0 +1,54 @@
+{
+  "projectId": "13875688496493816717",
+  "items": [
+    {
+      "title": "Design System",
+      "id": "asset-stub-assets_fbe115f1b0f04b5784b6a5300f00ed83",
+      "type": "design-system",
+      "files": {
+        "json": "design-system.json",
+        "markdown": "DESIGN.md"
+      }
+    },
+    {
+      "title": "健康趋势 - 康伴智能医疗助手",
+      "id": "3df317f2736648b4bca667db4bc37399",
+      "files": {
+        "html": "screens/02-health-trends.html",
+        "screenshot": "screens/02-health-trends.png"
+      }
+    },
+    {
+      "title": "AI 智能问诊 - 康伴智能医疗助手",
+      "id": "fc0c7461a5c84bfb96e4ce3319f12ef5",
+      "files": {
+        "html": "screens/03-ai-consultation.html",
+        "screenshot": "screens/03-ai-consultation.png"
+      }
+    },
+    {
+      "title": "病历管理 - 康伴智能医疗助手",
+      "id": "264136efb9cf473ba7d6a5e0916018fe",
+      "files": {
+        "html": "screens/04-medical-records.html",
+        "screenshot": "screens/04-medical-records.png"
+      }
+    },
+    {
+      "title": "首页 - 康伴智能医疗助手 (Redesigned)",
+      "id": "533df86864b8409da27d8ebcd729a4c4",
+      "files": {
+        "html": "screens/05-home-redesigned.html",
+        "screenshot": "screens/05-home-redesigned.png"
+      }
+    },
+    {
+      "title": "用药管理 - 康伴智能医疗助手 (含时间轴)",
+      "id": "bfe81731e3f046f8ab633f3f81cc8377",
+      "files": {
+        "html": "screens/06-medication-timeline.html",
+        "screenshot": "screens/06-medication-timeline.png"
+      }
+    }
+  ]
+}

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>添加药品 - 康伴</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@500&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-fixed": "#ffdad5",
+                      "primary-fixed-dim": "#ffb4aa",
+                      "on-tertiary-fixed-variant": "#004d63",
+                      "on-primary": "#ffffff",
+                      "secondary": "#5e5e5e",
+                      "primary-container": "#e2241f",
+                      "on-secondary-container": "#646464",
+                      "on-surface": "#291715",
+                      "inverse-primary": "#ffb4aa",
+                      "on-background": "#291715",
+                      "outline": "#926f6a",
+                      "surface-variant": "#fcdbd6",
+                      "surface-container-highest": "#fcdbd6",
+                      "surface-gray": "#F5F5F7",
+                      "on-error-container": "#93000a",
+                      "glass-fill": "rgba(255, 255, 255, 0.7)",
+                      "inverse-surface": "#402b29",
+                      "secondary-container": "#e2e2e2",
+                      "primary": "#bc000a",
+                      "background": "#fff8f7",
+                      "outline-variant": "#e7bdb7",
+                      "surface-tint": "#c0000a",
+                      "tertiary": "#00647f",
+                      "surface": "#fff8f7",
+                      "on-primary-container": "#fffbff",
+                      "error-container": "#ffdad6",
+                      "surface-container": "#ffe9e6",
+                      "tertiary-container": "#007fa0",
+                      "surface-bright": "#fff8f7",
+                      "surface-dim": "#f4d3ce",
+                      "secondary-fixed-dim": "#c6c6c6",
+                      "on-secondary": "#ffffff",
+                      "medical-red": "#FF3B30",
+                      "surface-container-high": "#ffe2dd",
+                      "on-secondary-fixed": "#1b1b1b",
+                      "on-error": "#ffffff",
+                      "on-tertiary-container": "#fafdff",
+                      "secondary-fixed": "#e2e2e2",
+                      "on-secondary-fixed-variant": "#474747",
+                      "error": "#ba1a1a",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed": "#410001",
+                      "on-tertiary-fixed": "#001f29",
+                      "border-subtle": "#E5E5EA",
+                      "on-surface-variant": "#5d3f3b",
+                      "surface-container-low": "#fff0ee",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed-variant": "#930005",
+                      "inverse-on-surface": "#ffedea",
+                      "tertiary-fixed-dim": "#68d3fc",
+                      "tertiary-fixed": "#bbe9ff",
+                      "text-muted": "#8E8E93"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "section-margin": "48px",
+                      "gutter": "24px",
+                      "unit": "8px",
+                      "container-padding": "32px",
+                      "card-gap": "20px"
+              },
+              "fontFamily": {
+                      "display-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "data-display": [
+                              "JetBrains Mono"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg": [
+                              "40px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "data-display": [
+                              "48px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "-0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Custom scrollbar for better medical UI feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E5E5EA;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c6c6c6;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md h-screen flex overflow-hidden">
+<!-- Side Navigation (Mobile Hidden, Desktop Flex) -->
+<nav class="hidden md:flex flex-col bg-surface border-r border-border-subtle h-screen w-72 left-0 top-0 py-6 px-4 transition-all duration-200 ease-in-out shrink-0 z-10">
+<div class="flex items-center gap-3 mb-10 px-4">
+<div class="w-10 h-10 rounded-xl bg-[#ff3b30] flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-xl">add</span>
+</div>
+<div>
+<h1 class="font-headline-md text-[20px] font-bold text-[#ff3b30]">患者中心</h1>
+<p class="font-body-sm text-[13px] text-secondary">康伴医疗助手 v2.1</p>
+</div>
+</div>
+<ul class="flex flex-col gap-2 flex-grow overflow-y-auto scrollbar-hide">
+<li>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-secondary">grid_view</span>
+<span class="font-body-md">首页</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-secondary">person</span>
+<span class="font-body-md">个人资料</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-secondary">group</span>
+<span class="font-body-md">家庭成员</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-secondary">edit_document</span>
+<span class="font-body-md">记录指标</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-secondary">timeline</span>
+<span class="font-body-md">健康指标</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-secondary">description</span>
+<span class="font-body-md">病历管理</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-secondary">chat_bubble</span>
+<span class="font-body-md">AI 问诊</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl bg-[#ff3b30] text-white shadow-[0_4px_12px_rgba(255,59,48,0.3)] transition-colors" href="#">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">pill</span>
+<span class="font-body-md font-semibold">用药管理</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-secondary">settings</span>
+<span class="font-body-md">设置</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto pt-6 flex flex-col gap-2">
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-secondary">help_outline</span>
+<span class="font-body-md">帮助</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3.5 rounded-xl text-on-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-secondary">logout</span>
+<span class="font-body-md">退出登录</span>
+</a>
+<div class="mt-4 px-4 pt-4 border-t border-border-subtle flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img alt="User Profile" class="w-10 h-10 rounded-full bg-surface-container object-cover border border-border-subtle" data-alt="A small circular avatar placeholder showing a generic user silhouette in soft gray tones against a white background, minimal and clean." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjK2-yfk44gYhc7Z8vIRqS74SXPXdHtF0ang-hTfxzxLm0EFRzQiQYIhe8gBEwt746xXNHe58N93D7NUY6XZhgNxLyrtkP_vL5htQuFa1S0DKZTMHaw2BoOyMopcTuWWStRYXlgiRfCcGfPqkgq7tr-n3nPcH0fKcgO3MRvnDfbW3NKhre8mbrg5LHei8Wzhd8vx2iYSsODxqShr2zUx5NG99M3U1-Es0MqK9inzhzcpE5Pw7hvUyd"/>
+<div>
+<p class="font-body-sm font-semibold text-on-surface">李明（自己）</p>
+<p class="font-label-caps text-secondary font-normal mt-0.5">个人账户</p>
+</div>
+</div>
+<button class="text-secondary hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-xl">menu</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto relative w-full flex flex-col bg-[#fafafa]">
+<!-- Top App Bar (Mobile Only for this flow) -->
+<header class="md:hidden flex justify-between items-center w-full px-6 h-16 sticky top-0 z-40 bg-glass-fill backdrop-blur-xl border-b border-border-subtle">
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">添加药品</h1>
+<div class="w-6"></div> <!-- Spacer for centering -->
+</header>
+<div class="p-container-padding max-w-5xl mx-auto w-full flex-grow flex flex-col gap-section-margin">
+<!-- Page Header (Desktop) -->
+<div class="hidden md:flex justify-between items-center w-full">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary text-sm">arrow_back</span>
+<a class="font-body-sm text-body-sm text-secondary hover:text-primary transition-colors" href="#">返回用药管理</a>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">添加新药品</h2>
+<p class="font-body-md text-body-md text-secondary mt-1">设置精确的用药计划以确保疗效。</p>
+</div>
+<button class="bg-white border border-border-subtle rounded-full px-6 py-3 flex items-center gap-2 hover:bg-surface-gray transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[#ff3b30]">qr_code_scanner</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface">扫码录入</span>
+</button>
+</div>
+<!-- Bento Grid Layout for Form -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-card-gap">
+<!-- Main Form Details -->
+<div class="lg:col-span-8 bg-white border border-border-subtle rounded-2xl p-6 lg:p-8 relative overflow-hidden shadow-sm">
+<!-- Subtle background decoration -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed/20 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+<h3 class="font-headline-md text-headline-md mb-8 flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-[#ff3b30]" style="font-variation-settings: 'FILL' 1;">pill</span>
+                        基本信息
+                    </h3>
+<form class="space-y-8">
+<!-- Medicine Name -->
+<div>
+<div class="flex justify-between items-end mb-2"><label class="block font-body-sm text-body-sm text-secondary">药品名称</label><button class="flex items-center gap-1 text-[#ff3b30] hover:text-primary transition-colors font-body-sm font-semibold" type="button"><span class="material-symbols-outlined text-[18px]">calculate</span>儿童剂量换算</button></div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted">search</span>
+<input class="w-full bg-[#f8f9fa] border-none rounded-xl py-4 pl-12 pr-4 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-[#ff3b30]/20 transition-all" placeholder="例如：阿司匹林、降压药..." type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 p-4 bg-surface-container-low rounded-xl border border-dashed border-border-subtle"><div class="col-span-full flex items-center gap-2 mb-2"><span class="material-symbols-outlined text-primary text-sm">child_care</span><span class="font-label-caps text-label-caps text-on-surface-variant">儿童患者参数 (可选)</span></div><div><label class="block font-body-sm text-body-sm text-secondary mb-2">年龄 (岁)</label><input class="w-full bg-white border border-border-subtle rounded-xl py-3 px-4 font-body-md text-body-md outline-none focus:ring-2 focus:ring-[#ff3b30]/20" placeholder="例如: 3.5" step="0.1" type="number"/></div><div><label class="block font-body-sm text-body-sm text-secondary mb-2">体重 (kg)</label><input class="w-full bg-white border border-border-subtle rounded-xl py-3 px-4 font-body-md text-body-md outline-none focus:ring-2 focus:ring-[#ff3b30]/20" placeholder="例如: 15.2" step="0.1" type="number"/></div><div class="col-span-full"><button class="w-full py-2 bg-primary-fixed/20 text-primary font-body-sm font-semibold rounded-lg hover:bg-primary-fixed/40 transition-colors" type="button">计算建议剂量</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Dosage -->
+<div>
+<label class="block font-body-sm text-body-sm text-secondary mb-2">单次剂量</label>
+<div class="flex gap-2 max-w-[240px]">
+<input class="flex-1 bg-[#f8f9fa] border-none rounded-xl py-4 px-4 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-[#ff3b30]/20 transition-all min-w-0" placeholder="1" type="number"/>
+<select class="w-20 shrink-0 bg-[#f8f9fa] border-none rounded-xl py-4 px-2 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-[#ff3b30]/20 transition-all appearance-none text-center">
+<option>片</option>
+<option>粒</option>
+<option>ml</option>
+<option>mg</option>
+</select>
+</div>
+</div>
+<!-- Inventory -->
+<div>
+<label class="block font-body-sm text-body-sm text-secondary mb-2">当前库存 (可选)</label>
+<div class="flex gap-2 max-w-[240px]">
+<input class="flex-1 bg-[#f8f9fa] border-none rounded-xl py-4 px-4 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-[#ff3b30]/20 transition-all min-w-0" placeholder="30" type="number"/>
+<div class="w-20 shrink-0 flex items-center justify-center bg-[#f8f9fa] border-none rounded-xl text-secondary font-body-md">
+                                        单位
+                                    </div>
+</div>
+</div>
+</div>
+<!-- Instructions -->
+<div>
+<label class="block font-body-sm text-body-sm text-secondary mb-3">用药说明</label>
+<div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+<label class="cursor-pointer shrink-0">
+<input checked="" class="peer sr-only" name="instruction" type="radio"/>
+<div class="px-6 py-2.5 rounded-full border border-border-subtle bg-white text-secondary peer-checked:bg-[#ff3b30] peer-checked:text-white peer-checked:border-[#ff3b30] transition-all font-body-sm">
+                                        饭后服用
+                                    </div>
+</label>
+<label class="cursor-pointer shrink-0">
+<input class="peer sr-only" name="instruction" type="radio"/>
+<div class="px-6 py-2.5 rounded-full border border-border-subtle bg-white text-secondary peer-checked:bg-[#ff3b30] peer-checked:text-white peer-checked:border-[#ff3b30] transition-all font-body-sm">
+                                        饭前服用
+                                    </div>
+</label>
+<label class="cursor-pointer shrink-0">
+<input class="peer sr-only" name="instruction" type="radio"/>
+<div class="px-6 py-2.5 rounded-full border border-border-subtle bg-white text-secondary peer-checked:bg-[#ff3b30] peer-checked:text-white peer-checked:border-[#ff3b30] transition-all font-body-sm">
+                                        随餐服用
+                                    </div>
+</label>
+<label class="cursor-pointer shrink-0">
+<input class="peer sr-only" name="instruction" type="radio"/>
+<div class="px-6 py-2.5 rounded-full border border-border-subtle bg-white text-secondary peer-checked:bg-[#ff3b30] peer-checked:text-white peer-checked:border-[#ff3b30] transition-all font-body-sm">
+                                        无特殊要求
+                                    </div>
+</label>
+</div>
+</div>
+</form>
+</div>
+<!-- Schedule & Reminders -->
+<div class="lg:col-span-4 flex flex-col gap-card-gap">
+<!-- Frequency Card -->
+<div class="bg-white border border-border-subtle rounded-2xl p-6 flex-1 shadow-sm">
+<h3 class="font-headline-md text-headline-md mb-6 flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-[#ff3b30]" style="font-variation-settings: 'FILL' 1;">event_repeat</span>
+                            用药频率
+                        </h3>
+<div class="space-y-6">
+<select class="w-full bg-[#f8f9fa] border-none rounded-xl py-4 px-4 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-[#ff3b30]/20 transition-all appearance-none">
+<option>每天</option>
+<option>隔天一次</option>
+<option>每周特定日期</option>
+<option>按需服用</option>
+</select>
+<div class="pt-4 border-t border-border-subtle">
+<label class="block font-body-sm text-body-sm text-secondary mb-3">提醒时间</label>
+<div class="space-y-3">
+<!-- Time Entry -->
+<div class="flex items-center gap-3">
+<div class="flex-1 bg-[#f8f9fa] rounded-xl py-3 px-4 flex items-center justify-between">
+<span class="font-data-display text-lg text-on-surface">08:00 AM</span>
+<span class="material-symbols-outlined text-secondary text-sm">schedule</span>
+</div>
+<button class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-text-muted hover:text-[#ff3b30] hover:bg-error-container transition-colors border border-border-subtle" type="button">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+<!-- Time Entry -->
+<div class="flex items-center gap-3">
+<div class="flex-1 bg-[#f8f9fa] rounded-xl py-3 px-4 flex items-center justify-between">
+<span class="font-data-display text-lg text-on-surface">08:00 PM</span>
+<span class="material-symbols-outlined text-secondary text-sm">schedule</span>
+</div>
+<button class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-text-muted hover:text-[#ff3b30] hover:bg-error-container transition-colors border border-border-subtle" type="button">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+<button class="w-full py-3 mt-2 border border-dashed border-[#ff3b30]/50 rounded-xl text-[#ff3b30] font-body-sm flex items-center justify-center gap-1 hover:bg-[#ff3b30]/5 transition-colors">
+<span class="material-symbols-outlined text-sm">add</span> 添加时间
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Visual Summary Card (Optional/Design Flair) -->
+<div class="bg-[#ffebe9] rounded-2xl p-6 relative overflow-hidden text-on-surface">
+<div class="relative z-10">
+<h4 class="font-body-md font-semibold mb-2">智能分析</h4>
+<p class="font-body-sm text-on-surface/80 mb-4 leading-relaxed">基于您的病历，此药物可能与当前服用的降压药有轻微相互作用。</p>
+<a class="font-label-caps text-[#ff3b30] bg-white px-4 py-2 rounded-full inline-block hover:bg-surface-gray transition-colors shadow-sm" href="#">查看详情</a>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-8xl text-[#ff3b30]/10 pointer-events-none" style="font-variation-settings: 'FILL' 1;">info</span>
+</div>
+</div>
+</div>
+<!-- Actions Bottom Bar -->
+<div class="flex justify-end gap-4 mt-6 pt-6 border-t border-border-subtle pb-10 md:pb-0">
+<button class="px-8 py-3 rounded-full font-body-md font-semibold text-secondary hover:bg-surface-gray transition-colors">
+                    取消
+                </button>
+<button class="px-10 py-3 rounded-full font-body-md font-semibold bg-[#ff3b30] text-white shadow-[0_4px_12px_rgba(255,59,48,0.3)] hover:shadow-[0_4px_16px_rgba(255,59,48,0.4)] hover:-translate-y-0.5 transition-all">
+                    保存药品
+                </button>
+</div>
+</div>
+</main>
+</body></html>

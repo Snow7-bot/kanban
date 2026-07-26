@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>健康报告 - 康伴</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#fff8f7",
+                    "on-secondary-fixed-variant": "#474747",
+                    "on-error-container": "#93000a",
+                    "glass-fill": "rgba(255, 255, 255, 0.7)",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#fafdff",
+                    "text-muted": "#8E8E93",
+                    "tertiary-fixed": "#bbe9ff",
+                    "surface-tint": "#c0000a",
+                    "primary-fixed": "#ffdad5",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#007fa0",
+                    "on-background": "#291715",
+                    "surface-container-low": "#fff0ee",
+                    "medical-red": "#FF3B30",
+                    "primary-container": "#e2241f",
+                    "surface-container": "#ffe9e6",
+                    "surface-variant": "#fcdbd6",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#e2e2e2",
+                    "secondary-fixed-dim": "#c6c6c6",
+                    "on-tertiary-fixed-variant": "#004d63",
+                    "inverse-surface": "#402b29",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#ffe2dd",
+                    "outline-variant": "#e7bdb7",
+                    "tertiary-fixed-dim": "#68d3fc",
+                    "tertiary": "#00647f",
+                    "surface-gray": "#F5F5F7",
+                    "on-surface": "#291715",
+                    "on-primary-fixed": "#410001",
+                    "on-secondary-fixed": "#1b1b1b",
+                    "on-primary-fixed-variant": "#930005",
+                    "on-secondary-container": "#646464",
+                    "surface": "#fff8f7",
+                    "surface-container-highest": "#fcdbd6",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#fffbff",
+                    "border-subtle": "#E5E5EA",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#f4d3ce",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#5d3f3b",
+                    "outline": "#926f6a",
+                    "background": "#fff8f7",
+                    "secondary-fixed": "#e2e2e2",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "inverse-primary": "#ffb4aa",
+                    "primary": "#bc000a",
+                    "on-tertiary-fixed": "#001f29",
+                    "inverse-on-surface": "#ffedea",
+                    "secondary": "#5e5e5e"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px",
+                    "2xl": "1rem",
+                    "3xl": "1.5rem"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "section-margin": "48px",
+                    "card-gap": "20px",
+                    "container-padding": "32px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "body-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "data-display": ["JetBrains Mono"],
+                    "label-caps": ["Inter"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "data-display": ["48px", {"lineHeight": "1", "letterSpacing": "-0.05em", "fontWeight": "500"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "display-lg": ["40px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { background-color: #fff8f7; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid #E5E5EA;
+        }
+        .dot-matrix {
+            background-image: radial-gradient(#bc000a 2px, transparent 2px);
+            background-size: 8px 8px;
+        }
+        .ambient-shadow {
+            box-shadow: 0 10px 30px -10px rgba(188, 0, 10, 0.1);
+        }
+    </style>
+</head>
+<body class="text-on-background flex h-screen overflow-hidden font-body-md antialiased">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-full py-6 px-4 bg-surface dark:bg-surface-dim border-r border-border-subtle dark:border-outline-variant w-64 flex-shrink-0 z-20">
+<div class="flex items-center gap-3 mb-10 px-2">
+<div class="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">add</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">患者中心</h1>
+<p class="font-label-caps text-label-caps text-text-muted mt-0.5">康伴医疗助手 v2.1</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-body-md">首页</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-body-md">个人资料</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md">家庭成员</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+<span class="font-body-md">记录指标</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold bg-primary-fixed/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">show_chart</span>
+<span class="font-body-md">健康指标</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-md">病历管理</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="font-body-md">AI 问诊</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">medication</span>
+<span class="font-body-md">用药管理</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">设置</span>
+</a>
+</nav>
+<div class="mt-auto space-y-2 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-body-md">帮助</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">退出登录</span>
+</a>
+<div class="border-t border-border-subtle mt-4 pt-4 px-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuYVGagJxz-ibGQCdEAZwHkCTCPxmgNhjOlwAf2N-5ZCGVUq7RmvY-hLyX3LSiKSdvuvDkr9BnDMu4D0vCWZzDzyLcOfWZ5TXLU07mCmTY1E5sIxbdCRJITrVBPUCMzADR-EUe80R2vGznxwxr5kYkVveeOfjKLAAQertiaUQiFNNDpr3Cv8xUnl5jVd7PcO4XRKsy_-ZyIAgL48LxGjbeqbYwqvRRvlfR_i44eunZ7IykSz8he4Hu"/>
+<div>
+<p class="font-body-sm font-medium">李明 (自己)</p>
+<p class="font-label-caps text-text-muted">个人账户</p>
+</div>
+</div>
+<button class="text-text-muted hover:text-on-background">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-full overflow-y-auto bg-surface-bright relative">
+<!-- Header Controls -->
+<header class="flex items-center justify-between px-container-padding py-6 sticky top-0 z-10 glass-panel border-t-0 border-x-0">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-background">本周健康总结</h2>
+<p class="font-body-md text-text-muted mt-1">2025年2月10日 - 2月16日</p>
+</div>
+<div class="flex items-center gap-4">
+<!-- Member Switcher -->
+<div class="relative group">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-gray rounded-full border border-border-subtle hover:border-primary transition-colors">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="A small, circular avatar portrait of a young adult male with a neutral, professional expression, set against a clean white background. High resolution, modern digital style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuYVGagJxz-ibGQCdEAZwHkCTCPxmgNhjOlwAf2N-5ZCGVUq7RmvY-hLyX3LSiKSdvuvDkr9BnDMu4D0vCWZzDzyLcOfWZ5TXLU07mCmTY1E5sIxbdCRJITrVBPUCMzADR-EUe80R2vGznxwxr5kYkVveeOfjKLAAQertiaUQiFNNDpr3Cv8xUnl5jVd7PcO4XRKsy_-ZyIAgL48LxGjbeqbYwqvRRvlfR_i44eunZ7IykSz8he4Hu"/>
+<span class="font-body-sm font-medium">自己</span>
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+</div>
+<!-- Period Switcher -->
+<div class="flex bg-surface-gray p-1 rounded-full border border-border-subtle">
+<button class="px-4 py-1.5 rounded-full bg-white shadow-sm font-body-sm font-medium text-on-background">周</button>
+<button class="px-4 py-1.5 rounded-full text-text-muted font-body-sm hover:text-on-background transition-colors">月</button>
+</div>
+<button class="w-10 h-10 flex items-center justify-center bg-surface-gray rounded-full border border-border-subtle hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-container-padding grid grid-cols-12 gap-card-gap pb-32">
+<!-- Top AI Insight -->
+<div class="col-span-12 glass-panel rounded-3xl p-6 flex items-start gap-4 ambient-shadow relative overflow-hidden">
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-primary-fixed rounded-full blur-3xl opacity-30"></div>
+<div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-2xl flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div class="flex-1 z-10">
+<h3 class="font-headline-md text-headline-md mb-2">AI 健康洞察</h3>
+<p class="font-body-md text-on-surface-variant leading-relaxed">
+                        本周您的整体健康状况稳定。心率维持在健康区间，但周三下午出现短暂升高，可能与高强度运动有关。睡眠质量较上周提升了 15%，建议继续保持目前的作息规律。运动步数基本达标，周末可适当增加户外活动时间。
+                    </p>
+</div>
+</div>
+<!-- Vitals Bento Grid -->
+<!-- Heart Rate -->
+<div class="col-span-12 lg:col-span-8 glass-panel rounded-3xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-6">
+<div>
+<div class="flex items-center gap-2 text-text-muted mb-1">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+<span class="font-body-sm font-medium uppercase tracking-wider">心率趋势</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-data-display text-data-display">72</span>
+<span class="font-body-sm text-text-muted mb-2">bpm (均值)</span>
+</div>
+</div>
+<span class="px-3 py-1 bg-surface-container-high text-on-surface text-xs font-medium rounded-full">正常范围</span>
+</div>
+<!-- Dot Matrix Chart Mockup -->
+<div class="h-32 w-full flex items-end justify-between gap-1 mt-auto">
+<!-- Generating decorative bars -->
+<div class="w-full flex items-end justify-between px-2">
+<div class="w-2 bg-primary/20 h-10 rounded-t-sm"></div>
+<div class="w-2 bg-primary/40 h-16 rounded-t-sm"></div>
+<div class="w-2 bg-primary/60 h-12 rounded-t-sm"></div>
+<div class="w-2 bg-primary h-24 rounded-t-sm"></div>
+<div class="w-2 bg-primary/80 h-20 rounded-t-sm"></div>
+<div class="w-2 bg-primary/30 h-14 rounded-t-sm"></div>
+<div class="w-2 bg-primary/50 h-18 rounded-t-sm"></div>
+<div class="w-2 bg-primary/70 h-22 rounded-t-sm"></div>
+<div class="w-2 bg-primary h-28 rounded-t-sm"></div>
+<div class="w-2 bg-primary/90 h-26 rounded-t-sm"></div>
+<div class="w-2 bg-primary/40 h-16 rounded-t-sm"></div>
+<div class="w-2 bg-primary/60 h-20 rounded-t-sm"></div>
+<div class="w-2 bg-primary/30 h-12 rounded-t-sm"></div>
+<div class="w-2 bg-primary/50 h-15 rounded-t-sm"></div>
+</div>
+</div>
+</div>
+<!-- Sleep Quality -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 glass-panel rounded-3xl p-6 flex flex-col justify-between items-center text-center">
+<div class="w-full flex justify-between items-center mb-4">
+<div class="flex items-center gap-2 text-text-muted">
+<span class="material-symbols-outlined text-[18px]">bedtime</span>
+<span class="font-body-sm font-medium uppercase tracking-wider">睡眠质量</span>
+</div>
+</div>
+<div class="relative w-40 h-40 flex items-center justify-center my-4">
+<!-- Circular ring mockup -->
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#E5E5EA" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#007fa0" stroke-dasharray="251.2" stroke-dashoffset="62.8" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-data-display text-3xl">7h</span>
+<span class="font-body-sm text-text-muted">30m</span>
+</div>
+</div>
+<p class="font-body-sm text-on-surface-variant">深睡比例 35% <br/> 优于 82% 同龄人</p>
+</div>
+<!-- Steps -->
+<div class="col-span-12 md:col-span-6 glass-panel rounded-3xl p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<div class="flex items-center gap-2 text-text-muted mb-1">
+<span class="material-symbols-outlined text-[18px]">directions_walk</span>
+<span class="font-body-sm font-medium uppercase tracking-wider">运动步数</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-data-display text-4xl">8,432</span>
+<span class="font-body-sm text-text-muted mb-1">步/日</span>
+</div>
+</div>
+</div>
+<!-- Simple Bar chart -->
+<div class="flex items-end justify-between h-24 mt-4 gap-2">
+<div class="w-full bg-tertiary-fixed h-[40%] rounded-t-md"></div>
+<div class="w-full bg-tertiary-fixed h-[60%] rounded-t-md"></div>
+<div class="w-full bg-tertiary-fixed h-[85%] rounded-t-md"></div>
+<div class="w-full bg-tertiary-container h-[100%] rounded-t-md relative">
+<div class="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-bold text-tertiary-container">今</div>
+</div>
+<div class="w-full bg-tertiary-fixed h-[50%] rounded-t-md"></div>
+<div class="w-full bg-tertiary-fixed h-[70%] rounded-t-md"></div>
+<div class="w-full bg-tertiary-fixed h-[45%] rounded-t-md"></div>
+</div>
+</div>
+<!-- Secondary Info Card -->
+<div class="col-span-12 md:col-span-6 glass-panel rounded-3xl p-6 bg-surface-gray border-none flex flex-col justify-center">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-secondary">calendar_month</span>
+</div>
+<div>
+<h4 class="font-body-lg font-semibold text-on-background">下次体检提醒</h4>
+<p class="font-body-sm text-text-muted">2025年4月15日 - 常规全身体检</p>
+</div>
+</div>
+<button class="mt-4 w-full py-3 bg-white border border-border-subtle rounded-xl font-body-md font-medium text-on-background hover:bg-surface-container transition-colors">
+                    查看预约详情
+                </button>
+</div>
+</div>
+<div class="mt-auto py-6 text-center">
+<p class="font-body-sm text-text-muted">健康参考，不替代医生诊断/处方</p>
+</div>
+</main>
+<!-- Mobile Bottom Nav (Floating Dock) -->
+<nav class="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 glass-panel px-6 py-4 rounded-full flex items-center gap-8 z-50 ambient-shadow">
+<a class="flex flex-col items-center gap-1 text-text-muted hover:text-on-background transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary relative" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+<div class="absolute -bottom-2 w-1 h-1 bg-primary rounded-full"></div>
+</a>
+<button class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center -mt-8 shadow-lg ambient-shadow">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+<a class="flex flex-col items-center gap-1 text-text-muted hover:text-on-background transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">chat_bubble</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-text-muted hover:text-on-background transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">person</span>
+</a>
+</nav>
+</body></html>

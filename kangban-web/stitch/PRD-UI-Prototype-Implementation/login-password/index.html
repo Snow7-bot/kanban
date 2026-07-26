@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>登录 - 康伴</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#ffe9e6",
+                        "on-primary-fixed": "#410001",
+                        "primary-container": "#e2241f",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-primary-container": "#fffbff",
+                        "surface-container-highest": "#fcdbd6",
+                        "on-secondary": "#ffffff",
+                        "primary": "#bc000a",
+                        "on-tertiary-fixed": "#001f29",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#bbe9ff",
+                        "on-secondary-container": "#646464",
+                        "outline-variant": "#e7bdb7",
+                        "text-muted": "#8E8E93",
+                        "on-secondary-fixed": "#1b1b1b",
+                        "surface-container-low": "#fff0ee",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#402b29",
+                        "secondary": "#5e5e5e",
+                        "secondary-container": "#e2e2e2",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#004d63",
+                        "surface": "#fff8f7",
+                        "surface-gray": "#F5F5F7",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "surface-bright": "#fff8f7",
+                        "on-surface-variant": "#5d3f3b",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#c6c6c6",
+                        "tertiary": "#00647f",
+                        "on-background": "#291715",
+                        "border-subtle": "#E5E5EA",
+                        "on-tertiary-container": "#fafdff",
+                        "surface-variant": "#fcdbd6",
+                        "tertiary-fixed-dim": "#68d3fc",
+                        "outline": "#926f6a",
+                        "tertiary-container": "#007fa0",
+                        "background": "#fff8f7",
+                        "glass-fill": "rgba(255, 255, 255, 0.7)",
+                        "primary-fixed": "#ffdad5",
+                        "surface-container-high": "#ffe2dd",
+                        "on-surface": "#291715",
+                        "medical-red": "#FF3B30",
+                        "surface-dim": "#f4d3ce",
+                        "on-secondary-fixed-variant": "#474747",
+                        "on-primary-fixed-variant": "#930005",
+                        "surface-tint": "#c0000a",
+                        "inverse-on-surface": "#ffedea",
+                        "inverse-primary": "#ffb4aa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-gap": "20px",
+                        "unit": "8px",
+                        "container-padding": "32px",
+                        "gutter": "24px",
+                        "section-margin": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-caps": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "display-lg": ["Plus Jakarta Sans", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "data-display": ["JetBrains Mono", "monospace"],
+                        "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["40px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "data-display": ["48px", { "lineHeight": "1", "letterSpacing": "-0.05em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            font-feature-settings: 'liga';
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+</head>
+<body class="bg-surface-bright text-on-surface h-screen w-full overflow-hidden flex flex-col md:flex-row">
+<!-- Left Pane: Branding & Visuals (Hidden on Mobile) -->
+<div class="hidden md:flex w-1/2 h-full relative bg-surface-container flex-col justify-between p-12 overflow-hidden">
+<!-- Abstract Medical Background -->
+<div class="absolute inset-0 z-0 bg-cover bg-center opacity-100" data-alt="A sophisticated, high-end medical abstraction featuring a subtle, glowing dot matrix pattern forming an abstract ECG wave or biometric data visualization. The scene is illuminated by soft, bright, clinical white lighting typical of a pristine light-mode interface. The color palette relies on pristine whites, soft grays, and precise accents of deep medical red. The overall mood is calm, trustworthy, and technologically advanced, suitable for a premium medical AI assistant splash screen." style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLtLguDgMXhyoGXhx3FEUaftiXThwgAtQD0lybg93XUMA0WlIhNs5QdoehiWtiaoWELPRm_ovAYKmVewXYJ49Ba_8TOkOjvJfhuGSvstsIwm1FOAKtzy0o8UPxrht9EiVv2JBtzCr97vsozcUzhigIE4DoiqUevv0fyDtNyqGvDWUf4rNeqeJEGBZcNZVtQxRkClwbUzJt6Kki0APx1nhA_0qJ5NYnAK0UI9fP51tcAP0TmI9Qp3vwIltA')">
+</div>
+<!-- Pattern Overlay -->
+<div class="absolute inset-0 z-0" style="background-image: radial-gradient(circle, #e2e2e2 1px, transparent 1px); background-size: 20px 20px; opacity: 0.3;"></div>
+<!-- Brand Header Top Left -->
+<div class="relative z-10 flex items-center gap-3">
+<span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 1;">vital_signs</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">康伴</span>
+<span class="font-label-caps text-label-caps text-secondary ml-2 px-2 py-1 bg-white/50 rounded-full backdrop-blur-sm border border-border-subtle">Medical AI</span>
+</div>
+<!-- Value Proposition / Large Text -->
+<div class="relative z-10 max-w-lg mb-24">
+<h1 class="font-display-lg text-display-lg text-on-surface mb-6">
+                临床级精准<br/>
+                充满关怀的智能
+            </h1>
+<p class="font-body-lg text-body-lg text-secondary">
+                您的专业医疗AI助手，旨在将高端临床见解与直观便捷的家庭应用无缝结合。
+            </p>
+</div>
+</div>
+<!-- Right Pane: Login Form -->
+<div class="w-full md:w-1/2 h-full flex flex-col items-center justify-center relative p-6 md:p-12 lg:p-24 bg-surface-bright">
+<!-- Mobile Header (Visible only on mobile) -->
+<div class="md:hidden flex flex-col items-center gap-2 mb-12 w-full text-center">
+<div class="flex items-center gap-2 justify-center">
+<span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 1;">vital_signs</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">康伴</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Medical AI</p>
+</div>
+<!-- Form Container -->
+<div class="w-full max-w-[420px] flex flex-col gap-8 z-10 relative">
+<div class="flex flex-col gap-2">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">欢迎登录</h2>
+<p class="font-body-md text-body-md text-secondary">请输入您的信息以访问您的健康数据</p>
+</div>
+<form class="flex flex-col gap-6" onsubmit="event.preventDefault();">
+<!-- Phone/Email Input -->
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-label-caps text-secondary" for="account">手机号或邮箱</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-4 text-secondary pointer-events-none">person</span>
+<input class="w-full bg-surface-gray border border-border-subtle rounded-xl py-4 pl-12 pr-4 font-body-md text-body-md text-on-surface placeholder:text-text-muted outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm" id="account" placeholder="请输入手机号或邮箱" type="text"/>
+</div>
+</div>
+<!-- Verification Code Input -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<label class="font-label-caps text-label-caps text-secondary" for="password">密码</label>
+<a class="font-body-sm text-body-sm text-primary font-medium hover:underline transition-all" href="#">忘记密码？</a>
+</div>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-4 text-secondary pointer-events-none">lock</span>
+<input class="w-full bg-surface-gray border border-border-subtle rounded-xl py-4 pl-12 pr-12 font-body-md text-body-md text-on-surface placeholder:text-text-muted outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm" id="password" placeholder="请输入密码" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-secondary hover:text-primary transition-colors" onclick="const input = document.getElementById('password'); const icon = this.querySelector('.material-symbols-outlined'); if (input.type === 'password') { input.type = 'text'; icon.textContent = 'visibility'; } else { input.type = 'password'; icon.textContent = 'visibility_off'; }" type="button">
+<span class="material-symbols-outlined">visibility_off</span>
+</button>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-4 mt-4">
+<button class="w-full bg-primary text-on-primary rounded-full py-4 font-headline-md text-body-lg font-bold shadow-[0_8px_20px_rgba(188,0,10,0.2)] hover:shadow-[0_4px_12px_rgba(188,0,10,0.3)] hover:-translate-y-[1px] transition-all active:translate-y-0" type="submit">
+                        登录
+                    </button>
+<div class="flex justify-center items-center gap-2 mt-2">
+<span class="font-body-sm text-body-sm text-secondary">还没有账号？</span>
+<a class="font-body-sm text-body-sm text-primary font-medium hover:underline transition-all" href="#">立即注册</a>
+</div>
+</div>
+</form>
+</div>
+<!-- Footer Disclaimer (Pushed to bottom) -->
+<div class="absolute bottom-8 w-full left-0 px-8 flex justify-center text-center">
+<p class="font-body-sm text-body-sm text-text-muted max-w-sm">
+                © 2024 康伴 KangBan.<br/>
+<span class="opacity-75 text-[12px]">健康参考，不替代医生诊断/处方</span>
+</p>
+</div>
+</div>
+</body></html>

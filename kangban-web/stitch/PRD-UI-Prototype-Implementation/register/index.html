@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>注册 - 康伴</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#ffe9e6",
+                        "on-primary-fixed": "#410001",
+                        "primary-container": "#e2241f",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-primary-container": "#fffbff",
+                        "surface-container-highest": "#fcdbd6",
+                        "on-secondary": "#ffffff",
+                        "primary": "#bc000a",
+                        "on-tertiary-fixed": "#001f29",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#bbe9ff",
+                        "on-secondary-container": "#646464",
+                        "outline-variant": "#e7bdb7",
+                        "text-muted": "#8E8E93",
+                        "on-secondary-fixed": "#1b1b1b",
+                        "surface-container-low": "#fff0ee",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#402b29",
+                        "secondary": "#5e5e5e",
+                        "secondary-container": "#e2e2e2",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#004d63",
+                        "surface": "#fff8f7",
+                        "surface-gray": "#F5F5F7",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "surface-bright": "#fff8f7",
+                        "on-surface-variant": "#5d3f3b",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#c6c6c6",
+                        "tertiary": "#00647f",
+                        "on-background": "#291715",
+                        "border-subtle": "#E5E5EA",
+                        "on-tertiary-container": "#fafdff",
+                        "surface-variant": "#fcdbd6",
+                        "tertiary-fixed-dim": "#68d3fc",
+                        "outline": "#926f6a",
+                        "tertiary-container": "#007fa0",
+                        "background": "#fff8f7",
+                        "glass-fill": "rgba(255, 255, 255, 0.7)",
+                        "primary-fixed": "#ffdad5",
+                        "surface-container-high": "#ffe2dd",
+                        "on-surface": "#291715",
+                        "medical-red": "#FF3B30",
+                        "surface-dim": "#f4d3ce",
+                        "on-secondary-fixed-variant": "#474747",
+                        "on-primary-fixed-variant": "#930005",
+                        "surface-tint": "#c0000a",
+                        "inverse-on-surface": "#ffedea",
+                        "inverse-primary": "#ffb4aa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-gap": "20px",
+                        "unit": "8px",
+                        "container-padding": "32px",
+                        "gutter": "24px",
+                        "section-margin": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Inter"],
+                        "data-display": ["JetBrains Mono"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["40px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "data-display": ["48px", { "lineHeight": "1", "letterSpacing": "-0.05em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #FBFBFB;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex bg-surface">
+<!-- Left Side - Hero Image -->
+<div class="hidden lg:block lg:w-1/2 relative overflow-hidden bg-surface-container">
+<img alt="Medical technology abstract background" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy5gPNIDyvy0kJV3xNiSTFnJ-B3Bq4wPkVyg_a4nRg9yyU-TVB0tqBthKZcCVAiGoum5CxiP_vBOUl-KlQBt-aHo4AuThYHs5xNBnudhv3hvCGRPqE8qiVaiLB1p59d0CBXUueF1gxXXGfPraPxCjUq9ZPcVE0-Z3sgjGUIe2RXuNVTEpJeC-e24enCcyNTHaBvvXQ05oD1iD2TduePw4FWGWHCBG-Aihx1-vqRwsYC1uoOHtt82Vc"/>
+</div>
+<!-- Right Side - Registration Form -->
+<div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative overflow-hidden">
+<!-- Decorative Background -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden z-0 flex items-center justify-center">
+<div class="absolute w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full bg-primary-fixed/20 blur-[100px] opacity-60 mix-blend-multiply translate-x-1/4 -translate-y-1/4"></div>
+<div class="absolute w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full bg-tertiary-fixed/30 blur-[80px] opacity-50 mix-blend-multiply -translate-x-1/3 translate-y-1/3"></div>
+</div>
+<!-- Main Registration Container -->
+<div class="glass-panel w-full max-w-md rounded-[32px] p-8 md:p-12 relative z-10">
+<!-- Brand Header -->
+<div class="flex flex-col items-center mb-10 text-center">
+<div class="w-16 h-16 rounded-2xl bg-surface-gray flex items-center justify-center mb-6 border border-border-subtle shadow-sm">
+<span class="material-symbols-outlined text-4xl text-primary" data-icon="ecg" style="font-variation-settings: 'FILL' 1;">ecg</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">创建康伴账号</h1>
+<p class="font-body-md text-body-md text-secondary">开启您的专属智能健康管理</p>
+</div>
+<!-- Registration Form -->
+<form class="space-y-6">
+<!-- Phone Number Input -->
+<div class="space-y-2">
+<label class="block font-body-sm text-body-sm text-on-surface-variant font-medium" for="phone">手机号码</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" data-icon="phone_iphone">phone_iphone</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-gray border border-border-subtle rounded-xl font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-text-muted" id="phone" placeholder="请输入您的手机号" type="tel"/>
+</div>
+</div>
+<!-- Verification Code Input -->
+<div class="space-y-2">
+<label class="block font-body-sm text-body-sm text-on-surface-variant font-medium" for="code">验证码</label>
+<div class="flex gap-3">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" data-icon="dialpad">dialpad</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-gray border border-border-subtle rounded-xl font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-text-muted" id="code" placeholder="输入验证码" type="text"/>
+</div>
+<button class="px-6 py-4 bg-surface-container text-primary font-body-sm text-body-sm font-medium rounded-xl border border-transparent hover:bg-surface-container-high transition-colors whitespace-nowrap" type="button">
+                        获取验证码
+                    </button>
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-2">
+<label class="block font-body-sm text-body-sm text-on-surface-variant font-medium" for="password">设置密码</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" data-icon="lock">lock</span>
+<input class="w-full pl-12 pr-12 py-4 bg-surface-gray border border-border-subtle rounded-xl font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-text-muted" id="password" placeholder="设置6-20位密码" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-on-surface transition-colors focus:outline-none" type="button">
+<span class="material-symbols-outlined" data-icon="visibility_off">visibility_off</span>
+</button>
+</div>
+</div>
+<!-- Agreement Checkbox -->
+<div class="flex items-start gap-3 pt-2">
+<div class="flex items-center h-6">
+<input class="w-5 h-5 text-primary bg-surface-gray border-border-subtle rounded focus:ring-primary focus:ring-offset-0 transition-colors cursor-pointer" id="agreement" type="checkbox"/>
+</div>
+<div class="flex-1">
+<label class="font-body-sm text-body-sm text-secondary cursor-pointer leading-tight" for="agreement">
+                        我已阅读并同意
+                        <a class="text-primary hover:underline font-medium" href="#">《用户服务协议》</a> 和
+                        <a class="text-primary hover:underline font-medium" href="#">《隐私政策》</a>
+</label>
+</div>
+</div>
+<!-- Submit Button -->
+<button class="w-full py-4 bg-medical-red text-white font-headline-md text-[18px] rounded-full hover:opacity-90 transition-opacity shadow-[0_8px_24px_rgba(255,59,48,0.2)] mt-8" type="submit">
+                注册
+            </button>
+</form>
+<!-- Footer Links -->
+<div class="mt-8 text-center">
+<p class="font-body-sm text-body-sm text-secondary">
+                已有账号？
+                <a class="text-primary font-medium hover:underline ml-1 transition-colors" href="#">返回登录</a>
+</p>
+</div>
+</div>
+</div>
+</body></html>

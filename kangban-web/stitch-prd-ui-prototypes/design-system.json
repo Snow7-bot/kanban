@@ -1,0 +1,146 @@
+{
+  "designSystems": [
+    {
+      "name": "assets/fbe115f1b0f04b5784b6a5300f00ed83",
+      "designSystem": {
+        "displayName": "Clinical Vitality",
+        "styleGuidelines": "## Brand & Style\nThe design system is defined by a \"Warm Clinical\" aesthetic. It balances the urgency and precision of healthcare with an approachable, patient-centric softness. It leverages **Minimalism** for clarity and **Glassmorphism** for modern depth, ensuring that complex medical data feels manageable and non-threatening.\n\nThe target audience ranges from tech-savvy individuals to elderly patients requiring high accessibility. The emotional response should be one of confidence, calm, and clarity. The UI uses stark white surfaces to evoke a sterile, professional environment, contrasted by high-impact crimson accents that denote vital energy and action.\n\n## Layout & Spacing\nThe layout follows a **fixed-grid** philosophy for the dashboard to maintain data density control, while utilizing fluid components within cards. \n\n- **Desktop:** 12-column grid with 24px gutters. Content is centered with a max-width of 1440px.\n- **Tablet:** 8-column grid. Cards reflow into a two-column stack.\n- **Mobile:** Single-column layout. Margins reduce to 20px. \n\nAll interactive elements must adhere to a minimum 48px touch target. In **Elderly Mode**, the `card-gap` should be increased to 32px to prevent accidental taps and reduce cognitive clutter.\n\n## Elevation & Depth\nHierarchy is established through **Tonal Layering** and **Ambient Shadows**. \n\n1.  **Canvas:** The base background is `#F8FAFC`.\n2.  **Cards:** Primary content containers are pure white (`#FFFFFF`) with a very soft, diffused shadow (Blur: 20px, Y: 4px, Opacity: 4% Black).\n3.  **Floating Elements:** Modals and menus use a more pronounced shadow and a backdrop blur (Glassmorphism) of 12px to maintain context of the underlying data.\n4.  **Active State:** Critical alerts may use a subtle inner glow or a 2px solid primary red border to draw immediate attention without relying solely on shadow depth.\n\n## Components\n- **Buttons:** Primary buttons are solid `#E63946` with white text. Secondary buttons use a ghost style with a `#1D3557` border.\n- **Cards:** White surfaces with 24px padding. They should group related metrics (e.g., Heart Rate + Trend Graph).\n- **Inputs:** Clean, outlined fields. On focus, the border transitions to Primary Red with a subtle outer glow.\n- **Medical Chips:** Use light tinted backgrounds of the status colors (e.g., light red for \"High Risk\") with bold text labels.\n- **Icons:** Use 2px stroke-based icons. Avoid filled icons unless they represent an active toggle state. In Elderly Mode, icons *must* be accompanied by a text label.\n- **Health Charts:** Use ECharts 5 with a simplified color palette—red for data lines and soft gray for grid lines.",
+        "theme": {
+          "colorMode": "LIGHT",
+          "font": "PLUS_JAKARTA_SANS",
+          "roundness": "ROUND_EIGHT",
+          "customColor": "#e63946",
+          "headlineFont": "PLUS_JAKARTA_SANS",
+          "bodyFont": "INTER",
+          "labelFont": "INTER",
+          "namedColors": {
+            "background": "#faf8ff",
+            "error": "#ba1a1a",
+            "error_container": "#ffdad6",
+            "inverse_on_surface": "#eef0ff",
+            "inverse_primary": "#ffb3b1",
+            "inverse_surface": "#283044",
+            "on_background": "#131b2e",
+            "on_error": "#ffffff",
+            "on_error_container": "#93000a",
+            "on_primary": "#ffffff",
+            "on_primary_container": "#fffbff",
+            "on_primary_fixed": "#410007",
+            "on_primary_fixed_variant": "#92001c",
+            "on_secondary": "#ffffff",
+            "on_secondary_container": "#445a7f",
+            "on_secondary_fixed": "#001b3c",
+            "on_secondary_fixed_variant": "#30476a",
+            "on_surface": "#131b2e",
+            "on_surface_variant": "#5b403f",
+            "on_tertiary": "#ffffff",
+            "on_tertiary_container": "#f6fff3",
+            "on_tertiary_fixed": "#161d16",
+            "on_tertiary_fixed_variant": "#404940",
+            "outline": "#8f6f6e",
+            "outline_variant": "#e4bebc",
+            "primary": "#b7102a",
+            "primary_container": "#db313f",
+            "primary_fixed": "#ffdad8",
+            "primary_fixed_dim": "#ffb3b1",
+            "secondary": "#485f84",
+            "secondary_container": "#bbd3fd",
+            "secondary_fixed": "#d5e3ff",
+            "secondary_fixed_dim": "#b0c7f1",
+            "status-critical": "#E63946",
+            "status-success": "#2D6A4F",
+            "status-warning": "#FFB703",
+            "surface": "#faf8ff",
+            "surface-bg": "#F8FAFC",
+            "surface-card": "#FFFFFF",
+            "surface_bright": "#faf8ff",
+            "surface_container": "#eaedff",
+            "surface_container_high": "#e2e7ff",
+            "surface_container_highest": "#dae2fd",
+            "surface_container_low": "#f2f3ff",
+            "surface_container_lowest": "#ffffff",
+            "surface_dim": "#d2d9f4",
+            "surface_tint": "#bb152c",
+            "surface_variant": "#dae2fd",
+            "tertiary": "#565e55",
+            "tertiary_container": "#6e776d",
+            "tertiary_fixed": "#dce5d9",
+            "tertiary_fixed_dim": "#c0c9be"
+          },
+          "designMd": "---\nname: Clinical Vitality\ncolors:\n  surface: '#faf8ff'\n  surface-dim: '#d2d9f4'\n  surface-bright: '#faf8ff'\n  surface-container-lowest: '#ffffff'\n  surface-container-low: '#f2f3ff'\n  surface-container: '#eaedff'\n  surface-container-high: '#e2e7ff'\n  surface-container-highest: '#dae2fd'\n  on-surface: '#131b2e'\n  on-surface-variant: '#5b403f'\n  inverse-surface: '#283044'\n  inverse-on-surface: '#eef0ff'\n  outline: '#8f6f6e'\n  outline-variant: '#e4bebc'\n  surface-tint: '#bb152c'\n  primary: '#b7102a'\n  on-primary: '#ffffff'\n  primary-container: '#db313f'\n  on-primary-container: '#fffbff'\n  inverse-primary: '#ffb3b1'\n  secondary: '#485f84'\n  on-secondary: '#ffffff'\n  secondary-container: '#bbd3fd'\n  on-secondary-container: '#445a7f'\n  tertiary: '#565e55'\n  on-tertiary: '#ffffff'\n  tertiary-container: '#6e776d'\n  on-tertiary-container: '#f6fff3'\n  error: '#ba1a1a'\n  on-error: '#ffffff'\n  error-container: '#ffdad6'\n  on-error-container: '#93000a'\n  primary-fixed: '#ffdad8'\n  primary-fixed-dim: '#ffb3b1'\n  on-primary-fixed: '#410007'\n  on-primary-fixed-variant: '#92001c'\n  secondary-fixed: '#d5e3ff'\n  secondary-fixed-dim: '#b0c7f1'\n  on-secondary-fixed: '#001b3c'\n  on-secondary-fixed-variant: '#30476a'\n  tertiary-fixed: '#dce5d9'\n  tertiary-fixed-dim: '#c0c9be'\n  on-tertiary-fixed: '#161d16'\n  on-tertiary-fixed-variant: '#404940'\n  background: '#faf8ff'\n  on-background: '#131b2e'\n  surface-variant: '#dae2fd'\n  status-critical: '#E63946'\n  status-success: '#2D6A4F'\n  status-warning: '#FFB703'\n  surface-bg: '#F8FAFC'\n  surface-card: '#FFFFFF'\ntypography:\n  display-lg:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 48px\n    fontWeight: '700'\n    lineHeight: 56px\n    letterSpacing: -0.02em\n  headline-lg:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 32px\n    fontWeight: '700'\n    lineHeight: 40px\n  headline-lg-mobile:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 24px\n    fontWeight: '700'\n    lineHeight: 32px\n  headline-md:\n    fontFamily: Plus Jakarta Sans\n    fontSize: 24px\n    fontWeight: '600'\n    lineHeight: 32px\n  body-lg:\n    fontFamily: Inter\n    fontSize: 18px\n    fontWeight: '400'\n    lineHeight: 28px\n  body-md:\n    fontFamily: Inter\n    fontSize: 16px\n    fontWeight: '400'\n    lineHeight: 24px\n  label-md:\n    fontFamily: Inter\n    fontSize: 14px\n    fontWeight: '600'\n    lineHeight: 20px\n    letterSpacing: 0.05em\n  elderly-body:\n    fontFamily: Inter\n    fontSize: 22px\n    fontWeight: '500'\n    lineHeight: 32px\n    letterSpacing: 0.01em\nrounded:\n  sm: 0.25rem\n  DEFAULT: 0.5rem\n  md: 0.75rem\n  lg: 1rem\n  xl: 1.5rem\n  full: 9999px\nspacing:\n  container-max: 1440px\n  gutter: 24px\n  margin-desktop: 40px\n  margin-mobile: 20px\n  touch-target: 48px\n  card-gap: 24px\n---\n\n## Brand & Style\nThe design system is defined by a \"Warm Clinical\" aesthetic. It balances the urgency and precision of healthcare with an approachable, patient-centric softness. It leverages **Minimalism** for clarity and **Glassmorphism** for modern depth, ensuring that complex medical data feels manageable and non-threatening.\n\nThe target audience ranges from tech-savvy individuals to elderly patients requiring high accessibility. The emotional response should be one of confidence, calm, and clarity. The UI uses stark white surfaces to evoke a sterile, professional environment, contrasted by high-impact crimson accents that denote vital energy and action.\n\n## Colors\nThis design system utilizes a high-contrast palette to ensure safety and readability. \n- **Primary Red:** Used for critical actions, vital signs, and emergency alerts. It is the signature \"heartbeat\" color.\n- **Secondary Navy:** Used for professional structure, navigation, and primary text, providing a grounded contrast to the red.\n- **Neutral:** A deep charcoal-black is reserved for body text to ensure maximum legibility against white backgrounds.\n- **Backgrounds:** Use a near-white gray for the application canvas to allow white cards to pop with subtle elevation.\n\n## Typography\nThe system uses **Plus Jakarta Sans** for headlines to provide a friendly, modern, and optimistic feel. **Inter** is used for all functional data and body text due to its exceptional legibility and neutral, systematic tone.\n\nFor **Elderly Mode**, use the `elderly-body` token which increases size and weight to accommodate visual impairment. Headlines should remain bold and clear, serving as wayfinding anchors. Data points (like BPM or Blood Pressure) should use semi-bold weights to stand out from labels.\n\n## Layout & Spacing\nThe layout follows a **fixed-grid** philosophy for the dashboard to maintain data density control, while utilizing fluid components within cards. \n\n- **Desktop:** 12-column grid with 24px gutters. Content is centered with a max-width of 1440px.\n- **Tablet:** 8-column grid. Cards reflow into a two-column stack.\n- **Mobile:** Single-column layout. Margins reduce to 20px. \n\nAll interactive elements must adhere to a minimum 48px touch target. In **Elderly Mode**, the `card-gap` should be increased to 32px to prevent accidental taps and reduce cognitive clutter.\n\n## Elevation & Depth\nHierarchy is established through **Tonal Layering** and **Ambient Shadows**. \n\n1.  **Canvas:** The base background is `#F8FAFC`.\n2.  **Cards:** Primary content containers are pure white (`#FFFFFF`) with a very soft, diffused shadow (Blur: 20px, Y: 4px, Opacity: 4% Black).\n3.  **Floating Elements:** Modals and menus use a more pronounced shadow and a backdrop blur (Glassmorphism) of 12px to maintain context of the underlying data.\n4.  **Active State:** Critical alerts may use a subtle inner glow or a 2px solid primary red border to draw immediate attention without relying solely on shadow depth.\n\n## Shapes\nThe shape language is \"Hyper-Soft.\" Large corner radii are used to make the medical interface feel safe and approachable. \n- **Standard Cards:** 24px corner radius.\n- **Buttons & Inputs:** 12px corner radius (Soft).\n- **Status Chips:** Full pill-shaped (rounded-full) to distinguish them from interactive buttons.\n\nIn **Elderly Mode**, the roundedness of buttons should increase to the \"Pill-shaped\" (Level 3) setting to maximize the visual affordance of \"tap-ability.\"\n\n## Components\n- **Buttons:** Primary buttons are solid `#E63946` with white text. Secondary buttons use a ghost style with a `#1D3557` border.\n- **Cards:** White surfaces with 24px padding. They should group related metrics (e.g., Heart Rate + Trend Graph).\n- **Inputs:** Clean, outlined fields. On focus, the border transitions to Primary Red with a subtle outer glow.\n- **Medical Chips:** Use light tinted backgrounds of the status colors (e.g., light red for \"High Risk\") with bold text labels.\n- **Icons:** Use 2px stroke-based icons. Avoid filled icons unless they represent an active toggle state. In Elderly Mode, icons *must* be accompanied by a text label.\n- **Health Charts:** Use ECharts 5 with a simplified color palette—red for data lines and soft gray for grid lines.",
+          "colorVariant": "FIDELITY",
+          "overridePrimaryColor": "#e63946",
+          "overrideSecondaryColor": "#1d3557",
+          "overrideTertiaryColor": "#f1faee",
+          "overrideNeutralColor": "#0f172a",
+          "spacingScale": 2,
+          "typography": {
+            "body-lg": {
+              "fontFamily": "Inter",
+              "fontSize": "18px",
+              "fontWeight": "400",
+              "lineHeight": "28px"
+            },
+            "body-md": {
+              "fontFamily": "Inter",
+              "fontSize": "16px",
+              "fontWeight": "400",
+              "lineHeight": "24px"
+            },
+            "display-lg": {
+              "fontFamily": "Plus Jakarta Sans",
+              "fontSize": "48px",
+              "fontWeight": "700",
+              "lineHeight": "56px",
+              "letterSpacing": "-0.02em"
+            },
+            "elderly-body": {
+              "fontFamily": "Inter",
+              "fontSize": "22px",
+              "fontWeight": "500",
+              "lineHeight": "32px",
+              "letterSpacing": "0.01em"
+            },
+            "headline-lg": {
+              "fontFamily": "Plus Jakarta Sans",
+              "fontSize": "32px",
+              "fontWeight": "700",
+              "lineHeight": "40px"
+            },
+            "headline-lg-mobile": {
+              "fontFamily": "Plus Jakarta Sans",
+              "fontSize": "24px",
+              "fontWeight": "700",
+              "lineHeight": "32px"
+            },
+            "headline-md": {
+              "fontFamily": "Plus Jakarta Sans",
+              "fontSize": "24px",
+              "fontWeight": "600",
+              "lineHeight": "32px"
+            },
+            "label-md": {
+              "fontFamily": "Inter",
+              "fontSize": "14px",
+              "fontWeight": "600",
+              "lineHeight": "20px",
+              "letterSpacing": "0.05em"
+            }
+          },
+          "spacing": {
+            "card-gap": "24px",
+            "container-max": "1440px",
+            "gutter": "24px",
+            "margin-desktop": "40px",
+            "margin-mobile": "20px",
+            "touch-target": "48px"
+          },
+          "headlineFontFamily": "Plus Jakarta Sans",
+          "bodyFontFamily": "Inter",
+          "labelFontFamily": "Inter"
+        }
+      },
+      "version": "1"
+    }
+  ]
+}

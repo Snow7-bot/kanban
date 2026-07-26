@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI 问诊 - 康伴</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#e4bebc",
+                        "secondary-container": "#bbd3fd",
+                        "inverse-surface": "#283044",
+                        "on-surface-variant": "#5b403f",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#dae2fd",
+                        "on-background": "#131b2e",
+                        "secondary-fixed": "#d5e3ff",
+                        "on-primary-fixed": "#410007",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-tertiary-fixed-variant": "#404940",
+                        "tertiary-fixed": "#dce5d9",
+                        "surface-card": "#FFFFFF",
+                        "tertiary": "#565e55",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#c0c9be",
+                        "surface-bright": "#faf8ff",
+                        "surface-container": "#eaedff",
+                        "secondary": "#485f84",
+                        "on-secondary-container": "#445a7f",
+                        "error": "#ba1a1a",
+                        "primary-container": "#db313f",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#bb152c",
+                        "on-surface": "#131b2e",
+                        "status-critical": "#E63946",
+                        "surface-container-low": "#f2f3ff",
+                        "tertiary-container": "#6e776d",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#92001c",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#b0c7f1",
+                        "on-tertiary-fixed": "#161d16",
+                        "background": "#faf8ff",
+                        "primary-fixed": "#ffdad8",
+                        "surface": "#faf8ff",
+                        "primary": "#b7102a",
+                        "surface-dim": "#d2d9f4",
+                        "outline": "#8f6f6e",
+                        "inverse-primary": "#ffb3b1",
+                        "primary-fixed-dim": "#ffb3b1",
+                        "status-success": "#2D6A4F",
+                        "on-tertiary-container": "#f6fff3",
+                        "on-secondary-fixed": "#001b3c",
+                        "on-primary-container": "#fffbff",
+                        "surface-variant": "#dae2fd",
+                        "surface-container-high": "#e2e7ff",
+                        "surface-bg": "#F8FAFC",
+                        "on-secondary-fixed-variant": "#30476a",
+                        "status-warning": "#FFB703"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1440px",
+                        "card-gap": "24px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "40px",
+                        "touch-target": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "elderly-body": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "elderly-body": ["22px", { "lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .soft-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
+        /* Scrollbar styling for chat */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e4bebc; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b7102a; }
+    </style>
+</head>
+<body class="text-on-surface h-screen flex overflow-hidden">
+<!-- SideNavBar (Hidden on Mobile) -->
+<nav class="hidden md:flex flex-col h-full w-64 fixed left-0 top-0 bg-surface-container-lowest shadow-xl z-40 transition-all duration-300 ease-in-out p-4 space-y-2">
+<div class="mb-8 px-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">vital_signs</span>
+<div>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary tracking-tight">康伴</h1>
+<p class="font-label-md text-[10px] text-on-surface-variant uppercase tracking-wider">医疗助手 v2.1</p>
+</div>
+</div>
+<div class="flex-1 space-y-2">
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl font-label-md text-label-md transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+                首页
+            </a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl font-label-md text-label-md transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+                健康指标
+            </a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl font-label-md text-label-md transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+                临床记录
+            </a>
+<a class="bg-primary-container text-on-primary-container rounded-xl flex items-center gap-3 p-3 font-label-md text-label-md shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="chat_bubble" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+                AI 问诊
+            </a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl font-label-md text-label-md transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                预约
+            </a>
+</div>
+<div class="mt-auto space-y-2 pt-4 border-t border-outline-variant/30">
+<button class="w-full bg-status-critical text-on-primary font-label-md text-label-md py-3 rounded-xl hover:bg-primary transition-colors flex items-center justify-center gap-2 shadow-md">
+<span class="material-symbols-outlined text-sm">add</span> 新的问诊
+            </button>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl font-label-md text-label-md transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span> 帮助
+            </a>
+<a class="text-on-surface-variant flex items-center gap-3 p-3 hover:bg-surface-container-highest rounded-xl font-label-md text-label-md transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span> 退出登录
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full md:ml-64 relative bg-surface-bg">
+<!-- Top Mobile Header -->
+<header class="md:hidden glass-panel sticky top-0 z-30 flex justify-between items-center px-4 py-4 border-b border-outline-variant/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">vital_signs</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">康伴</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-highest text-on-surface">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<div class="flex-1 flex flex-col lg:flex-row overflow-hidden p-4 md:p-gutter gap-gutter max-w-container-max mx-auto w-full">
+<!-- Left Side: Patient Context & Health Overview -->
+<aside class="w-full lg:w-[340px] flex flex-col gap-6 overflow-y-auto shrink-0 pb-20 lg:pb-0 hidden md:flex">
+<!-- Patient Info Card -->
+<div class="bg-surface-card rounded-2xl p-6 soft-shadow border border-outline-variant/10">
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-headline-md text-headline-md">患者信息</h2>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-surface-container">
+<img alt="Ryan Walker" class="w-full h-full object-cover" data-alt="A professional headshot of a 39 year old man with a neat beard, wearing a light grey casual shirt, set against a bright, sterile white medical background. High key lighting, modern clinical aesthetic." src="assets/asset-02.jpg"/>
+</div>
+<div>
+<h3 class="font-headline-md text-[20px] font-bold">李雷</h3>
+<p class="font-body-md text-sm text-on-surface-variant">li.lei@example.com</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3 mb-6">
+<div class="bg-surface-bg p-3 rounded-xl border border-outline-variant/20">
+<p class="font-label-md text-[11px] text-on-surface-variant uppercase mb-1">年龄</p>
+<p class="font-headline-md text-lg">39 <span class="text-sm font-normal text-on-surface-variant">岁</span></p>
+</div>
+<div class="bg-surface-bg p-3 rounded-xl border border-outline-variant/20">
+<p class="font-label-md text-[11px] text-on-surface-variant uppercase mb-1">血型</p>
+<p class="font-headline-md text-lg">O<span class="text-sm font-normal text-on-surface-variant">+</span></p>
+</div>
+<div class="bg-surface-bg p-3 rounded-xl border border-outline-variant/20 col-span-2">
+<p class="font-label-md text-[11px] text-on-surface-variant uppercase mb-1">患者 ID</p>
+<p class="font-body-md text-sm">3KF2-DW9OD-8A1</p>
+</div>
+</div>
+</div>
+<!-- Health Overview (Collapsible) -->
+<div class="bg-surface-card rounded-2xl p-6 soft-shadow border border-outline-variant/10">
+<div class="flex items-center justify-between cursor-pointer mb-2" onclick="document.getElementById('health-overview-content').classList.toggle('hidden')">
+<h2 class="font-headline-md text-headline-md flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">favorite</span>
+                            健康概览
+                        </h2>
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</div>
+<div class="space-y-4 mt-4" id="health-overview-content">
+<!-- Metric 1 -->
+<div class="flex items-center justify-between p-3 bg-surface-bg rounded-xl border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-error-container text-status-critical flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">ecg</span>
+</div>
+<div>
+<p class="font-label-md text-xs text-on-surface-variant">平均心率</p>
+<p class="font-body-md font-semibold text-on-surface">72 次/分</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-status-success text-sm">trending_down</span>
+</div>
+<!-- Metric 2 -->
+<div class="flex items-center justify-between p-3 bg-surface-bg rounded-xl border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">blood_pressure</span>
+</div>
+<div>
+<p class="font-label-md text-xs text-on-surface-variant">血压</p>
+<p class="font-body-md font-semibold text-on-surface">118/76</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-status-success text-sm">check_circle</span>
+</div>
+<div class="pt-2">
+<div class="inline-flex items-center gap-2 bg-surface-container-high px-3 py-1.5 rounded-full">
+<span class="w-2 h-2 rounded-full bg-status-warning"></span>
+<span class="font-label-md text-xs text-on-surface">过敏史：青霉素</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Right Side: AI Chat Interface -->
+<section class="flex-1 flex flex-col bg-surface-card rounded-3xl soft-shadow border border-outline-variant/10 overflow-hidden relative">
+<!-- Chat Header -->
+<div class="h-20 border-b border-outline-variant/10 flex items-center justify-between px-6 bg-white z-10">
+<div>
+<h2 class="font-headline-md text-xl">问诊助手</h2>
+<p class="font-body-md text-sm text-on-surface-variant flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-status-success inline-block"></span>
+                            AI 在线并已连接心电图数据
+                        </p>
+</div>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">history</span>
+</button>
+<button class="w-10 h-10 rounded-full hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Chat Messages Area -->
+<div class="flex-1 overflow-y-auto p-6 space-y-6 bg-[#FDFDFD]" id="chat-container">
+<!-- Date Divider -->
+<div class="flex justify-center">
+<span class="font-label-md text-[10px] uppercase tracking-widest text-on-surface-variant bg-surface-container-low px-3 py-1 rounded-full">今天, 10:42 AM</span>
+</div>
+<!-- AI Greeting -->
+<div class="flex gap-4 max-w-[85%]">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">robot_2</span>
+</div>
+<div class="bg-white border border-outline-variant/20 rounded-2xl rounded-tl-sm p-4 soft-shadow">
+<p class="font-body-md text-on-surface">您好，李雷。我查看了您 Apple Watch Series X 最新的心电图扫描结果。与您的每周平均值（72 次/分）相比，您的心率略有升高（89 次/分）。您现在感觉如何？</p>
+</div>
+</div>
+<!-- User Response -->
+<div class="flex gap-4 max-w-[85%] ml-auto flex-row-reverse">
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden shrink-0">
+<img alt="User" class="w-full h-full object-cover" data-alt="A small circular avatar headshot of a 39 year old man with a neat beard, light grey shirt, white background." src="assets/asset-07.jpg"/>
+</div>
+<div class="bg-on-surface text-white rounded-2xl rounded-tr-sm p-4 soft-shadow">
+<p class="font-body-md">我刚慢跑完，觉得有点头晕。</p>
+</div>
+</div>
+<!-- AI Analysis -->
+<div class="flex gap-4 max-w-[85%]">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">robot_2</span>
+</div>
+<div class="bg-white border border-outline-variant/20 rounded-2xl rounded-tl-sm p-4 soft-shadow space-y-3">
+<p class="font-body-md text-on-surface">考虑到您刚运动完，心率升高是正常的。但是，头晕需要引起注意。</p>
+<!-- Contextual Medical Chip / Alert -->
+<div class="bg-error-container/30 border border-status-critical/20 rounded-xl p-3 flex gap-3 items-start">
+<span class="material-symbols-outlined text-status-critical mt-0.5">warning</span>
+<div>
+<p class="font-label-md text-status-critical mb-1">临床建议</p>
+<p class="font-body-md text-sm text-on-surface">请坐下，喝点水，休息 5 分钟。如果头晕持续存在或您出现胸痛，请立即就医。</p>
+</div>
+</div>
+<p class="font-body-md text-on-surface">为了安全起见，您希望我为您安排今天晚些时候与史密斯医生的快速远程健康检查吗？</p>
+</div>
+</div>
+<!-- Action Suggestions -->
+<div class="flex gap-2 pl-14 flex-wrap">
+<button class="bg-surface-container hover:bg-surface-variant text-on-surface font-label-md text-sm px-4 py-2 rounded-full border border-outline-variant/20 transition-colors">是的，请安排</button>
+<button class="bg-surface-container hover:bg-surface-variant text-on-surface font-label-md text-sm px-4 py-2 rounded-full border border-outline-variant/20 transition-colors">不用了，我现在感觉好多了</button>
+<button class="bg-surface-container hover:bg-surface-variant text-on-surface font-label-md text-sm px-4 py-2 rounded-full border border-outline-variant/20 transition-colors">记录静息心率</button>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-4 md:p-6 bg-white border-t border-outline-variant/10 z-10">
+<div class="relative flex items-end gap-2 bg-surface-bg border border-outline-variant/30 rounded-3xl p-2 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all soft-shadow">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors shrink-0 mb-1">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<textarea class="w-full bg-transparent border-none focus:ring-0 resize-none py-3 font-body-md text-on-surface placeholder:text-on-surface-variant/50 min-h-[48px] max-h-[120px]" placeholder="输入您的信息或描述症状..." rows="1"></textarea>
+<div class="flex items-center gap-1 shrink-0 mb-1">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-error-container hover:text-status-critical transition-colors">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center hover:bg-status-critical transition-colors shadow-md">
+<span class="material-symbols-outlined" style="transform: rotate(-45deg); margin-left: 4px; margin-bottom: 4px;">send</span>
+</button>
+</div>
+</div>
+<div class="text-center mt-2 hidden md:block">
+<span class="font-label-md text-[10px] text-on-surface-variant">AI 回复基于您的临床数据生成。不用于紧急诊断。</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full bg-surface-container-lowest border-t border-outline-variant/20 flex justify-around items-center h-20 px-4 pb-safe z-40 soft-shadow">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-md text-[10px]">首页</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-label-md text-[10px]">指标</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<div class="bg-primary-container/20 p-1.5 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+</div>
+<span class="font-label-md text-[10px] font-bold">对话</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-label-md text-[10px]">记录</span>
+</a>
+</nav>
+</body></html>

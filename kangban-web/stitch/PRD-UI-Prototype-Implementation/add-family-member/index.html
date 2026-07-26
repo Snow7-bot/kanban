@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>康伴 - 添加家庭成员</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#ffe9e6",
+                        "on-primary-fixed": "#410001",
+                        "primary-container": "#e2241f",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-primary-container": "#fffbff",
+                        "surface-container-highest": "#fcdbd6",
+                        "on-secondary": "#ffffff",
+                        "primary": "#bc000a",
+                        "on-tertiary-fixed": "#001f29",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#bbe9ff",
+                        "on-secondary-container": "#646464",
+                        "outline-variant": "#e7bdb7",
+                        "text-muted": "#8E8E93",
+                        "on-secondary-fixed": "#1b1b1b",
+                        "surface-container-low": "#fff0ee",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#402b29",
+                        "secondary": "#5e5e5e",
+                        "secondary-container": "#e2e2e2",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#004d63",
+                        "surface": "#fff8f7",
+                        "surface-gray": "#F5F5F7",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "surface-bright": "#fff8f7",
+                        "on-surface-variant": "#5d3f3b",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#c6c6c6",
+                        "tertiary": "#00647f",
+                        "on-background": "#291715",
+                        "border-subtle": "#E5E5EA",
+                        "on-tertiary-container": "#fafdff",
+                        "surface-variant": "#fcdbd6",
+                        "tertiary-fixed-dim": "#68d3fc",
+                        "outline": "#926f6a",
+                        "tertiary-container": "#007fa0",
+                        "background": "#fff8f7",
+                        "glass-fill": "rgba(255, 255, 255, 0.7)",
+                        "primary-fixed": "#ffdad5",
+                        "surface-container-high": "#ffe2dd",
+                        "on-surface": "#291715",
+                        "medical-red": "#FF3B30",
+                        "surface-dim": "#f4d3ce",
+                        "on-secondary-fixed-variant": "#474747",
+                        "on-primary-fixed-variant": "#930005",
+                        "surface-tint": "#c0000a",
+                        "inverse-on-surface": "#ffedea",
+                        "inverse-primary": "#ffb4aa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-gap": "20px",
+                        "unit": "8px",
+                        "container-padding": "32px",
+                        "gutter": "24px",
+                        "section-margin": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Inter"],
+                        "data-display": ["JetBrains Mono"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["40px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "data-display": ["48px", { "lineHeight": "1", "letterSpacing": "-0.05em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .input-glass {
+            background-color: #F5F5F7;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .input-glass:focus {
+            border-color: #bc000a;
+            box-shadow: 0 0 0 1px #bc000a;
+            outline: none;
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md h-screen w-screen overflow-hidden flex">
+<!-- SideNavBar -->
+<aside class="w-64 left-0 top-0 h-screen flex flex-col py-6 px-4 shrink-0 bg-surface dark:bg-surface-dim border-r border-border-subtle dark:border-outline-variant z-50 hidden md:flex">
+<!-- Brand -->
+<div class="flex items-center gap-3 mb-10 px-4">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white shrink-0">
+<span class="material-symbols-outlined text-xl">add</span>
+</div>
+<div>
+<h1 class="font-headline-md text-[20px] font-bold text-primary dark:text-inverse-primary leading-tight">患者中心</h1>
+<p class="font-label-caps text-[11px] text-text-muted normal-case tracking-normal">康伴医疗助手 v2.1</p>
+</div>
+</div>
+<!-- Nav Links -->
+<nav class="flex-1 flex flex-col gap-2">
+<!-- Home -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-secondary-fixed-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors hover:bg-surface-container dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-body-md text-body-md">首页</span>
+</a>
+<!-- Profile -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-secondary-fixed-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors hover:bg-surface-container dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-body-md text-body-md">个人资料</span>
+</a>
+<!-- Family (Active) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ease-in-out bg-primary text-white shadow-[0_4px_14px_0_rgba(188,0,10,0.39)] hover:bg-[#a30009]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-body-md text-body-md font-bold">家庭成员</span>
+</a>
+<!-- Health Metrics -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-secondary-fixed-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors hover:bg-surface-container dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined">monitor_heart</span>
+<span class="font-body-md text-body-md">健康指标</span>
+</a>
+<!-- Medical Records -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-secondary-fixed-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors hover:bg-surface-container dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-md text-body-md">病历管理</span>
+</a>
+<!-- AI Consultation -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-secondary-fixed-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors hover:bg-surface-container dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="font-body-md text-body-md">AI 问诊</span>
+</a>
+<!-- Medication Management -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-secondary-fixed-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors hover:bg-surface-container dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined">medication</span>
+<span class="font-body-md text-body-md">用药管理</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-secondary-fixed-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors hover:bg-surface-container dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">设置</span>
+</a>
+</nav>
+<!-- Bottom Area -->
+<div class="mt-auto flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-secondary-fixed-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors hover:bg-surface-container dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-body-md text-body-md">帮助</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-secondary-fixed-variant dark:text-on-secondary-fixed-variant hover:text-primary transition-colors hover:bg-surface-container dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">退出登录</span>
+</a>
+<div class="mt-4 pt-4 border-t border-border-subtle flex items-center justify-between px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-border-subtle shrink-0">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfIXhWMAeMRUuZwu4XDxNCFHmi7OzPb0Gn-zFrDHdzsN2oZXk5TwsGHQmhsfxHJZft-cY1Br8tHspHwT0q03erxHXM84bWFykU-DX9ynuD-aE74sCyy0HnkwHehiJWQasrMcg0UegnW5kumodXuPZPp3hb4ex_AUsfxEcFzln7yx8Bfxp5WuHj_lvhdz7x4i25IfxY_37e0tE4WJwBYzlZyryYKrKFZWL7cGVP0p9PmWr5jKkQ6VwM"/>
+</div>
+<div>
+<div class="font-body-sm font-bold text-on-background leading-tight">李明 (自己)</div>
+<div class="text-[12px] text-text-muted mt-0.5">个人账户</div>
+</div>
+</div>
+<button class="text-text-muted hover:text-on-background transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Workspace -->
+<div class="flex-1 flex flex-col h-screen overflow-hidden">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-8 h-16 z-40 docked full-width top-0 sticky bg-glass-fill backdrop-blur-xl dark:bg-surface-container/80 border-b border-border-subtle dark:border-outline-variant backdrop-blur-md transition-all">
+<!-- Search (Left aligned as per JSON) -->
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">search</span>
+<input class="w-full pl-10 pr-4 py-2 rounded-full bg-surface-gray border-none focus:ring-1 focus:ring-primary text-sm font-body-sm transition-all" placeholder="搜索" type="text"/>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full overflow-hidden border border-border-subtle hover:opacity-80 transition-opacity">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A macro photography style portrait of a diverse medical professional used as a user profile avatar. Clean studio lighting, soft shadows, pristine white background, conveying trust and modern clinical precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfIXhWMAeMRUuZwu4XDxNCFHmi7OzPb0Gn-zFrDHdzsN2oZXk5TwsGHQmhsfxHJZft-cY1Br8tHspHwT0q03erxHXM84bWFykU-DX9ynuD-aE74sCyy0HnkwHehiJWQasrMcg0UegnW5kumodXuPZPp3hb4ex_AUsfxEcFzln7yx8Bfxp5WuHj_lvhdz7x4i25IfxY_37e0tE4WJwBYzlZyryYKrKFZWL7cGVP0p9PmWr5jKkQ6VwM"/>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto p-container-padding bg-surface-bright">
+<div class="max-w-4xl mx-auto">
+<!-- Page Header -->
+<div class="mb-8 flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-text-muted">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="font-headline-lg text-headline-lg text-on-background">添加家庭成员</h2>
+</div>
+<!-- Form Card -->
+<div class="bg-surface rounded-[24px] p-8 border border-border-subtle shadow-sm flex flex-col md:flex-row gap-12">
+<!-- Left: Avatar Upload -->
+<div class="flex flex-col items-center gap-4 w-full md:w-1/3">
+<div class="relative group cursor-pointer">
+<div class="w-40 h-40 rounded-full bg-surface-gray border-2 border-dashed border-border-subtle flex flex-col items-center justify-center text-text-muted group-hover:border-primary group-hover:text-primary transition-colors overflow-hidden">
+<span class="material-symbols-outlined text-4xl mb-2">add_a_photo</span>
+<span class="font-body-sm text-body-sm">上传照片</span>
+</div>
+<!-- Invisible file input overlaid -->
+<input accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" type="file"/>
+</div>
+<p class="font-body-sm text-body-sm text-text-muted text-center px-4">
+                            清晰的正面照有助于在紧急情况下快速识别身份。
+                        </p>
+</div>
+<!-- Right: Form Fields -->
+<div class="flex-1 flex flex-col gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Name -->
+<div class="flex flex-col gap-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium">姓名</label>
+<input class="input-glass w-full rounded-xl p-4 font-body-md text-body-md text-on-background" placeholder="输入真实姓名" type="text"/>
+</div>
+<!-- Relationship -->
+<div class="flex flex-col gap-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium">关系</label>
+<div class="relative">
+<select class="input-glass w-full rounded-xl p-4 pr-10 font-body-md text-body-md text-on-background appearance-none">
+<option disabled="" selected="" value="">选择关系</option>
+<option value="parent">父母</option>
+<option value="spouse">配偶</option>
+<option value="child">子女</option>
+<option value="other">其他</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Age -->
+<div class="flex flex-col gap-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium">年龄</label>
+<input class="input-glass w-full rounded-xl p-4 font-body-md text-body-md text-on-background" placeholder="例如: 65" type="number"/>
+</div>
+<!-- Gender Segmented Control -->
+<div class="flex flex-col gap-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium">性别</label>
+<div class="flex bg-surface-gray rounded-xl p-1 h-[58px]">
+<label class="flex-1 relative cursor-pointer group">
+<input checked="" class="peer sr-only" name="gender" type="radio" value="male"/>
+<div class="w-full h-full flex items-center justify-center rounded-lg font-body-md text-body-md text-text-muted peer-checked:bg-white peer-checked:text-on-background peer-checked:shadow-sm transition-all">
+                                            男
+                                        </div>
+</label>
+<label class="flex-1 relative cursor-pointer group">
+<input class="peer sr-only" name="gender" type="radio" value="female"/>
+<div class="w-full h-full flex items-center justify-center rounded-lg font-body-md text-body-md text-text-muted peer-checked:bg-white peer-checked:text-on-background peer-checked:shadow-sm transition-all">
+                                            女
+                                        </div>
+</label>
+</div>
+</div>
+</div>
+<!-- Medical History Summary -->
+<div class="flex flex-col gap-2">
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium">简要病史 (选填)</label>
+<textarea class="input-glass w-full rounded-xl p-4 font-body-md text-body-md text-on-background resize-none" placeholder="例如：高血压、糖尿病、对青霉素过敏等重要医疗信息..." rows="4"></textarea>
+</div>
+<!-- Actions -->
+<div class="flex items-center justify-end gap-4 mt-4 pt-6 border-t border-border-subtle">
+<button class="px-8 py-3 rounded-full font-body-md text-body-md font-medium text-text-muted hover:text-on-background hover:bg-surface-gray transition-colors">
+                                取消
+                            </button>
+<button class="px-8 py-3 rounded-full font-body-md text-body-md font-bold bg-primary text-white shadow-[0_4px_14px_0_rgba(188,0,10,0.39)] hover:bg-[#a30009] transition-all">
+                                保存记录
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
