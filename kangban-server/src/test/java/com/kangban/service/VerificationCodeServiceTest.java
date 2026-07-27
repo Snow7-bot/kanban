@@ -53,4 +53,16 @@ class VerificationCodeServiceTest {
 
         assertFalse(service.isDevCodeEnabled());
     }
+
+    @Test
+    void localProfileCanUseAnExplicitDevelopmentCode() {
+        Environment environment = mock(Environment.class);
+        when(environment.acceptsProfiles(any(Profiles.class))).thenReturn(true);
+
+        VerificationCodeService service = new VerificationCodeService(mock(StringRedisTemplate.class));
+        ReflectionTestUtils.setField(service, "environment", environment);
+        ReflectionTestUtils.setField(service, "devCode", "123456");
+
+        org.junit.jupiter.api.Assertions.assertTrue(service.isDevCodeEnabled());
+    }
 }

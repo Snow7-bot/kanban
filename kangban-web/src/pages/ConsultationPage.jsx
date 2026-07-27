@@ -233,38 +233,46 @@ export default function ConsultationPage() {
     setStreamingText('');
 
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
-    const params = new URLSearchParams({
-      token: token || '',
-      messageId: String(messageId),
-    });
+    const params = new URLSearchParams({ messageId: String(messageId) });
     const url = `${API_CONFIG.BASE_URL}/consultation/sessions/${sessionId}/stream?${params}`;
-    const eventSource = new EventSource(url);
-    eventSourceRef.current = eventSource;
+    const controller = new AbortController();
+    const streamConnection = { close: () => controller.abort() };
+    eventSourceRef.current = streamConnection;
     let settled = false;
 
     const finish = () => {
       settled = true;
-      eventSource.close();
-      if (eventSourceRef.current === eventSource) eventSourceRef.current = null;
+      streamConnection.close();
+      if (eventSourceRef.current === streamConnection) eventSourceRef.current = null;
       sendingRef.current = false;
       setThinking(false);
       setStreaming(false);
       setSending(false);
     };
 
-    eventSource.addEventListener('thinking', (event) => {
-      setThinkingText(event.data);
-    });
-    eventSource.addEventListener('thinking_done', () => {
-      setThinking(false);
-      setStreaming(true);
-    });
-    eventSource.addEventListener('token', (event) => {
-      setStreamingText(event.data);
-    });
-    eventSource.addEventListener('done', (event) => {
+    const handleStreamEvent = (eventName, data) => {
+      if (eventName === 'thinking') {
+        setThinkingText(data);
+        return;
+      }
+      if (eventName === 'thinking_done') {
+        setThinking(false);
+        setStreaming(true);
+        return;
+      }
+      if (eventName === 'token') {
+        setStreamingText(data);
+        return;
+      }
+      if (eventName === 'ai_error') {
+        if (settled) return;
+        finish();
+        setSendError(data || 'AI 服务暂时不可用，请稍后重试');
+        return;
+      }
+      if (eventName !== 'done') return;
       if (settled) return;
-      const finalText = event.data;
+      const finalText = data;
       finish();
       failedMessageIdRef.current = null;
       setMessagesData((previous) => {
@@ -278,17 +286,58 @@ export default function ConsultationPage() {
           createdAt: new Date().toISOString(),
         }];
       });
-    });
-    eventSource.addEventListener('ai_error', (event) => {
-      if (settled) return;
-      finish();
-      setSendError(event.data || 'AI 服务暂时不可用，请稍后重试');
-    });
-    eventSource.onerror = () => {
-      if (settled) return;
-      finish();
-      setSendError('连接中断，请重试');
     };
+
+    const consumeBlock = (block) => {
+      let eventName = 'message';
+      const dataLines = [];
+      block.split('\n').forEach((line) => {
+        if (line.startsWith('event:')) eventName = line.slice(6).trim();
+        if (line.startsWith('data:')) dataLines.push(line.slice(5).trimStart());
+      });
+      handleStreamEvent(eventName, dataLines.join('\n'));
+    };
+
+    const readStream = async () => {
+      try {
+        if (!token) throw new Error('登录状态已失效，请重新登录');
+        const response = await fetch(url, {
+          headers: {
+            Accept: 'text/event-stream',
+            Authorization: `Bearer ${token}`,
+          },
+          signal: controller.signal,
+        });
+        if (!response.ok || !response.body) {
+          throw new Error(response.status === 401 || response.status === 403
+            ? '登录状态已失效，请重新登录'
+            : 'AI 连接建立失败，请重试');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        while (!settled) {
+          const { value, done } = await reader.read();
+          buffer = (buffer + decoder.decode(value || new Uint8Array(), { stream: !done }))
+            .replace(/\r\n/g, '\n');
+          let boundary = buffer.indexOf('\n\n');
+          while (boundary >= 0 && !settled) {
+            consumeBlock(buffer.slice(0, boundary));
+            buffer = buffer.slice(boundary + 2);
+            boundary = buffer.indexOf('\n\n');
+          }
+          if (done) break;
+        }
+        if (!settled) throw new Error('AI 连接意外中断，请重试');
+      } catch (error) {
+        if (settled || error?.name === 'AbortError') return;
+        finish();
+        setSendError(error?.message || '连接中断，请重试');
+      }
+    };
+
+    readStream();
   }, [sessionId, setMessagesData]);
 
   const retryLastResponse = useCallback(() => {

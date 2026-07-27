@@ -48,7 +48,7 @@ public class VerificationCodeService {
 
     boolean isDevCodeEnabled() {
         return environment != null
-                && environment.acceptsProfiles(Profiles.of("dev"))
+                && environment.acceptsProfiles(Profiles.of("dev", "local"))
                 && devCode != null
                 && devCode.matches("\\d{6}");
     }

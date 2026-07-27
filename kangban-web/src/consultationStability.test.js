@@ -10,8 +10,12 @@ test('consultation retry reuses the saved message and closes stale SSE connectio
     source('./api/consultation.js'),
   ]);
 
-  assert.match(page, /messageId: String\(messageId\)/);
+  assert.match(page, /new URLSearchParams\(\{ messageId: String\(messageId\) \}\)/);
   assert.match(page, /eventSourceRef\.current\?\.close\(\)/);
+  assert.match(page, /Authorization: `Bearer \$\{token\}`/);
+  assert.match(page, /fetch\(url,/);
+  assert.doesNotMatch(page, /token: token \|\| ''/);
+  assert.doesNotMatch(page, /new EventSource\(/);
   assert.match(page, /failedMessageIdRef\.current/);
   assert.match(page, /onClick=\{retryLastResponse\}/);
   assert.doesNotMatch(page, /sendMessage\(lastMsg\.content\)/);

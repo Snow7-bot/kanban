@@ -39,8 +39,7 @@ public class SecurityConfig {
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/v3/api-docs/**",
-                    "/actuator/health",
-                    "/consultation/sessions/*/stream"
+                    "/actuator/health"
                 ).permitAll()
                 .requestMatchers("/auth/me", "/auth/logout").authenticated()
                 .anyRequest().authenticated()
