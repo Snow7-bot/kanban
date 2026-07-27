@@ -2,6 +2,10 @@ package com.kangban.service;
 
 import com.kangban.common.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,12 @@ public class VerificationCodeService {
 
     private final StringRedisTemplate redisTemplate;
 
+    @Value("${app.sms.dev-code:}")
+    private String devCode;
+
+    @Autowired
+    private Environment environment;
+
     public String issue(String purpose, String phone) {
         String cooldownKey = cooldownKey(purpose, phone);
         Boolean sent = redisTemplate.opsForValue().setIfAbsent(cooldownKey, "1", SEND_COOLDOWN);
@@ -28,10 +38,19 @@ public class VerificationCodeService {
             throw BusinessException.tooManyRequests("验证码已发送，请稍后再试");
         }
 
-        String code = String.format("%06d", RANDOM.nextInt(1_000_000));
+        String code = isDevCodeEnabled()
+                ? devCode
+                : String.format("%06d", RANDOM.nextInt(1_000_000));
         redisTemplate.opsForValue().set(codeKey(purpose, phone), code, CODE_TTL);
         redisTemplate.delete(attemptKey(purpose, phone));
         return code;
+    }
+
+    boolean isDevCodeEnabled() {
+        return environment != null
+                && environment.acceptsProfiles(Profiles.of("dev"))
+                && devCode != null
+                && devCode.matches("\\d{6}");
     }
 
     public boolean verify(String purpose, String phone, String code) {
