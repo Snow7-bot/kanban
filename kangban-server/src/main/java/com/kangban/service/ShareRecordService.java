@@ -32,6 +32,7 @@ public class ShareRecordService {
     private final ShareRecordMapper shareRecordMapper;
     private final MedicalRecordMapper medicalRecordMapper;
     private final MedicalRecordService medicalRecordService;
+    private final MinioService minioService;
 
     @Value("${app.base-url:http://localhost:5173}")
     private String baseUrl;
@@ -113,7 +114,7 @@ public class ShareRecordService {
         result.put("department", record.getDepartment());
         result.put("doctor", record.getDoctor());
         result.put("recordDate", record.getRecordDate());
-        result.put("fileUrl", record.getFileUrl());
+        result.put("fileUrl", minioService.resolveFileUrl(record.getFileUrl()));
         result.put("fileSize", record.getFileSize());
         result.put("fileType", record.getFileType());
         result.put("status", record.getStatus());

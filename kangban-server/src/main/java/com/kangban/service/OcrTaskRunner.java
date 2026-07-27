@@ -24,6 +24,7 @@ public class OcrTaskRunner {
     private final MedicalRecordMapper medicalRecordMapper;
     private final OcrClient ocrClient;
     private final ObjectMapper objectMapper;
+    private final MinioService minioService;
 
     @Async("taskExecutor")
     public void processOcr(Long taskId) {
@@ -53,7 +54,8 @@ public class OcrTaskRunner {
             ocrAnalysisTaskMapper.updateById(task);
 
             // Delegate to OCR client
-            OcrClient.OcrResult result = ocrClient.analyze(taskId, record.getFileUrl(), record.getFileType());
+            String readableFileUrl = minioService.resolveFileUrl(record.getFileUrl());
+            OcrClient.OcrResult result = ocrClient.analyze(taskId, readableFileUrl, record.getFileType());
             if (result == null || !result.hasText()) {
                 updateTaskError(taskId, "OCR 未返回可用文本");
                 return;

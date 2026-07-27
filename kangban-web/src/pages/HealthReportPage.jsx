@@ -96,7 +96,7 @@ export default function HealthReportPage() {
       </div>
     </header>
     <section className="report-dashboard">
-      <article className="report-insight"><i><Sparkles size={22} fill="currentColor" /></i><div><h2>AI 健康洞察</h2><p>{insight}</p></div></article>
+      <article className="report-insight"><i><Sparkles size={22} fill="currentColor" /></i><div><h2>健康数据摘要</h2><p>{insight}</p></div></article>
       <article className="report-card report-heart">
         <div className="report-card-head"><div><div className="report-label"><HeartPulse size={16} />心率趋势</div><strong>{heartValue}<small>bpm (均值)</small></strong></div><span>正常范围</span></div>
         <SummaryBars values={heartBars} />

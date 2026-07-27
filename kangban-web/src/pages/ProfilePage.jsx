@@ -112,12 +112,12 @@ export default function ProfilePage() {
   if (fetching) return <main className="page-content"><div className="state-loading"><div className="state-spinner" /><p>加载中...</p></div></main>;
 
   const avatarSrc = profile.avatarUrl || user?.avatarUrl || DEFAULT_AVATAR_URL;
-  const patientId = user?.patientId || user?.id || 'ART-99420';
+  const patientId = user?.patientId || user?.id || '----';
 
   return <main className="page-content account-page profile-page">
     <header className="account-heading profile-heading">
-      <div><h1>个人资料</h1><p>管理您的健康身份。准确的信息可确保精确的临床护理和个性化的健康建议。</p></div>
-      <span className="verified-pill"><ShieldCheck size={15} />已验证患者档案</span>
+      <div><h1>个人资料</h1><p>管理您的健康身份。完善资料有助于保持健康记录一致。</p></div>
+      <span className="verified-pill"><ShieldCheck size={15} />个人健康档案</span>
     </header>
     {error && <p className="auth-error" style={{ marginBottom: 12 }}>{error}</p>}
     <form className="profile-form" onSubmit={handleSubmit}>
@@ -133,7 +133,7 @@ export default function ProfilePage() {
         <h2>{profile.name || '用户'}</h2>
         <p>患者 ID：{patientId}</p>
         <dl>
-          <div><dt>账号状态</dt><dd>已验证</dd></div>
+          <div><dt>账号状态</dt><dd>正常</dd></div>
           <div><dt>最后更新</dt><dd>{new Date().toLocaleDateString('zh-CN')}</dd></div>
         </dl>
       </Card>
@@ -156,7 +156,7 @@ export default function ProfilePage() {
           <label><ShieldCheck size={14} />紧急联系人<input value={profile.emergency || ''} placeholder="未设置" readOnly /></label>
         </div>
         <footer>
-          <span><LockKeyhole size={15} />您的数据已加密并符合 HIPAA 标准。</span>
+          <span><LockKeyhole size={15} />请仅向可信联系人授权健康数据访问。</span>
           <div>
             <Button type="button" onClick={() => {
               setProfile(persistedProfile);

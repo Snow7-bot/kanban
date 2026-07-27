@@ -43,7 +43,7 @@ public class MinioService {
     public String uploadObject(MultipartFile file, Long userId) {
         try {
             ensureBucket();
-            String originalFilename = file.getOriginalFilename();
+            String originalFilename = sanitizeFilename(file.getOriginalFilename());
             String objectName = userId + "/" + UUID.randomUUID() + "-" + originalFilename;
 
             minioClient.putObject(PutObjectArgs.builder()
@@ -78,8 +78,7 @@ public class MinioService {
      */
     public void deleteFile(String fileUrl) {
         try {
-            // Extract object name from URL
-            String objectName = extractObjectName(fileUrl);
+            String objectName = storedObjectName(fileUrl);
             if (objectName != null) {
                 minioClient.removeObject(RemoveObjectArgs.builder()
                         .bucket(minioBucket)
@@ -154,11 +153,32 @@ public class MinioService {
      * 从URL获取文件字节
      */
     public byte[] downloadByUrl(String fileUrl) {
-        String objectName = extractObjectName(fileUrl);
+        String objectName = storedObjectName(fileUrl);
         if (objectName == null) {
             throw new RuntimeException("无法解析文件路径");
         }
         return downloadFile(objectName);
+    }
+
+    private String storedObjectName(String storedValue) {
+        if (storedValue == null || storedValue.isBlank()) {
+            return null;
+        }
+        return storedValue.startsWith("http") ? extractObjectName(storedValue) : storedValue;
+    }
+
+    static String sanitizeFilename(String originalFilename) {
+        if (originalFilename == null || originalFilename.isBlank()) {
+            return "file";
+        }
+        String normalized = originalFilename.replace('\\', '/');
+        String filename = normalized.substring(normalized.lastIndexOf('/') + 1)
+                .replaceAll("[\\p{Cntrl}]", "_")
+                .trim();
+        if (filename.isBlank()) {
+            return "file";
+        }
+        return filename.length() > 150 ? filename.substring(filename.length() - 150) : filename;
     }
 
     /**

@@ -61,13 +61,13 @@ export default function MedicationAddPage({ onNavigate }) {
       <article className="medication-basic-card">
         <h2><Pill size={18} />基本信息</h2>
         <div className="form-group medicine-name">
-          <div><label>药品名称</label><button onClick={calculateChildDose}><Calculator size={15} />儿童剂量换算</button></div>
+          <div><label>药品名称</label><button onClick={calculateChildDose}><Calculator size={15} />儿童用药说明</button></div>
           <span><Search size={16} /><input aria-label="药品名称" value={name} onChange={(event) => setName(event.target.value)} placeholder="例如：阿司匹林、降压药..." /></span>
         </div>
         <section className="child-dose-card">
           <header><Baby size={15} />儿童患者参数（可选）</header>
           <div><label>年龄（岁）<input aria-label="儿童年龄" value={age} onChange={(event) => setAge(event.target.value)} inputMode="decimal" placeholder="例如：3.5" /></label><label>体重（kg）<input aria-label="儿童体重" value={weight} onChange={(event) => setWeight(event.target.value)} inputMode="decimal" placeholder="例如：15.2" /></label></div>
-          <button onClick={calculateChildDose}>计算建议剂量</button>
+          <button onClick={calculateChildDose}>记录参数并查看说明</button>
         </section>
         <div className="dose-grid">
           <label>单次剂量<span><input aria-label="单次剂量" value={dosage} onChange={(event) => setDosage(event.target.value)} inputMode="decimal" /><select aria-label="剂量单位" value={unit} onChange={(event) => setUnit(event.target.value)}>{['片', '粒', 'ml', 'mg'].map(item => <option key={item}>{item}</option>)}</select></span></label>
@@ -89,9 +89,9 @@ export default function MedicationAddPage({ onNavigate }) {
           </div>
         </section>
         <section className="medication-smart-card">
-          <Camera size={70} /><h3>智能分析</h3>
-          <p>基于您的病历，此药物可能与当前服用的降压药有轻微相互作用。</p>
-          <button onClick={() => window.dispatchEvent(new CustomEvent('app:success', { detail: '药物相互作用详情' }))}>查看详情</button>
+          <Camera size={70} /><h3>相互作用检查</h3>
+          <p>保存药品后，可在用药管理中选择两种及以上药品进行演示规则检查。</p>
+          <button onClick={() => onNavigate('medications')}>前往用药管理</button>
         </section>
       </aside>
     </section>
