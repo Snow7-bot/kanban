@@ -274,7 +274,7 @@ public class FamilySharingService {
         result.put("userId", userId);
         result.put("name", displayName(user));
         result.put("avatarUrl", user == null ? null : minioService.resolveFileUrl(user.getAvatarUrl()));
-        result.put("relation", relation(permission.getFamilyId(), userId));
+        result.put("relation", sharedRelation(permission.getFamilyId(), userId));
         result.put("permissions", permissionMap(permission));
         result.put("direction", subject ? "canView" : "canViewMe");
         return result;
@@ -301,6 +301,11 @@ public class FamilySharingService {
                         .eq(FamilyGroupMember::getStatus, "active")
                         .last("LIMIT 1"));
         return member == null ? "家庭成员" : member.getRelation();
+    }
+
+    private String sharedRelation(Long familyId, Long userId) {
+        String value = relation(familyId, userId);
+        return value == null || value.isBlank() || "本人".equals(value) ? "家庭成员" : value;
     }
 
     private String displayName(User user) {

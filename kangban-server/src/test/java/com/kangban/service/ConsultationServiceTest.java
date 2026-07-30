@@ -118,6 +118,31 @@ class ConsultationServiceTest {
     }
 
     @Test
+    void repeatedSummaryRequestDoesNotInsertAnIdenticalConsecutiveMessage() {
+        ChatSession session = session(31L, 9L);
+        session.setMemberId(15L);
+        PatientHealthContextService.Snapshot snapshot = new PatientHealthContextService.Snapshot(
+                15L, "王阿姨", java.util.Map.of("name", "王阿姨"),
+                "{\"contextVersion\":\"family-agent-v2\"}", "王阿姨最新健康概况");
+        ChatMessage existing = new ChatMessage();
+        existing.setId(88L);
+        existing.setSessionId(31L);
+        existing.setUserId(9L);
+        existing.setRole("assistant");
+        existing.setContent("王阿姨最新健康概况");
+        existing.setCreatedAt(LocalDateTime.now());
+        when(sessionMapper.selectOne(any())).thenReturn(session);
+        when(patientHealthContextService.build(9L, 15L)).thenReturn(snapshot);
+        when(messageMapper.selectOne(any())).thenReturn(existing);
+
+        var result = service.appendPatientSummary(9L, 31L);
+
+        verify(messageMapper, never()).insert(any());
+        assertThat(result.getMessage()).isEqualTo("健康概况无变化");
+        assertThat(result.getData()).isSameAs(existing);
+    }
+
+    @Test
     void streamPersistsOneReplyLinkedToTheExactUserMessage() {
         ChatSession session = session(3L, 9L);
         ChatMessage userMessage = userMessage(21L, 3L, 9L, "client-1");

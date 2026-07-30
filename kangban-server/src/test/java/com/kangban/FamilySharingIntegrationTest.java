@@ -1,6 +1,9 @@
 package com.kangban;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kangban.entity.FamilyGroup;
+import com.kangban.entity.FamilyGroupMember;
+import com.kangban.entity.FamilyPermission;
 import com.kangban.entity.HealthRecord;
 import com.kangban.entity.User;
 import com.kangban.mapper.*;
@@ -132,6 +135,49 @@ class FamilySharingIntegrationTest {
                         .header("Authorization", bearer(viewerToken))
                         .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void sharedAccountNeverShowsAnotherUserAsSelf() throws Exception {
+        FamilyGroup group = new FamilyGroup();
+        group.setName("历史家庭");
+        group.setOwnerUserId(subject.getId());
+        group.setCreatedAt(LocalDateTime.now());
+        group.setUpdatedAt(LocalDateTime.now());
+        groupMapper.insert(group);
+
+        FamilyGroupMember owner = new FamilyGroupMember();
+        owner.setFamilyId(group.getId());
+        owner.setUserId(subject.getId());
+        owner.setRelation("本人");
+        owner.setRole("owner");
+        owner.setStatus("active");
+        owner.setJoinedAt(LocalDateTime.now());
+        owner.setCreatedAt(LocalDateTime.now());
+        owner.setUpdatedAt(LocalDateTime.now());
+        groupMemberMapper.insert(owner);
+
+        FamilyPermission permission = new FamilyPermission();
+        permission.setFamilyId(group.getId());
+        permission.setSubjectUserId(subject.getId());
+        permission.setGranteeUserId(viewer.getId());
+        permission.setCanViewHealth(true);
+        permission.setCanAddHealth(false);
+        permission.setCanViewRecords(false);
+        permission.setCanViewMedications(false);
+        permission.setCanViewReports(true);
+        permission.setCanUseAi(true);
+        permission.setCanModify(false);
+        permission.setCanDelete(false);
+        permission.setStatus("active");
+        permission.setCreatedAt(LocalDateTime.now());
+        permission.setUpdatedAt(LocalDateTime.now());
+        permissionMapper.insert(permission);
+
+        mockMvc.perform(get("/family/sharing")
+                        .header("Authorization", bearer(viewerToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.sharedSubjects[0].relation").value("家庭成员"));
     }
 
     private Long invite(boolean canAddHealth) throws Exception {

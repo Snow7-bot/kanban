@@ -61,39 +61,50 @@ export function viewSharedRecord(token) {
 export async function downloadPdf(id, includeAnalysis = false) {
   const token = localStorage.getItem(AUTH_TOKEN_KEY);
   const url = new URL(`${API_CONFIG.BASE_URL}/medical-records/${id}/print`);
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 60_000);
   if (includeAnalysis) {
     url.searchParams.set('includeAnalysis', 'true');
   }
 
-  const response = await fetch(url.toString(), {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+  try {
+    const response = await fetch(url.toString(), {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      signal: controller.signal,
+    });
 
-  if (!response.ok) {
-    if (response.status === 401) {
-      window.dispatchEvent(new CustomEvent('auth:unauthorized'));
-      throw new Error('登录已失效');
+    if (!response.ok) {
+      if (response.status === 401) {
+        window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+        throw new Error('登录已失效');
+      }
+      let msg = '下载失败';
+      try {
+        const data = await response.json();
+        msg = data?.message || msg;
+      } catch { /* not JSON */ }
+      throw new Error(msg);
     }
-    let msg = '下载失败';
-    try {
-      const data = await response.json();
-      msg = data?.message || msg;
-    } catch { /* not JSON */ }
-    throw new Error(msg);
+
+    const blob = await response.blob();
+    const disposition = response.headers.get('Content-Disposition') || '';
+    const match = disposition.match(/filename="(.+)"/);
+    const filename = match ? decodeURIComponent(match[1]) : `病历_${id}.pdf`;
+
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    if (error?.name === 'AbortError') {
+      throw new Error('PDF 生成超时，请稍后重试');
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
   }
-
-  const blob = await response.blob();
-  const disposition = response.headers.get('Content-Disposition') || '';
-  const match = disposition.match(/filename="(.+)"/);
-  const filename = match ? decodeURIComponent(match[1]) : `病历_${id}.pdf`;
-
-  // Trigger download
-  const blobUrl = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = blobUrl;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(blobUrl);
 }

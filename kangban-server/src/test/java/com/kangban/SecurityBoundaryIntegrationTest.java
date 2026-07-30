@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -27,6 +28,13 @@ class SecurityBoundaryIntegrationTest {
 
     @MockBean
     private SmsSender smsSender;
+
+    @Test
+    void healthEndpointIsPublicAndAvailable() throws Exception {
+        mockMvc.perform(get("/actuator/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
+    }
 
     @Test
     void consultationStreamRequiresAuthentication() throws Exception {

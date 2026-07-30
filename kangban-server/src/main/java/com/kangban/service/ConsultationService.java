@@ -157,6 +157,20 @@ public class ConsultationService {
         session.setUpdatedAt(LocalDateTime.now());
         chatSessionMapper.updateById(session);
 
+        ChatMessage latest = chatMessageMapper.selectOne(
+                new LambdaQueryWrapper<ChatMessage>()
+                        .eq(ChatMessage::getSessionId, sessionId)
+                        .orderByDesc(ChatMessage::getCreatedAt)
+                        .orderByDesc(ChatMessage::getId)
+                        .last("LIMIT 1")
+        );
+        if (latest != null
+                && "assistant".equals(latest.getRole())
+                && latest.getReplyToMessageId() == null
+                && snapshot.initialMessage().equals(latest.getContent())) {
+            return Result.success("健康概况无变化", latest);
+        }
+
         ChatMessage summary = new ChatMessage();
         summary.setSessionId(sessionId);
         summary.setUserId(userId);

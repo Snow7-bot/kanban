@@ -49,7 +49,7 @@
 
 ## 本地运行要求
 
-- Node.js 18+
+- Node.js 20.19+ 或 22.12+
 - npm
 - JDK 17+
 - Maven 3.9+
@@ -110,7 +110,7 @@ Swagger：http://127.0.0.1:8080/swagger-ui/index.html
 
 ```bash
 cd kangban-web
-npm install
+npm ci
 npm run dev
 ```
 
@@ -155,3 +155,6 @@ mvn package
 - 不要提交 `.env`、IDEA 工作区配置、数据库文件或对象存储数据。
 - 不要在 Issues、日志或截图中公开密码、JWT、API Key 和访问令牌。
 - 已经暴露过的密钥应立即轮换，旧密钥不应继续使用。
+
+发布候选版本检查、生产部署顺序和回滚方案见
+[`docs/RELEASE_CANDIDATE.md`](docs/RELEASE_CANDIDATE.md)。
