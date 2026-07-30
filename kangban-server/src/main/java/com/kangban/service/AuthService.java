@@ -1,11 +1,9 @@
 package com.kangban.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.kangban.common.BusinessException;
 import com.kangban.common.Result;
 import com.kangban.dto.request.LoginRequest;
 import com.kangban.dto.request.RegisterRequest;
-import com.kangban.dto.request.ResetPasswordRequest;
 import com.kangban.dto.response.AuthResponse;
 import com.kangban.entity.RefreshToken;
 import com.kangban.entity.User;
@@ -31,38 +29,45 @@ public class AuthService {
     private final RefreshTokenMapper refreshTokenMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final VerificationCodeService verificationCodeService;
-    private final SmsSender smsSender;
+    private final CaptchaService captchaService;
     private final MinioService minioService;
-
-    public void sendVerifyCode(String phone) {
-        smsSender.sendVerificationCode(phone, verificationCodeService.issue("register", phone));
-    }
 
     /**
      * 用户注册
      */
     @Transactional
     public Result<AuthResponse> register(RegisterRequest req) {
-        if (!verificationCodeService.verify("register", req.getPhone(), req.getCode())) {
-            return Result.error("验证码错误");
+        if (!captchaService.verify(req.getCaptchaId(), req.getCaptchaAnswer())) {
+            return Result.error("人机验证错误或已过期");
         }
 
-        // Check if phone already registered
-        Long count = userMapper.selectCount(
+        String username = req.getUsername().trim();
+        String phone = req.getPhone() == null || req.getPhone().isBlank()
+                ? null
+                : req.getPhone().trim();
+
+        Long usernameCount = userMapper.selectCount(
                 new LambdaQueryWrapper<User>()
-                        .eq(User::getPhone, req.getPhone())
+                        .eq(User::getUsername, username)
                         .isNull(User::getDeletedAt)
         );
-        if (count > 0) {
+        if (usernameCount > 0) {
+            return Result.error("该用户名已被使用");
+        }
+
+        if (phone != null && userMapper.selectCount(
+                new LambdaQueryWrapper<User>()
+                        .eq(User::getPhone, phone)
+                        .isNull(User::getDeletedAt)
+        ) > 0) {
             return Result.error("该手机号已注册");
         }
 
         // Create user
         User user = new User();
-        user.setPhone(req.getPhone());
+        user.setPhone(phone);
         user.setPassword(passwordEncoder.encode(req.getPassword()));
-        user.setUsername("user_" + req.getPhone().substring(req.getPhone().length() - 4));
+        user.setUsername(username);
         user.setStatus(1);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
@@ -91,7 +96,9 @@ public class AuthService {
         // Find user by phone or email
         User user = userMapper.selectOne(
                 new LambdaQueryWrapper<User>()
-                        .and(w -> w.eq(User::getPhone, req.getAccount())
+                        .and(w -> w.eq(User::getUsername, req.getAccount())
+                                .or()
+                                .eq(User::getPhone, req.getAccount())
                                 .or()
                                 .eq(User::getEmail, req.getAccount()))
                         .eq(User::getStatus, 1)
@@ -179,37 +186,6 @@ public class AuthService {
         Map<String, String> result = new HashMap<>();
         result.put("token", newToken);
         return Result.success(result);
-    }
-
-    /**
-     * 忘记密码 - 发送验证码
-     */
-    public void forgotPassword(String phone) {
-        smsSender.sendVerificationCode(phone, verificationCodeService.issue("reset", phone));
-    }
-
-    /**
-     * 重置密码
-     */
-    @Transactional
-    public void resetPassword(ResetPasswordRequest req) {
-        if (!verificationCodeService.verify("reset", req.getPhone(), req.getCode())) {
-            throw new BusinessException("验证码错误");
-        }
-
-        User user = userMapper.selectOne(
-                new LambdaQueryWrapper<User>()
-                        .eq(User::getPhone, req.getPhone())
-                        .isNull(User::getDeletedAt)
-        );
-
-        if (user == null) {
-            throw new BusinessException("该手机号未注册");
-        }
-
-        user.setPassword(passwordEncoder.encode(req.getPassword()));
-        user.setUpdatedAt(LocalDateTime.now());
-        userMapper.updateById(user);
     }
 
     /**

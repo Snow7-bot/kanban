@@ -15,5 +15,5 @@ spring:
     locations: classpath:db/migration
 
 app:
-  sms:
-    dev-code: ${KANGBAN_DEV_SMS_CODE:}
+  captcha:
+    secret: ${KANGBAN_CAPTCHA_SECRET:local-only-captcha-secret-change-me}

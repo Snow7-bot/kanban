@@ -37,7 +37,7 @@
 
 ## 已实现功能
 
-- 登录、注册、短信验证码模拟与密码重置
+- 用户名登录、图片人机验证注册与管理员协助找回密码
 - 游客首页和登录后数据加载
 - 个人资料与头像上传
 - 家庭成员管理
@@ -74,7 +74,7 @@ KANGBAN_MINIO_ENDPOINT
 KANGBAN_MINIO_ACCESS_KEY
 KANGBAN_MINIO_SECRET_KEY
 KANGBAN_JWT_SECRET
-KANGBAN_DEV_SMS_CODE
+KANGBAN_CAPTCHA_SECRET
 APP_BASE_URL
 APP_CORS_ALLOWED_ORIGINS
 APP_AI_PROVIDER
@@ -84,7 +84,7 @@ APP_AI_AI_MODEL
 APP_AI_OCR_MODEL
 ```
 
-本地默认使用 `local` Profile。开发验证码只有在显式配置 `KANGBAN_DEV_SMS_CODE` 时才固定；未配置 `APP_AI_PROVIDER` 时使用 Mock，避免意外调用付费模型。`prod` Profile 默认关闭 Swagger，正式短信供应商接入前会返回“短信服务尚未配置”。
+本地默认使用 `local` Profile。注册使用 Redis 保存的一次性图片人机验证，手机号为可选资料且不代表已验证身份；忘记密码暂由管理员协助处理。未配置 `APP_AI_PROVIDER` 时使用 Mock，避免意外调用付费模型；`prod` Profile 默认关闭 Swagger。
 
 JWT 密钥可生成一行式 Base64 内容：
 

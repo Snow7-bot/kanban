@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(TestVerificationCodeConfig.class)
+@Import(TestCaptchaConfig.class)
 class FamilySharingIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
@@ -182,7 +182,7 @@ class FamilySharingIntegrationTest {
 
     private Long invite(boolean canAddHealth) throws Exception {
         String body = objectMapper.writeValueAsString(Map.of(
-                "phone", subject.getPhone(),
+                "username", subject.getUsername(),
                 "relation", "家人",
                 "permissions", Map.of(
                         "canViewHealth", true,

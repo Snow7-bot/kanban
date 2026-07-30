@@ -69,12 +69,12 @@ public class FamilySharingService {
     @Transactional
     public Map<String, Object> invite(Long inviterUserId, CreateFamilyInvitationRequest request) {
         User invitee = userMapper.selectOne(new LambdaQueryWrapper<User>()
-                .eq(User::getPhone, request.getPhone())
+                .eq(User::getUsername, request.getUsername())
                 .eq(User::getStatus, 1)
                 .isNull(User::getDeletedAt)
                 .last("LIMIT 1"));
         if (invitee == null) {
-            throw BusinessException.notFound("该手机号尚未注册康伴账号");
+            throw BusinessException.notFound("该用户名尚未注册康伴账号");
         }
         if (inviterUserId.equals(invitee.getId())) {
             throw BusinessException.paramsError("不能邀请自己");

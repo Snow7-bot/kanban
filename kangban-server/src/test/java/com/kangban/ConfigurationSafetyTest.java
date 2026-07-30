@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ConfigurationSafetyTest {
 
     @Test
-    void defaultsDoNotEnableRealAiOrAUniversalVerificationCode() throws Exception {
+    void defaultsDoNotEnableRealAiOrSmsVerification() throws Exception {
         String application = resource("application.yml");
         String development = resource("application-dev.yml");
         String local = resource("application-local.yml");
@@ -19,8 +19,9 @@ class ConfigurationSafetyTest {
         assertTrue(application.contains("provider: ${APP_AI_PROVIDER:mock}"));
         assertTrue(application.contains("default: local"));
         assertFalse(application.contains("active: dev"));
-        assertFalse(development.contains("KANGBAN_DEV_SMS_CODE:000000"));
-        assertFalse(local.contains("KANGBAN_DEV_SMS_CODE:000000"));
+        assertFalse(development.contains("dev-code"));
+        assertFalse(local.contains("dev-code"));
+        assertTrue(local.contains("KANGBAN_CAPTCHA_SECRET"));
         assertTrue(compose.contains("SPRING_PROFILES_ACTIVE: prod"));
     }
 

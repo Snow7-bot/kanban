@@ -24,6 +24,8 @@ app:
   base-url: ${APP_BASE_URL}
   cors:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS}
+  captcha:
+    secret: ${KANGBAN_CAPTCHA_SECRET}
   ai:
     provider: ${APP_AI_PROVIDER}
     api-url: ${APP_AI_API_URL}

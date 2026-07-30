@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(TestVerificationCodeConfig.class)
+@Import(TestCaptchaConfig.class)
 @DisplayName("P1-B: 药物相互作用检查集成测试")
 class DrugInteractionCheckTest {
 

@@ -49,7 +49,7 @@ export default function FamilySharingPanel() {
   const [busy, setBusy] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [permissionTarget, setPermissionTarget] = useState(null);
-  const [phone, setPhone] = useState('');
+  const [username, setUsername] = useState('');
   const [relation, setRelation] = useState('家人');
   const [permissions, setPermissions] = useState(DEFAULT_PERMISSIONS);
 
@@ -82,12 +82,12 @@ export default function FamilySharingPanel() {
   const submitInvite = async (event) => {
     event.preventDefault();
     const ok = await run(
-      () => familyApi.inviteFamilyAccount({ phone, relation, permissions }),
+      () => familyApi.inviteFamilyAccount({ username, relation, permissions }),
       '邀请已发送，等待对方确认',
     );
     if (ok) {
       setInviteOpen(false);
-      setPhone('');
+      setUsername('');
       setPermissions(DEFAULT_PERMISSIONS);
     }
   };
@@ -143,7 +143,7 @@ export default function FamilySharingPanel() {
 
     {inviteOpen && <Modal title="邀请家人账号" onClose={() => setInviteOpen(false)}>
       <form className="family-sharing-form" onSubmit={submitInvite}>
-        <label><span>家人手机号</span><input required inputMode="numeric" pattern="1[0-9]{10}" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="输入对方注册手机号" /></label>
+        <label><span>家人用户名</span><input required value={username} onChange={(event) => setUsername(event.target.value)} placeholder="输入对方注册用户名" /></label>
         <label><span>与我的关系</span><select value={relation} onChange={(event) => setRelation(event.target.value)}><option>家人</option><option>父亲</option><option>母亲</option><option>配偶</option><option>子女</option><option>其他</option></select></label>
         <PermissionFields value={permissions} onChange={setPermissions} />
         <p className="family-consent-note">对方接受邀请即表示同意向你开放勾选的数据；未勾选的数据不会被读取。</p>

@@ -1,7 +1,6 @@
 package com.kangban;
 
-import com.kangban.service.SmsSender;
-import com.kangban.service.VerificationCodeService;
+import com.kangban.service.CaptchaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,10 +23,7 @@ class SecurityBoundaryIntegrationTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private VerificationCodeService verificationCodeService;
-
-    @MockBean
-    private SmsSender smsSender;
+    private CaptchaService captchaService;
 
     @Test
     void healthEndpointIsPublicAndAvailable() throws Exception {

@@ -2,10 +2,6 @@ spring:
   config:
     import: classpath:application-local.yml
 
-app:
-  sms:
-    dev-code: ${KANGBAN_DEV_SMS_CODE:}
-
 logging:
   level:
     com.kangban: INFO

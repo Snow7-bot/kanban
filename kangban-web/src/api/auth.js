@@ -1,12 +1,12 @@
 /**
  * 认证相关 API
- * 登录、注册、验证码、退出、获取当前用户
+ * 登录、注册、人机验证、退出、获取当前用户
  */
 import { post, get, del } from './request.js';
 
-/** 发送验证码 */
-export function sendVerifyCode(phone) {
-  return post('/auth/code', { phone });
+/** 获取本地图片人机验证 */
+export function getCaptcha() {
+  return get('/auth/captcha');
 }
 
 /** 注册 */
@@ -32,14 +32,4 @@ export function getCurrentUser() {
 /** 刷新 token */
 export function refreshToken(refreshToken) {
   return post('/auth/refresh', { refreshToken });
-}
-
-/** 忘记密码 - 发送重置验证码 */
-export function forgotPassword(phone) {
-  return post('/auth/forgot', { phone });
-}
-
-/** 重置密码 */
-export function resetPassword(data) {
-  return post('/auth/reset', data);
 }
