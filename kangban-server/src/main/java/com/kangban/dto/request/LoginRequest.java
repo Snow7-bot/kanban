@@ -2,6 +2,7 @@ package com.kangban.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -13,6 +14,7 @@ public class LoginRequest {
     private String account;
 
     @NotBlank(message = "密码不能为空")
+    @Size(max = 20, message = "密码长度不能超过20位")
     @Schema(description = "密码")
     private String password;
 }

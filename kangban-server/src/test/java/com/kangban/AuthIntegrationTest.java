@@ -240,6 +240,21 @@ class AuthIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.code").value(500));
         }
+
+        @Test
+        @DisplayName("超长密码在进入认证流程前被拒绝")
+        void overlongPasswordReturns400() throws Exception {
+            String body = objectMapper.writeValueAsString(Map.of(
+                    "account", TEST_PHONE,
+                    "password", "A".repeat(21)));
+
+            mockMvc.perform(post("/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(body))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value(400))
+                    .andExpect(jsonPath("$.message").value("密码长度不能超过20位"));
+        }
     }
 
     // ==================== Token 与身份认证 ====================

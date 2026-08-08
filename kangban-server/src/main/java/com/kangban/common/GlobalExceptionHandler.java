@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * 全局异常处理
@@ -60,6 +61,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Result<Void>> handleBusiness(BusinessException e) {
         return ResponseEntity.status(e.getHttpStatus())
                 .body(Result.error(e.getCode(), e.getMessage()));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Result<Void>> handleNotFound(NoResourceFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Result.notFound("资源不存在"));
     }
 
     @ExceptionHandler(Exception.class)
