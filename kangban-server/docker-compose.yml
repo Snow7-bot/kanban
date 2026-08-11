@@ -68,6 +68,10 @@ services:
       APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS}
       APP_AI_PROVIDER: ${APP_AI_PROVIDER:-qwen}
       APP_AI_API_KEY: ${APP_AI_API_KEY:-}
+      APP_AGENT_ENABLED: ${APP_AGENT_ENABLED:-true}
+      APP_AGENT_CONTEXT_SECRET: ${APP_AGENT_CONTEXT_SECRET:-}
+      APP_RAG_ENABLED: ${APP_RAG_ENABLED:-false}
+      APP_RAG_VECTOR_STORE: ${APP_RAG_VECTOR_STORE:-postgresql}
     depends_on:
       mysql:
         condition: service_healthy

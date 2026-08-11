@@ -1,7 +1,9 @@
 package com.kangban.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kangban.client.AiConsultationClient;
+import com.kangban.agent.AgentExecutionContext;
+import com.kangban.agent.AgentOrchestrator;
+import com.kangban.agent.AgentResponse;
 import com.kangban.dto.request.CreateSessionRequest;
 import com.kangban.dto.request.SendMessageRequest;
 import com.kangban.entity.ChatMessage;
@@ -24,7 +26,7 @@ class ConsultationServiceTest {
 
     private ChatSessionMapper sessionMapper;
     private ChatMessageMapper messageMapper;
-    private AiConsultationClient aiClient;
+    private AgentOrchestrator agentOrchestrator;
     private PatientHealthContextService patientHealthContextService;
     private FamilyAccessService familyAccessService;
     private AuditService auditService;
@@ -34,7 +36,7 @@ class ConsultationServiceTest {
     void setUp() {
         sessionMapper = mock(ChatSessionMapper.class);
         messageMapper = mock(ChatMessageMapper.class);
-        aiClient = mock(AiConsultationClient.class);
+        agentOrchestrator = mock(AgentOrchestrator.class);
         patientHealthContextService = mock(PatientHealthContextService.class);
         familyAccessService = mock(FamilyAccessService.class);
         auditService = mock(AuditService.class);
@@ -44,7 +46,7 @@ class ConsultationServiceTest {
             return subject == null ? actor : subject;
         });
         service = new ConsultationService(
-                sessionMapper, messageMapper, new ObjectMapper(), aiClient, patientHealthContextService,
+                sessionMapper, messageMapper, new ObjectMapper(), agentOrchestrator, patientHealthContextService,
                 familyAccessService, auditService);
         ReflectionTestUtils.setField(service, "taskExecutor", (Executor) Runnable::run);
     }
@@ -109,7 +111,7 @@ class ConsultationServiceTest {
         ArgumentCaptor<ChatMessage> messageCaptor = ArgumentCaptor.forClass(ChatMessage.class);
         verify(sessionMapper).updateById(sessionCaptor.capture());
         verify(messageMapper).insert(messageCaptor.capture());
-        verifyNoInteractions(aiClient);
+        verifyNoInteractions(agentOrchestrator);
         assertThat(sessionCaptor.getValue().getPatientData()).contains("family-agent-v2");
         assertThat(messageCaptor.getValue().getSessionId()).isEqualTo(31L);
         assertThat(messageCaptor.getValue().getRole()).isEqualTo("assistant");
@@ -149,12 +151,15 @@ class ConsultationServiceTest {
         when(sessionMapper.selectOne(any())).thenReturn(session);
         when(messageMapper.selectOne(any())).thenReturn(userMessage, null, null);
         when(patientHealthContextService.build(9L, null)).thenReturn(snapshot());
-        when(aiClient.consult(3L, "头痛两天", "{}")).thenReturn("请注意休息并观察症状。");
+        AgentExecutionContext context = context();
+        when(agentOrchestrator.createContext(9L, 9L, null, 3L)).thenReturn(context);
+        when(agentOrchestrator.run(any())).thenReturn(
+                new AgentResponse("请注意休息并观察症状。", context.runId(), null, null));
 
         service.streamAiResponse(9L, 3L, 21L);
 
         ArgumentCaptor<ChatMessage> captor = ArgumentCaptor.forClass(ChatMessage.class);
-        verify(aiClient, times(1)).consult(3L, "头痛两天", "{}");
+        verify(agentOrchestrator, times(1)).run(any());
         verify(messageMapper, times(1)).insert(captor.capture());
         assertThat(captor.getValue().getReplyToMessageId()).isEqualTo(21L);
         assertThat(captor.getValue().getRole()).isEqualTo("assistant");
@@ -174,7 +179,7 @@ class ConsultationServiceTest {
 
         service.streamAiResponse(9L, 3L, 21L);
 
-        verifyNoInteractions(aiClient);
+        verifyNoInteractions(agentOrchestrator);
         verify(messageMapper, never()).insert(any());
     }
 
@@ -201,5 +206,10 @@ class ConsultationServiceTest {
     private static PatientHealthContextService.Snapshot snapshot() {
         return new PatientHealthContextService.Snapshot(
                 null, "本人", java.util.Map.of("name", "本人"), "{}", "个性化分析");
+    }
+
+    private static AgentExecutionContext context() {
+        return new AgentExecutionContext(9L, 9L, null, 3L,
+                "run-test", "trace-test", 1L, Long.MAX_VALUE);
     }
 }

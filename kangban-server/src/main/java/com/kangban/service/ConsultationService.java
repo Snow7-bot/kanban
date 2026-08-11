@@ -6,10 +6,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kangban.common.BusinessException;
 import com.kangban.common.Result;
+import com.kangban.agent.AgentExecutionContext;
+import com.kangban.agent.AgentOrchestrator;
+import com.kangban.agent.AgentRequest;
+import com.kangban.agent.AgentResponse;
 import com.kangban.dto.request.CreateSessionRequest;
 import com.kangban.dto.request.SendMessageRequest;
 import com.kangban.dto.request.UpdatePatientRequest;
-import com.kangban.client.AiConsultationClient;
 import com.kangban.client.AiClientException;
 import com.kangban.entity.ChatMessage;
 import com.kangban.entity.ChatSession;
@@ -38,12 +41,12 @@ public class ConsultationService {
     private final ChatSessionMapper chatSessionMapper;
     private final ChatMessageMapper chatMessageMapper;
     private final ObjectMapper objectMapper;
-    private final AiConsultationClient aiClient;
+    private final AgentOrchestrator agentOrchestrator;
     private final PatientHealthContextService patientHealthContextService;
     private final FamilyAccessService familyAccessService;
     private final AuditService auditService;
 
-    @Resource(name = "taskExecutor")
+    @Resource(name = "agentTaskExecutor")
     private Executor taskExecutor;
 
     private final Set<Long> activeMessageIds = ConcurrentHashMap.newKeySet();
@@ -296,8 +299,11 @@ public class ConsultationService {
                     session.setPatientData(currentSnapshot.contextJson());
                     session.setUpdatedAt(LocalDateTime.now());
                     chatSessionMapper.updateById(session);
-                    String fullResponse = aiClient.consult(
-                            sessionId, userMsg.getContent(), currentSnapshot.contextJson());
+                    AgentExecutionContext context = agentOrchestrator.createContext(
+                            userId, subjectUserId, session.getMemberId(), sessionId);
+                    AgentResponse agentResponse = agentOrchestrator.run(new AgentRequest(
+                            context, userMsg.getContent(), currentSnapshot.contextJson()));
+                    String fullResponse = agentResponse.content();
 
                     // Save first: if the browser disconnects, retry can replay the same reply.
                     ChatMessage completedReply = findReply(messageId);
@@ -320,8 +326,8 @@ public class ConsultationService {
                     emitter.complete();
 
                     long elapsed = System.currentTimeMillis() - start;
-                    log.info("SSE streaming done: sessionId={}, messageId={}, elapsed={}ms",
-                            sessionId, messageId, elapsed);
+                    log.info("SSE streaming done: sessionId={}, messageId={}, runId={}, elapsed={}ms",
+                            sessionId, messageId, agentResponse.runId(), elapsed);
                 } catch (AiClientException e) {
                     log.warn("SSE AI provider failure: sessionId={}, messageId={}", sessionId, messageId);
                     failEmitter(emitter, e.getUserMessage());
