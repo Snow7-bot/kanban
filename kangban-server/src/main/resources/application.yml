@@ -37,6 +37,9 @@ app:
       top-k: ${APP_RAG_TOP_K:5}
       min-score: ${APP_RAG_MIN_SCORE:0.7}
       max-context-tokens: ${APP_RAG_MAX_CONTEXT_TOKENS:6000}
+      admin-token: ${APP_KNOWLEDGE_ADMIN_TOKEN:}
+      embedding-model: ${APP_RAG_EMBEDDING_MODEL:local-hash-v1}
+      max-file-bytes: ${APP_RAG_MAX_FILE_BYTES:10485760}
 
 spring:
   application:

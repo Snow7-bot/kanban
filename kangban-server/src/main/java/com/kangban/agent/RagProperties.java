@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * RAG 配置边界。第一阶段只建立契约和开关，公共资料入库与生产向量库在后续阶段启用。
+ * RAG 配置边界。公共知识库的管理接口由独立令牌保护，令牌只从环境变量绑定。
  */
 @Data
 @Configuration
@@ -17,4 +17,7 @@ public class RagProperties {
     private int topK = 5;
     private double minScore = 0.7;
     private int maxContextTokens = 6000;
+    private String adminToken = "";
+    private String embeddingModel = "local-hash-v1";
+    private long maxFileBytes = 10 * 1024 * 1024L;
 }

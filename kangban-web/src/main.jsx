@@ -12,6 +12,7 @@ import './styles/report.css';
 import './styles/record-detail.css';
 import './styles/medication-add.css';
 import './styles/avatar-sync.css';
+import './styles/knowledge-admin.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

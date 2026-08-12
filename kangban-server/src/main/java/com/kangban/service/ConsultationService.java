@@ -321,6 +321,9 @@ public class ConsultationService {
                     }
 
                     emitter.send(SseEmitter.event().name("thinking_done").data(""));
+                    for (com.kangban.agent.Citation citation : agentResponse.citations()) {
+                        emitter.send(SseEmitter.event().name("citation").data(citation));
+                    }
                     emitter.send(SseEmitter.event().name("token").data(fullResponse));
                     emitter.send(SseEmitter.event().name("done").data(fullResponse));
                     emitter.complete();

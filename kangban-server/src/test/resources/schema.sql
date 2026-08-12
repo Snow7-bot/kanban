@@ -252,3 +252,52 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     ip_address    VARCHAR(50),
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS knowledge_documents (
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title         VARCHAR(255) NOT NULL,
+    source        VARCHAR(255) NOT NULL,
+    source_url    VARCHAR(1000),
+    file_name     VARCHAR(255) NOT NULL,
+    media_type    VARCHAR(150),
+    file_sha256   VARCHAR(64) NOT NULL UNIQUE,
+    file_size     BIGINT NOT NULL,
+    version       INT NOT NULL DEFAULT 1,
+    status        VARCHAR(30) NOT NULL DEFAULT 'DRAFT',
+    raw_content   BLOB NOT NULL,
+    review_note   VARCHAR(1000),
+    created_by    BIGINT NOT NULL,
+    updated_by    BIGINT,
+    published_at  TIMESTAMP,
+    revoked_at    TIMESTAMP,
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at    TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS knowledge_chunks (
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    document_id     BIGINT NOT NULL,
+    chunk_index     INT NOT NULL,
+    page_number     INT,
+    section         VARCHAR(255),
+    content         TEXT NOT NULL,
+    token_count     INT NOT NULL,
+    embedding_json  TEXT,
+    embedding_model VARCHAR(100),
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (document_id, chunk_index)
+);
+
+CREATE TABLE IF NOT EXISTS ingestion_jobs (
+    id               BIGINT AUTO_INCREMENT PRIMARY KEY,
+    document_id      BIGINT NOT NULL,
+    job_type         VARCHAR(30) NOT NULL,
+    status           VARCHAR(30) NOT NULL DEFAULT 'PENDING',
+    total_chunks     INT NOT NULL DEFAULT 0,
+    processed_chunks INT NOT NULL DEFAULT 0,
+    error_message    VARCHAR(1000),
+    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at     TIMESTAMP
+);
