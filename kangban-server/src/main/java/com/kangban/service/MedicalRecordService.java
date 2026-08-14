@@ -11,6 +11,7 @@ import com.kangban.entity.OcrAnalysisTask;
 import com.kangban.mapper.MedicalRecordMapper;
 import com.kangban.mapper.FamilyMemberMapper;
 import com.kangban.mapper.OcrAnalysisTaskMapper;
+import com.kangban.rag.PrivateKnowledgeIndexService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,7 @@ public class MedicalRecordService {
     private final MinioService minioService;
     private final OcrTaskRunner ocrTaskRunner;
     private final FamilyMemberMapper familyMemberMapper;
+    private final PrivateKnowledgeIndexService privateKnowledgeIndexService;
 
     public PageResult<Map<String, Object>> list(Long userId, Integer page, Integer pageSize, Long memberId) {
         validateMemberAccess(userId, memberId);
@@ -149,7 +151,84 @@ public class MedicalRecordService {
         }
         record.setDeletedAt(LocalDateTime.now());
         medicalRecordMapper.updateById(record);
+        privateKnowledgeIndexService.revokeRecord(id, userId);
         minioService.deleteFile(record.getFileUrl());
+    }
+
+    /** 为历史 OCR 完成病历补建私有检索索引；不触发 OCR。 */
+    public Map<String, Object> reindexPrivate(Long userId, Long id) {
+        MedicalRecord record = medicalRecordMapper.selectOne(
+                new LambdaQueryWrapper<MedicalRecord>()
+                        .eq(MedicalRecord::getId, id)
+                        .eq(MedicalRecord::getUserId, userId)
+                        .isNull(MedicalRecord::getDeletedAt));
+        if (record == null) {
+            throw BusinessException.notFound("病历记录不存在");
+        }
+        privateKnowledgeIndexService.indexCompletedRecord(id);
+        if (!isIndexable(record)) {
+            return Map.of("recordId", id, "status", "skipped", "reason", "病历尚未完成 OCR 或没有可检索文本");
+        }
+        return Map.of("recordId", id, "status", "indexed");
+    }
+
+    /**
+     * 显式补建当前账号的历史病历索引，不在应用启动时自动执行。
+     */
+    public Map<String, Object> reindexPrivateBatch(Long userId, Long memberId, Integer requestedLimit) {
+        validateMemberAccess(userId, memberId);
+        int limit = requestedLimit == null ? 100 : requestedLimit;
+        if (limit < 1 || limit > 500) {
+            throw BusinessException.paramsError("批量重建数量必须在1到500之间");
+        }
+
+        LambdaQueryWrapper<MedicalRecord> wrapper = new LambdaQueryWrapper<MedicalRecord>()
+                .eq(MedicalRecord::getUserId, userId)
+                .isNull(MedicalRecord::getDeletedAt)
+                .orderByAsc(MedicalRecord::getId)
+                .last("LIMIT " + limit);
+        if (memberId == null) {
+            wrapper.isNull(MedicalRecord::getMemberId);
+        } else {
+            wrapper.eq(MedicalRecord::getMemberId, memberId);
+        }
+
+        List<MedicalRecord> records = medicalRecordMapper.selectList(wrapper);
+        int indexed = 0;
+        int skipped = 0;
+        int failed = 0;
+        for (MedicalRecord record : records) {
+            try {
+                privateKnowledgeIndexService.indexCompletedRecord(record.getId());
+                if (isIndexable(record)) {
+                    indexed++;
+                } else {
+                    skipped++;
+                }
+            } catch (RuntimeException exception) {
+                failed++;
+                log.warn("Private record reindex failed: recordId={}, errorType={}",
+                        record.getId(), exception.getClass().getSimpleName());
+            }
+        }
+        return Map.of(
+                "scanned", records.size(),
+                "indexed", indexed,
+                "skipped", skipped,
+                "failed", failed,
+                "limit", limit,
+                "memberId", memberId == null ? "self" : memberId
+        );
+    }
+
+    private boolean isIndexable(MedicalRecord record) {
+        return record != null
+                && "completed".equalsIgnoreCase(record.getStatus())
+                && String.join("\n\n",
+                Optional.ofNullable(record.getOcrText()).orElse(""),
+                Optional.ofNullable(record.getDiagnosisData()).orElse(""),
+                Optional.ofNullable(record.getMedicationsData()).orElse(""),
+                Optional.ofNullable(record.getAdvicesData()).orElse("")).trim().length() > 0;
     }
 
     public Map<String, Object> getAnalysisStatus(Long userId, Long id) {

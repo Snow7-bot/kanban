@@ -13,8 +13,13 @@ import org.springframework.context.annotation.Configuration;
 public class AgentProperties {
 
     private boolean enabled = true;
+    /** 默认使用服务端确定性工具规划，模型自主工具调用需显式开启。 */
+    private boolean modelToolCallingEnabled = false;
     private int contextTtlSeconds = 300;
     private int maxIterations = 5;
+    private int maxHistoryMessages = 12;
+    private int maxHistoryTokens = 6000;
+    private int maxHistoryMessageCharacters = 4000;
     private int corePoolSize = 2;
     private int maxPoolSize = 4;
     private int queueCapacity = 20;

@@ -15,6 +15,7 @@ test('authentication persists refresh tokens and retries one expired request', a
   assert.match(context, /setAuthReady\(true\)/);
   assert.match(request, /refreshAccessToken/);
   assert.match(request, /_authRetry/);
+  assert.match(request, /finally \{[\s\S]*clearTimeout\(timeoutId\)/);
 });
 
 test('login links to the password reset page', async () => {

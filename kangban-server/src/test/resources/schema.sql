@@ -174,6 +174,8 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     attachment_url      VARCHAR(500),
     reply_to_message_id BIGINT,
     client_message_id   VARCHAR(64),
+    citations_json      TEXT,
+    agent_tool_traces_json TEXT,
     created_at          TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (reply_to_message_id),
     UNIQUE (user_id, client_message_id)
@@ -300,4 +302,57 @@ CREATE TABLE IF NOT EXISTS ingestion_jobs (
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed_at     TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS family_knowledge_documents (
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    medical_record_id  BIGINT NOT NULL UNIQUE,
+    owner_user_id     BIGINT NOT NULL,
+    subject_user_id   BIGINT NOT NULL,
+    family_id         BIGINT,
+    member_id         BIGINT,
+    title             VARCHAR(255) NOT NULL,
+    source            VARCHAR(255) NOT NULL DEFAULT '家庭私有病历',
+    version           INT NOT NULL DEFAULT 1,
+    status            VARCHAR(30) NOT NULL DEFAULT 'READY',
+    embedding_model   VARCHAR(100),
+    record_updated_at TIMESTAMP,
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    revoked_at        TIMESTAMP,
+    deleted_at        TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS family_knowledge_chunks (
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    document_id       BIGINT NOT NULL,
+    owner_user_id     BIGINT NOT NULL,
+    subject_user_id   BIGINT NOT NULL,
+    family_id         BIGINT,
+    member_id         BIGINT,
+    chunk_index       INT NOT NULL,
+    page_number       INT,
+    section           VARCHAR(255),
+    content           TEXT NOT NULL,
+    token_count       INT NOT NULL,
+    embedding_json    TEXT,
+    embedding_model   VARCHAR(100),
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (document_id, chunk_index)
+);
+
+CREATE TABLE IF NOT EXISTS knowledge_outbox_events (
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    event_key         VARCHAR(180) NOT NULL UNIQUE,
+    event_type        VARCHAR(50) NOT NULL,
+    medical_record_id  BIGINT NOT NULL,
+    owner_user_id     BIGINT NOT NULL,
+    subject_user_id   BIGINT NOT NULL,
+    family_id         BIGINT,
+    member_id         BIGINT,
+    status            VARCHAR(30) NOT NULL DEFAULT 'PENDING',
+    attempts          INT NOT NULL DEFAULT 0,
+    last_error        VARCHAR(1000),
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    processed_at      TIMESTAMP
 );

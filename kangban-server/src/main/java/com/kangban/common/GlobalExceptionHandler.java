@@ -1,5 +1,6 @@
 package com.kangban.common;
 
+import com.kangban.rag.RagUnavailableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +68,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Result<Void>> handleNotFound(NoResourceFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Result.notFound("资源不存在"));
+    }
+
+    @ExceptionHandler(RagUnavailableException.class)
+    public ResponseEntity<Result<Void>> handleRagUnavailable(RagUnavailableException e) {
+        log.warn("RAG service unavailable: message={}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(Result.error(HttpStatus.SERVICE_UNAVAILABLE.value(), e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

@@ -8,9 +8,9 @@ import java.net.URI;
 import java.util.List;
 
 /** Keeps provider calls independent from stale desktop proxy settings. */
-final class DirectProxySelector extends ProxySelector {
+public final class DirectProxySelector extends ProxySelector {
 
-    static final DirectProxySelector INSTANCE = new DirectProxySelector();
+    public static final DirectProxySelector INSTANCE = new DirectProxySelector();
 
     private DirectProxySelector() {
     }

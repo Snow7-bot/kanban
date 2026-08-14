@@ -17,6 +17,7 @@ export default function KnowledgeAdminPage() {
   const [file, setFile] = useState(null);
   const [query, setQuery] = useState('');
   const [searchResult, setSearchResult] = useState(null);
+  const [searchError, setSearchError] = useState('');
   const [chunks, setChunks] = useState(null);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -70,7 +71,13 @@ export default function KnowledgeAdminPage() {
   const runSearch = async (event) => {
     event.preventDefault();
     if (!query.trim()) return;
-    setSearchResult(await knowledgeApi.searchKnowledge(token.trim(), query.trim()));
+    setSearchError('');
+    try {
+      setSearchResult(await knowledgeApi.searchKnowledge(token.trim(), query.trim()));
+    } catch (error) {
+      setSearchResult(null);
+      setSearchError(error?.message || '知识库暂时不可用，请稍后重试。');
+    }
   };
 
   return <main className="page-content knowledge-admin-page">
@@ -103,7 +110,7 @@ export default function KnowledgeAdminPage() {
       <Card className="knowledge-search-card">
         <div className="knowledge-section-title"><div><Search size={17} /><h2>检索预览</h2></div><small>仅返回已发布资料</small></div>
         <form className="knowledge-search-form" onSubmit={runSearch}><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="输入血压、用药等关键词" /><Button variant="soft" disabled={!token.trim()}><Search size={15} />检索</Button></form>
-        {searchResult ? <div className="knowledge-search-result"><p>命中 {searchResult.hits?.length || 0} 条，引用 {searchResult.citations?.length || 0} 个</p><pre>{searchResult.context || '暂无足够依据'}</pre></div> : <div className="knowledge-empty">检索结果会显示在这里，并携带文档和页码引用。</div>}
+        {searchError ? <div className="knowledge-search-error" role="alert">{searchError}</div> : searchResult ? <div className="knowledge-search-result"><p>命中 {searchResult.hits?.length || 0} 条，引用 {searchResult.citations?.length || 0} 个</p><pre>{searchResult.context || '暂无足够依据'}</pre></div> : <div className="knowledge-empty">检索结果会显示在这里，并携带文档和页码引用。</div>}
       </Card>
     </section>
 

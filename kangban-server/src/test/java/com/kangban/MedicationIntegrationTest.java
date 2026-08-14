@@ -310,10 +310,11 @@ class MedicationIntegrationTest {
         }
 
         @Test
-        @DisplayName("未登录 → 403")
+        @DisplayName("未登录 → 401")
         void unauthenticatedAccessDenied() throws Exception {
             mockMvc.perform(get("/medications"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value(401));
         }
 
         @Test

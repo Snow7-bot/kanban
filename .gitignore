@@ -16,6 +16,10 @@ kangban-web/.env.*
 *.iml
 *.log
 
+# Separate nested projects; they are not part of the Kangban application.
+/agent/
+/kangban-server/lumenx/
+
 # Build outputs
 kangban-server/target/
 kangban-web/dist/

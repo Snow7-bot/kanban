@@ -10,6 +10,12 @@ public record Citation(
         Integer pageNumber,
         String section,
         String source,
-        String updatedAt
+        String updatedAt,
+        String scope
 ) {
+
+    public Citation(String documentId, String title, String version, Integer pageNumber,
+                    String section, String source, String updatedAt) {
+        this(documentId, title, version, pageNumber, section, source, updatedAt, "PUBLIC");
+    }
 }

@@ -6,8 +6,15 @@ package com.kangban.agent;
 public record AgentRequest(
         AgentExecutionContext context,
         String message,
-        String patientContextJson
+        String patientContextJson,
+        java.util.List<ConversationMessage> history
 ) {
+
+    public AgentRequest(AgentExecutionContext context,
+                        String message,
+                        String patientContextJson) {
+        this(context, message, patientContextJson, java.util.List.of());
+    }
 
     public AgentRequest {
         if (context == null) {
@@ -16,5 +23,6 @@ public record AgentRequest(
         if (message == null || message.isBlank()) {
             throw new IllegalArgumentException("用户问题不能为空");
         }
+        history = history == null ? java.util.List.of() : java.util.List.copyOf(history);
     }
 }

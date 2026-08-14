@@ -295,7 +295,8 @@ class FamilyHealthIntegrationTest {
         @DisplayName("获取可用指标类型列表")
         void getMetrics() throws Exception {
             mockMvc.perform(get("/health/metrics"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value(401));
         }
     }
 

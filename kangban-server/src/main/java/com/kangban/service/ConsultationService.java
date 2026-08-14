@@ -10,6 +10,8 @@ import com.kangban.agent.AgentExecutionContext;
 import com.kangban.agent.AgentOrchestrator;
 import com.kangban.agent.AgentRequest;
 import com.kangban.agent.AgentResponse;
+import com.kangban.agent.AgentToolTrace;
+import com.kangban.agent.ConversationMessage;
 import com.kangban.dto.request.CreateSessionRequest;
 import com.kangban.dto.request.SendMessageRequest;
 import com.kangban.dto.request.UpdatePatientRequest;
@@ -243,7 +245,7 @@ public class ConsultationService {
      * 流式生成AI回复 — SSE 端点使用。
      */
     public SseEmitter streamAiResponse(Long userId, Long sessionId, Long messageId) {
-        SseEmitter emitter = new SseEmitter(120_000L);
+        SseEmitter emitter = new SseEmitter(180_000L);
 
         ChatSession session = chatSessionMapper.selectOne(
                 new LambdaQueryWrapper<ChatSession>()
@@ -278,7 +280,8 @@ public class ConsultationService {
 
         ChatMessage existingReply = findReply(messageId);
         if (existingReply != null) {
-            replayCompletedResponse(emitter, existingReply.getContent());
+            replayCompletedResponse(emitter, existingReply.getContent(), existingReply.getCitationsJson(),
+                    existingReply.getAgentToolTracesJson());
             return emitter;
         }
 
@@ -302,13 +305,18 @@ public class ConsultationService {
                     AgentExecutionContext context = agentOrchestrator.createContext(
                             userId, subjectUserId, session.getMemberId(), sessionId);
                     AgentResponse agentResponse = agentOrchestrator.run(new AgentRequest(
-                            context, userMsg.getContent(), currentSnapshot.contextJson()));
+                            context, userMsg.getContent(), currentSnapshot.contextJson(),
+                            loadConversationHistory(session, userMsg.getId())));
                     String fullResponse = agentResponse.content();
+                    List<com.kangban.agent.Citation> citations = agentResponse.citations();
+                    List<AgentToolTrace> toolTraces = agentResponse.toolTraces();
 
                     // Save first: if the browser disconnects, retry can replay the same reply.
                     ChatMessage completedReply = findReply(messageId);
                     if (completedReply != null) {
                         fullResponse = completedReply.getContent();
+                        citations = readCitations(completedReply.getCitationsJson());
+                        toolTraces = readAgentToolTraces(completedReply.getAgentToolTracesJson());
                     } else {
                         ChatMessage aiMessage = new ChatMessage();
                         aiMessage.setSessionId(sessionId);
@@ -316,12 +324,17 @@ public class ConsultationService {
                         aiMessage.setRole("assistant");
                         aiMessage.setContent(fullResponse);
                         aiMessage.setReplyToMessageId(messageId);
+                        aiMessage.setCitationsJson(toJson(citations));
+                        aiMessage.setAgentToolTracesJson(toJson(toolTraces));
                         aiMessage.setCreatedAt(LocalDateTime.now());
                         chatMessageMapper.insert(aiMessage);
                     }
 
+                    for (AgentToolTrace toolTrace : toolTraces) {
+                        emitter.send(SseEmitter.event().name("agent_tool").data(toClientToolTrace(toolTrace)));
+                    }
                     emitter.send(SseEmitter.event().name("thinking_done").data(""));
-                    for (com.kangban.agent.Citation citation : agentResponse.citations()) {
+                    for (com.kangban.agent.Citation citation : citations) {
                         emitter.send(SseEmitter.event().name("citation").data(citation));
                     }
                     emitter.send(SseEmitter.event().name("token").data(fullResponse));
@@ -363,14 +376,90 @@ public class ConsultationService {
         );
     }
 
-    private void replayCompletedResponse(SseEmitter emitter, String response) {
+    /**
+     * 只读取当前已授权会话的用户/助手消息，并排除本轮问题。工具结果存放在独立审计字段，
+     * 不会作为下一轮的对话记忆发送给模型。
+     */
+    private List<ConversationMessage> loadConversationHistory(ChatSession session, Long currentMessageId) {
+        List<ChatMessage> messages = chatMessageMapper.selectList(
+                new LambdaQueryWrapper<ChatMessage>()
+                        .eq(ChatMessage::getSessionId, session.getId())
+                        .eq(ChatMessage::getUserId, session.getUserId())
+                        .in(ChatMessage::getRole, List.of("user", "assistant"))
+                        .ne(ChatMessage::getId, currentMessageId)
+                        .orderByDesc(ChatMessage::getCreatedAt)
+                        .orderByDesc(ChatMessage::getId)
+                        .last("LIMIT 40")
+        );
+        if (messages == null || messages.isEmpty()) {
+            return List.of();
+        }
+        List<ConversationMessage> history = messages.stream()
+                .filter(message -> message.getId() == null || !message.getId().equals(currentMessageId))
+                .filter(message -> "user".equals(message.getRole()) || "assistant".equals(message.getRole()))
+                .filter(message -> message.getContent() != null && !message.getContent().isBlank())
+                .map(message -> new ConversationMessage(message.getRole(), message.getContent()))
+                .toList();
+        List<ConversationMessage> chronological = new ArrayList<>(history);
+        Collections.reverse(chronological);
+        return List.copyOf(chronological);
+    }
+
+    private void replayCompletedResponse(SseEmitter emitter, String response, String citationsJson,
+                                         String agentToolTracesJson) {
         try {
+            for (AgentToolTrace toolTrace : readAgentToolTraces(agentToolTracesJson)) {
+                emitter.send(SseEmitter.event().name("agent_tool").data(toClientToolTrace(toolTrace)));
+            }
             emitter.send(SseEmitter.event().name("thinking_done").data(""));
+            for (com.kangban.agent.Citation citation : readCitations(citationsJson)) {
+                emitter.send(SseEmitter.event().name("citation").data(citation));
+            }
             emitter.send(SseEmitter.event().name("token").data(response));
             emitter.send(SseEmitter.event().name("done").data(response));
             emitter.complete();
         } catch (IOException e) {
             emitter.complete();
+        }
+    }
+
+    private List<AgentToolTrace> readAgentToolTraces(String agentToolTracesJson) {
+        if (agentToolTracesJson == null || agentToolTracesJson.isBlank()) {
+            return List.of();
+        }
+        try {
+            return objectMapper.readValue(agentToolTracesJson,
+                    new TypeReference<List<AgentToolTrace>>() {});
+        } catch (JsonProcessingException ignored) {
+            return List.of();
+        }
+    }
+
+    private Map<String, Object> toClientToolTrace(AgentToolTrace trace) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("toolName", trace.toolName());
+        payload.put("status", trace.status().name());
+        payload.put("iteration", trace.iteration());
+        return payload;
+    }
+
+    private List<com.kangban.agent.Citation> readCitations(String citationsJson) {
+        if (citationsJson == null || citationsJson.isBlank()) {
+            return List.of();
+        }
+        try {
+            return objectMapper.readValue(citationsJson,
+                    new TypeReference<List<com.kangban.agent.Citation>>() {});
+        } catch (JsonProcessingException ignored) {
+            return List.of();
+        }
+    }
+
+    private String toJson(Object value) {
+        try {
+            return objectMapper.writeValueAsString(value == null ? List.of() : value);
+        } catch (JsonProcessingException e) {
+            return "[]";
         }
     }
 

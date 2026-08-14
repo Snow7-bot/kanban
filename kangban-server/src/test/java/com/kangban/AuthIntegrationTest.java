@@ -283,10 +283,12 @@ class AuthIntegrationTest {
         }
 
         @Test
-        @DisplayName("无 Token → 403 Forbidden")
-        void noTokenReturns403() throws Exception {
+        @DisplayName("无 Token → 401 Unauthorized")
+        void noTokenReturns401() throws Exception {
             mockMvc.perform(get("/auth/me"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value(401))
+                    .andExpect(jsonPath("$.message").value("请先登录"));
         }
 
         @Test
@@ -438,7 +440,8 @@ class AuthIntegrationTest {
         @DisplayName("401 未登录 → 跳转登录页（前端约定）")
         void unauthenticatedTriggers401() throws Exception {
             mockMvc.perform(delete("/auth/logout"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value(401));
         }
     }
 }

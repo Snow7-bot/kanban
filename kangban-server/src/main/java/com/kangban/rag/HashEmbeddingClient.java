@@ -1,6 +1,9 @@
 package com.kangban.rag;
 
+import com.kangban.agent.AgentMetrics;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 
@@ -8,14 +11,32 @@ import java.util.Arrays;
  * 本地、可重复的开发期向量化实现。生产环境应替换为受管控的 Embedding 服务。
  */
 @Component
+@ConditionalOnProperty(name = "app.agent.rag.embedding-provider", havingValue = "local", matchIfMissing = true)
 public class HashEmbeddingClient implements EmbeddingClient {
 
     static final int DIMENSIONS = 128;
+    private final AgentMetrics metrics;
+
+    @Autowired
+    public HashEmbeddingClient(AgentMetrics metrics) {
+        this.metrics = metrics;
+    }
+
+    public HashEmbeddingClient() {
+        this(new AgentMetrics());
+    }
+
+    @Override
+    public int dimensions() {
+        return DIMENSIONS;
+    }
 
     @Override
     public double[] embed(String text) {
+        long startedAt = System.currentTimeMillis();
         double[] vector = new double[DIMENSIONS];
         if (text == null || text.isBlank()) {
+            metrics.recordEmbedding("local", 1, System.currentTimeMillis() - startedAt, "success");
             return vector;
         }
         String normalized = text.trim().toLowerCase();
@@ -27,18 +48,12 @@ public class HashEmbeddingClient implements EmbeddingClient {
             }
         }
         normalize(vector);
+        metrics.recordEmbedding("local", 1, System.currentTimeMillis() - startedAt, "success");
         return vector;
     }
 
     static double cosine(double[] left, double[] right) {
-        if (left == null || right == null || left.length != right.length) {
-            return 0.0;
-        }
-        double dot = 0.0;
-        for (int i = 0; i < left.length; i++) {
-            dot += left[i] * right[i];
-        }
-        return Math.max(0.0, Math.min(1.0, dot));
+        return VectorSimilarity.cosine(left, right);
     }
 
     private static void add(double[] vector, int hash, double weight) {

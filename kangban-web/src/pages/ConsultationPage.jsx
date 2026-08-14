@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ChevronDown, Clock3, Edit3, Mic, Paperclip, Send, Sparkles, Stethoscope, Users } from 'lucide-react';
+import { ChevronDown, Clock3, Edit3, Mic, Paperclip, Send, ShieldAlert, Sparkles, Stethoscope, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import * as consultApi from '../api/consultation.js';
 import * as familyApi from '../api/family.js';
@@ -25,6 +25,28 @@ function hasPersonalizedContext(session, selectedTarget) {
   }
 }
 
+const AGENT_TOOL_LABELS = {
+  get_patient_health_snapshot: '健康档案',
+  get_health_metrics: '健康指标',
+  get_active_medications: '用药记录',
+  get_recent_medical_records: '病历摘要',
+};
+
+function readAgentToolTraces(message) {
+  if (Array.isArray(message?.agentToolTraces)) return message.agentToolTraces;
+  if (typeof message?.agentToolTracesJson !== 'string') return [];
+  try {
+    const parsed = JSON.parse(message.agentToolTracesJson);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function agentToolLabel(trace) {
+  return AGENT_TOOL_LABELS[trace?.toolName] || '授权健康数据';
+}
+
 export default function ConsultationPage() {
   const { user } = useAuth();
   const [sessionId, setSessionId] = useState(null);
@@ -32,6 +54,8 @@ export default function ConsultationPage() {
   const [sending, setSending] = useState(false);
   const [streaming, setStreaming] = useState(false);
   const [streamingText, setStreamingText] = useState('');
+  const [streamingCitations, setStreamingCitations] = useState([]);
+  const [streamingToolTraces, setStreamingToolTraces] = useState([]);
   const [thinking, setThinking] = useState(false);
   const [thinkingText, setThinkingText] = useState('');
   const [sendError, setSendError] = useState(null);
@@ -54,6 +78,7 @@ export default function ConsultationPage() {
   const sendingRef = useRef(false);
   const failedMessageIdRef = useRef(null);
   const pendingSummaryMemberRef = useRef(null);
+  const streamingCitationsRef = useRef([]);
 
   useEffect(() => {
     let active = true;
@@ -113,7 +138,7 @@ export default function ConsultationPage() {
       scrollChatToBottom(reduceMotion ? 'auto' : 'smooth');
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [messages.length, thinking, thinkingText, streaming, streamingText, sendError, scrollChatToBottom]);
+  }, [messages.length, thinking, thinkingText, streaming, streamingText, streamingToolTraces.length, sendError, scrollChatToBottom]);
 
   useEffect(() => {
     let active = true;
@@ -149,6 +174,9 @@ export default function ConsultationPage() {
     setThinking(false);
     setStreaming(false);
     setStreamingText('');
+    setStreamingCitations([]);
+    setStreamingToolTraces([]);
+    streamingCitationsRef.current = [];
     setSendError(null);
 
     (async () => {
@@ -231,6 +259,9 @@ export default function ConsultationPage() {
     setThinking(true);
     setThinkingText('');
     setStreamingText('');
+    setStreamingCitations([]);
+    setStreamingToolTraces([]);
+    streamingCitationsRef.current = [];
 
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
     const params = new URLSearchParams({ messageId: String(messageId) });
@@ -239,6 +270,8 @@ export default function ConsultationPage() {
     const streamConnection = { close: () => controller.abort() };
     eventSourceRef.current = streamConnection;
     let settled = false;
+    let receivedCitations = [];
+    let receivedToolTraces = [];
 
     const finish = () => {
       settled = true;
@@ -270,6 +303,27 @@ export default function ConsultationPage() {
         setSendError(data || 'AI 服务暂时不可用，请稍后重试');
         return;
       }
+      if (eventName === 'citation') {
+        try {
+          const citation = JSON.parse(data);
+          receivedCitations = [...receivedCitations, citation];
+          streamingCitationsRef.current = receivedCitations;
+          setStreamingCitations((previous) => [...previous, citation]);
+        } catch {
+          // Ignore malformed citation events; the answer itself remains available.
+        }
+        return;
+      }
+      if (eventName === 'agent_tool') {
+        try {
+          const toolTrace = JSON.parse(data);
+          receivedToolTraces = [...receivedToolTraces, toolTrace];
+          setStreamingToolTraces((previous) => [...previous, toolTrace]);
+        } catch {
+          // Ignore malformed trace events; the answer itself remains available.
+        }
+        return;
+      }
       if (eventName !== 'done') return;
       if (settled) return;
       const finalText = data;
@@ -283,6 +337,8 @@ export default function ConsultationPage() {
           role: 'assistant',
           content: finalText,
           replyToMessageId: messageId,
+          citations: receivedCitations,
+          agentToolTraces: receivedToolTraces,
           createdAt: new Date().toISOString(),
         }];
       });
@@ -478,12 +534,42 @@ export default function ConsultationPage() {
     const text = msg.text || msg.content || '';
     const id = msg.id || msg._id || Math.random();
     const isAssistant = role === 'assistant' || role === 'ai' || role === 'model';
+    let citations = Array.isArray(msg.citations) ? msg.citations : [];
+    if (citations.length === 0 && typeof msg.citationsJson === 'string') {
+      try {
+        const parsed = JSON.parse(msg.citationsJson);
+        citations = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        citations = [];
+      }
+    }
+    const toolTraces = readAgentToolTraces(msg);
 
     return isAssistant ? (
       <div key={id} className="message" style={{alignItems:'flex-start'}}>
         <DocIcon />
         <div>
           <div className="message-bubble">{text}</div>
+          {citations.length > 0 && (
+            <div className="message-citations" aria-label="回答依据">
+              {citations.map((citation, index) => (
+                <span className={`message-citation ${citation.scope === 'PRIVATE' ? 'private' : 'public'}`} key={`${citation.documentId || index}-${index}`}>
+                  {citation.scope === 'PRIVATE' ? '家庭私有病历' : '公共资料'} · {citation.title || `资料${index + 1}`}
+                  {citation.pageNumber ? ` · 第${citation.pageNumber}页` : ''}
+                </span>
+              ))}
+            </div>
+          )}
+          {toolTraces.length > 0 && (
+            <div className="message-agent-traces" aria-label="本轮已读取的数据">
+              <span className="message-agent-trace-title">已读取</span>
+              {toolTraces.map((trace, index) => (
+                <span className={`message-agent-trace ${trace.status === 'SUCCESS' ? 'success' : 'failed'}`} key={`${trace.toolName || index}-${index}`}>
+                  {trace.status === 'SUCCESS' ? '✓' : '!' } {agentToolLabel(trace)}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     ) : (
@@ -514,6 +600,15 @@ export default function ConsultationPage() {
                 {thinkingText || '正在分析...'}<span className="cursor-blink">|</span>
               </div>
             </div>
+          </div>
+        )}
+        {streamingToolTraces.length > 0 && (thinking || streaming) && (
+          <div className="message-agent-traces streaming-traces" aria-label="正在读取授权数据">
+            {streamingToolTraces.map((trace, index) => (
+              <span className="message-agent-trace success" key={`${trace.toolName || index}-${index}`}>
+                ✓ {agentToolLabel(trace)}
+              </span>
+            ))}
           </div>
         )}
         {streaming && streamingText && (
@@ -781,8 +876,8 @@ export default function ConsultationPage() {
           )}
 
           <div className="chat-disclaimer">
-            <Sparkles size={10} />
-            🏥 当前分析仅使用{patientDisplay.name}的授权健康数据，AI 建议不替代专业医疗诊断。
+            <ShieldAlert size={10} />
+            <span>当前分析仅使用{patientDisplay.name}的授权健康数据；回答下方会标注引用资料。AI 不用于诊断、处方或调整剂量。若出现胸痛、呼吸困难、意识异常或大出血，请立即拨打 120 或前往急诊。</span>
           </div>
         </Card>
       </div>

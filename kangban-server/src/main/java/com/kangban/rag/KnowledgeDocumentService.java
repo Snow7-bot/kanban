@@ -137,14 +137,20 @@ public class KnowledgeDocumentService {
             if (chunks.isEmpty()) {
                 throw BusinessException.paramsError("文档未生成有效知识片段");
             }
+            List<double[]> embeddings = embeddingClient.embedBatch(
+                    chunks.stream().map(KnowledgeChunkDraft::content).toList());
+            if (embeddings.size() != chunks.size()) {
+                throw new IllegalStateException("知识片段向量数量不一致");
+            }
             jdbcTemplate.update("DELETE FROM knowledge_chunks WHERE document_id=?", documentId);
-            for (KnowledgeChunkDraft chunk : chunks) {
+            for (int index = 0; index < chunks.size(); index++) {
+                KnowledgeChunkDraft chunk = chunks.get(index);
                 jdbcTemplate.update(
                         "INSERT INTO knowledge_chunks "
                                 + "(document_id, chunk_index, page_number, section, content, token_count, "
                                 + "embedding_json, embedding_model) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                         documentId, chunk.chunkIndex(), chunk.pageNumber(), blankToNull(chunk.section()),
-                        chunk.content(), chunk.tokenCount(), serializeEmbedding(embeddingClient.embed(chunk.content())),
+                        chunk.content(), chunk.tokenCount(), serializeEmbedding(embeddings.get(index)),
                         properties.getEmbeddingModel());
             }
             jdbcTemplate.update("UPDATE ingestion_jobs SET status='SUCCEEDED', total_chunks=?, "

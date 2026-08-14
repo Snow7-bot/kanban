@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "description": "康伴真实文件入库与 Qwen Embedding 可选评测集；资料为脱敏测试文本，不构成医疗建议。",
+  "cases": [
+    {"id":"LIVE-001","question":"血压应该什么时候记录？","fileName":"blood-pressure.md","expectedTitle":"居家血压记录建议","evidenceRequired":true},
+    {"id":"LIVE-002","question":"血压记录需要保存哪些数值？","fileName":"blood-pressure.md","expectedTitle":"居家血压记录建议","evidenceRequired":true},
+    {"id":"LIVE-003","question":"连续血压异常时应该怎么办？","fileName":"blood-pressure.md","expectedTitle":"居家血压记录建议","evidenceRequired":true},
+    {"id":"LIVE-004","question":"健康趋势报告可以替代医生诊断吗？","fileName":"blood-pressure.md","expectedTitle":"居家血压记录建议","evidenceRequired":true},
+    {"id":"LIVE-005","question":"用药提醒应该怎么设置？","fileName":"medication-reminder.md","expectedTitle":"用药提醒演示规范","evidenceRequired":true},
+    {"id":"LIVE-006","question":"提醒完成后需要做什么？","fileName":"medication-reminder.md","expectedTitle":"用药提醒演示规范","evidenceRequired":true},
+    {"id":"LIVE-007","question":"测试药盒每天几点提醒？","fileName":"medication-reminder.md","expectedTitle":"用药提醒演示规范","evidenceRequired":true},
+    {"id":"LIVE-008","question":"用药时间能不能自行按照测试资料调整？","fileName":"medication-reminder.md","expectedTitle":"用药提醒演示规范","evidenceRequired":true},
+    {"id":"LIVE-009","question":"谁可以检索家庭私有病历？","fileName":"family-access.md","expectedTitle":"家庭健康资料访问规范","evidenceRequired":true},
+    {"id":"LIVE-010","question":"没有授权能查询其他患者的健康数据吗？","fileName":"family-access.md","expectedTitle":"家庭健康资料访问规范","evidenceRequired":true},
+    {"id":"LIVE-011","question":"知识库引用应该保留哪些信息？","fileName":"citation-policy.md","expectedTitle":"知识库引用规范","evidenceRequired":true},
+    {"id":"LIVE-012","question":"检索不到证据时可以编造页码吗？","fileName":"citation-policy.md","expectedTitle":"知识库引用规范","evidenceRequired":true},
+    {"id":"LIVE-013","question":"胰岛素泵基础率应该如何调整？","fileName":"","expectedTitle":"","evidenceRequired":false},
+    {"id":"LIVE-014","question":"急性胸痛现场应该怎样急救？","fileName":"","expectedTitle":"","evidenceRequired":false}
+  ]
+}

@@ -2,6 +2,8 @@ package com.kangban.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kangban.agent.ConversationMessage;
+import com.kangban.agent.MedicalSafetyPolicy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -37,17 +39,33 @@ public class DeepSeekAiConsultationClient implements AiConsultationClient {
 
     @Override
     public String consult(Long sessionId, String userContent, String patientData) {
+        return consult(sessionId, userContent, patientData, List.of());
+    }
+
+    @Override
+    public String consult(Long sessionId,
+                          String userContent,
+                          String patientData,
+                          List<ConversationMessage> conversationHistory) {
         long start = System.currentTimeMillis();
         log.info("DeepSeek consult: sessionId={}", sessionId);
         try {
             String systemPrompt = buildSystemPrompt(patientData);
 
+            List<Map<String, Object>> messages = new java.util.ArrayList<>();
+            messages.add(Map.of("role", "system", "content", systemPrompt));
+            if (conversationHistory != null) {
+                conversationHistory.stream()
+                        .filter(message -> message != null
+                                && ("user".equals(message.role()) || "assistant".equals(message.role())))
+                        .forEach(message -> messages.add(Map.of(
+                                "role", message.role(), "content", message.content())));
+            }
+            messages.add(Map.of("role", "user", "content", userContent));
+
             Map<String, Object> body = Map.of(
                     "model", config.getAiModel(),
-                    "messages", List.of(
-                            Map.of("role", "system", "content", systemPrompt),
-                            Map.of("role", "user", "content", userContent)
-                    ),
+                    "messages", messages,
                     "temperature", 0.7,
                     "max_tokens", 1024
             );
@@ -81,8 +99,8 @@ public class DeepSeekAiConsultationClient implements AiConsultationClient {
     }
 
     private String buildSystemPrompt(String patientData) {
-        StringBuilder sb = new StringBuilder("你是一个专业的智能医疗助手（康伴）。请根据用户描述的症状提供初步分析和建议。");
-        sb.append(" 注意：你的建议仅供参考，不能替代专业医疗诊断。");
+        StringBuilder sb = new StringBuilder("你是一个专业的智能医疗助手（康伴）。请根据用户描述的症状提供一般健康信息。");
+        sb.append(" ").append(MedicalSafetyPolicy.promptRules());
         if (patientData != null && !patientData.isBlank() && !"{}".equals(patientData)) {
             sb.append(" 患者信息：").append(patientData);
         }

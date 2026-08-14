@@ -252,7 +252,8 @@ class MedicalRecordShareAndPrintTest {
 
             // No auth header
             mockMvc.perform(get("/share/" + token))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value(401));
         }
 
         @Test
@@ -480,7 +481,8 @@ class MedicalRecordShareAndPrintTest {
         @DisplayName("未认证用户无法下载 PDF")
         void unauthenticatedCannotDownloadPdf() throws Exception {
             mockMvc.perform(get("/medical-records/" + record.getId() + "/print"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value(401));
         }
     }
 }

@@ -42,10 +42,19 @@ class SecurityBoundaryIntegrationTest {
     }
 
     @Test
+    void metricsEndpointRequiresAuthentication() throws Exception {
+        mockMvc.perform(get("/actuator/metrics"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401));
+    }
+
+    @Test
     void consultationStreamRequiresAuthentication() throws Exception {
         mockMvc.perform(get("/consultation/sessions/1/stream")
                         .param("messageId", "1"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.message").value("请先登录"));
     }
 
     @Test

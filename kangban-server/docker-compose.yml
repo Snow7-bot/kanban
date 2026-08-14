@@ -71,7 +71,8 @@ services:
       APP_AGENT_ENABLED: ${APP_AGENT_ENABLED:-true}
       APP_AGENT_CONTEXT_SECRET: ${APP_AGENT_CONTEXT_SECRET:-}
       APP_RAG_ENABLED: ${APP_RAG_ENABLED:-false}
-      APP_RAG_VECTOR_STORE: ${APP_RAG_VECTOR_STORE:-postgresql}
+      APP_RAG_PRIVATE_ENABLED: ${APP_RAG_PRIVATE_ENABLED:-true}
+      APP_RAG_VECTOR_STORE: ${APP_RAG_VECTOR_STORE:-mysql-jdbc}
     depends_on:
       mysql:
         condition: service_healthy

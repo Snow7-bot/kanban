@@ -5,6 +5,7 @@ import com.kangban.entity.MedicalRecord;
 import com.kangban.mapper.FamilyMemberMapper;
 import com.kangban.mapper.MedicalRecordMapper;
 import com.kangban.mapper.OcrAnalysisTaskMapper;
+import com.kangban.rag.PrivateKnowledgeIndexService;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -92,7 +93,8 @@ class MedicalRecordSafetyTest {
                 mock(OcrAnalysisTaskMapper.class),
                 minioService,
                 mock(OcrTaskRunner.class),
-                mock(FamilyMemberMapper.class)
+                mock(FamilyMemberMapper.class),
+                mock(PrivateKnowledgeIndexService.class)
         );
     }
 }

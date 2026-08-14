@@ -4,6 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kangban.agent.AgentExecutionContext;
 import com.kangban.agent.AgentOrchestrator;
 import com.kangban.agent.AgentResponse;
+import com.kangban.agent.AgentToolResult;
+import com.kangban.agent.AgentToolTrace;
+import com.kangban.agent.Citation;
+import com.kangban.agent.ConversationMessage;
 import com.kangban.dto.request.CreateSessionRequest;
 import com.kangban.dto.request.SendMessageRequest;
 import com.kangban.entity.ChatMessage;
@@ -16,6 +20,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -154,7 +159,11 @@ class ConsultationServiceTest {
         AgentExecutionContext context = context();
         when(agentOrchestrator.createContext(9L, 9L, null, 3L)).thenReturn(context);
         when(agentOrchestrator.run(any())).thenReturn(
-                new AgentResponse("请注意休息并观察症状。", context.runId(), null, null));
+                new AgentResponse("请注意休息并观察症状。", context.runId(),
+                        java.util.List.of(new Citation("private:7", "血常规", "1", null,
+                                "OCR文本", "家庭私有病历", "2026-08-12", "PRIVATE")), null,
+                        java.util.List.of(new AgentToolTrace("get_health_metrics", AgentToolResult.Status.SUCCESS,
+                                1, 12, ""))));
 
         service.streamAiResponse(9L, 3L, 21L);
 
@@ -163,6 +172,46 @@ class ConsultationServiceTest {
         verify(messageMapper, times(1)).insert(captor.capture());
         assertThat(captor.getValue().getReplyToMessageId()).isEqualTo(21L);
         assertThat(captor.getValue().getRole()).isEqualTo("assistant");
+        assertThat(captor.getValue().getCitationsJson()).contains("PRIVATE", "家庭私有病历");
+        assertThat(captor.getValue().getAgentToolTracesJson()).contains("get_health_metrics", "SUCCESS");
+    }
+
+    @Test
+    void loadsOnlyCurrentSessionConversationHistoryForAgent() {
+        ChatSession session = session(3L, 9L);
+        ChatMessage userMessage = userMessage(21L, 3L, 9L, "client-2");
+        ChatMessage previousUser = userMessage(18L, 3L, 9L, "client-previous");
+        previousUser.setContent("我上次的血压是多少");
+        ChatMessage previousAssistant = new ChatMessage();
+        previousAssistant.setId(19L);
+        previousAssistant.setSessionId(3L);
+        previousAssistant.setUserId(9L);
+        previousAssistant.setRole("assistant");
+        previousAssistant.setContent("上次记录是 128/80。");
+        ChatMessage toolTraceMessage = new ChatMessage();
+        toolTraceMessage.setId(20L);
+        toolTraceMessage.setSessionId(3L);
+        toolTraceMessage.setUserId(9L);
+        toolTraceMessage.setRole("tool");
+        toolTraceMessage.setContent("不应进入长期记忆");
+        when(sessionMapper.selectOne(any())).thenReturn(session);
+        when(messageMapper.selectOne(any())).thenReturn(userMessage, null, null);
+        when(messageMapper.selectList(any())).thenReturn(
+                java.util.List.of(previousAssistant, previousUser, toolTraceMessage));
+        when(patientHealthContextService.build(9L, null)).thenReturn(snapshot());
+        AgentExecutionContext context = context();
+        when(agentOrchestrator.createContext(9L, 9L, null, 3L)).thenReturn(context);
+        when(agentOrchestrator.run(any())).thenReturn(
+                new AgentResponse("已结合上轮对话。", context.runId(), List.of(), null, List.of()));
+
+        service.streamAiResponse(9L, 3L, 21L);
+
+        org.mockito.ArgumentCaptor<com.kangban.agent.AgentRequest> requestCaptor =
+                org.mockito.ArgumentCaptor.forClass(com.kangban.agent.AgentRequest.class);
+        verify(agentOrchestrator).run(requestCaptor.capture());
+        assertThat(requestCaptor.getValue().history())
+                .extracting(ConversationMessage::content)
+                .containsExactly("我上次的血压是多少", "上次记录是 128/80。");
     }
 
     @Test
@@ -174,6 +223,7 @@ class ConsultationServiceTest {
         reply.setRole("assistant");
         reply.setContent("已生成的回复");
         reply.setReplyToMessageId(21L);
+        reply.setAgentToolTracesJson("[{\"toolName\":\"get_health_metrics\",\"status\":\"SUCCESS\",\"iteration\":1,\"elapsedMs\":8,\"errorCode\":\"\"}]");
         when(sessionMapper.selectOne(any())).thenReturn(session);
         when(messageMapper.selectOne(any())).thenReturn(userMessage, reply);
 

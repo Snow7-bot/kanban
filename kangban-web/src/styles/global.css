@@ -191,7 +191,8 @@ h1, h2, h3, h4, p { margin: 0; }
 .quick-replies { display: flex; flex-wrap: wrap; gap: 7px; padding: 0 20px 15px; }
 .quick-reply { min-height: 29px; padding: 0 10px; color: var(--muted); background: var(--canvas-soft); border-radius: 999px; font-size: 9px; }
 .composer { display: flex; align-items: center; gap: 10px; padding: 14px 17px 17px; border-top: 1px solid var(--line); }
-.chat-disclaimer { display: flex; align-items: center; justify-content: center; gap: 5px; color: var(--subtle); padding: 0 15px 13px; font-size: 8px; }
+.chat-disclaimer { display: flex; align-items: flex-start; justify-content: center; gap: 5px; color: var(--subtle); padding: 0 15px 13px; font-size: 8px; line-height: 1.45; text-align: center; }
+.chat-disclaimer svg { flex: 0 0 auto; margin-top: 1px; color: var(--primary); }
 .composer input { flex: 1; min-width: 0; height: 38px; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 11px; }
 .composer input::placeholder { color: var(--subtle); }
 .send-button { width: 35px; height: 35px; display: grid; place-items: center; color: #fff; background: var(--primary); border-radius: 50%; }
@@ -420,6 +421,15 @@ h1, h2, h3, h4, p { margin: 0; }
 .cursor-blink { animation: blink 1s step-end infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 .message-bubble.streaming { min-height: 1.5em; }
+.message-citations { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.message-citation { display: inline-flex; align-items: center; padding: 4px 8px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--muted); font-size: 10px; line-height: 1.3; }
+.message-citation.private { border-color: #c7d2fe; color: #4338ca; background: #eef2ff; }
+.message-citation.public { border-color: #dbeafe; color: #1d4ed8; background: #eff6ff; }
+.message-agent-traces { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+.message-agent-trace-title { color: var(--muted); font-size: 10px; }
+.message-agent-trace { display: inline-flex; align-items: center; padding: 4px 8px; border: 1px solid #d1fae5; border-radius: 999px; background: #ecfdf5; color: #047857; font-size: 10px; line-height: 1.3; }
+.message-agent-trace.failed { border-color: #fed7aa; background: #fff7ed; color: #c2410c; }
+.streaming-traces { margin-top: 6px; }
 @media (prefers-reduced-motion: reduce) {
   .chat-messages { scroll-behavior: auto; }
   .chat-scroll-button { transition: none; }
