@@ -23,3 +23,9 @@ test('health trends compacts stat readings when the shared sidebar reduces deskt
   assert.match(css, /@media \(max-width:\s*1280px\)[\s\S]*?\.trends-stat-value strong\s*\{[^}]*font:\s*700 28px\/36px/s);
   assert.match(css, /@media \(max-width:\s*1280px\)[\s\S]*?\.trends-stat-value span\s*\{[^}]*font-size:\s*14px/s);
 });
+
+test('health trends keeps same-day records keyed by record id', async () => {
+  const source = await readFile(new URL('./pages/HealthTrendsPage.jsx', import.meta.url), 'utf8');
+
+  assert.match(source, /key=\{record\.id \?\? `\$\{record\.recordedDate\}-\$\{index\}`\}/);
+});

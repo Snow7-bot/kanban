@@ -57,4 +57,5 @@ test('profile normalizes nullable backend fields before passing them to controll
   assert.match(authContext, /const updateUser = useCallback/);
   assert.match(authContext, /function withDerivedUserFields/);
   assert.match(authContext, /localStorage\.setItem\(AUTH_USER_KEY, JSON\.stringify\(nextUser\)\)/);
+  assert.doesNotMatch(profile, /HIPAA|已验证患者档案|ART-99420/);
 });

@@ -11,6 +11,9 @@ import java.time.LocalTime;
 @Schema(description = "添加健康记录请求")
 public class AddHealthRecordRequest {
 
+    @Schema(description = "共享账号用户 ID（空表示当前账号）")
+    private Long subjectUserId;
+
     @Schema(description = "家庭成员名称（空表示本人）")
     private String memberName;
 

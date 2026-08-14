@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Activity, Camera, ChevronRight, HeartPulse, Plus, Trash2, UserPlus } from 'lucide-react';
 import { Button, Card, StatusChip } from '../components/UI.jsx';
 import AccountFooter from '../components/AccountFooter.jsx';
+import FamilySharingPanel from '../components/FamilySharingPanel.jsx';
 import * as familyApi from '../api/family.js';
 import { useAsync } from '../hooks/useAsync.js';
 import { API_CONFIG } from '../api/config.js';
@@ -108,6 +109,7 @@ export default function FamilyPage({ onNavigate }) {
             添加成员
           </Button>
         </header>
+        <FamilySharingPanel />
         <section className="family-grid">
           {[1, 2, 3].map((i) => (
             <div key={i} className="family-member-card is-loading">
@@ -170,6 +172,7 @@ export default function FamilyPage({ onNavigate }) {
             <p>统一管理您家人的健康档案与监测数据。</p>
           </div>
         </header>
+        <FamilySharingPanel />
         <section className="family-grid">
           <div className="family-error-card">
             <p>数据加载失败：{error}</p>
@@ -200,6 +203,7 @@ export default function FamilyPage({ onNavigate }) {
             添加成员
           </Button>
         </header>
+        <FamilySharingPanel />
         <section className="family-grid">
           <div className="family-empty-card">
             <i>
@@ -279,6 +283,7 @@ export default function FamilyPage({ onNavigate }) {
           添加成员
         </Button>
       </header>
+      <FamilySharingPanel />
 
       <section className="family-grid">
         {members.map((member) => {

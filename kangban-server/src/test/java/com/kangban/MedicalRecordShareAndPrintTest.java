@@ -8,8 +8,12 @@ import com.kangban.entity.User;
 import com.kangban.mapper.MedicalRecordMapper;
 import com.kangban.mapper.ShareRecordMapper;
 import com.kangban.mapper.UserMapper;
+import com.kangban.service.MinioService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,6 +30,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.crypto.SecretKey;
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
@@ -32,13 +38,15 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(TestVerificationCodeConfig.class)
+@Import(TestCaptchaConfig.class)
 @DisplayName("P1-A: 病历分享与 PDF 导出集成测试")
 class MedicalRecordShareAndPrintTest {
 
@@ -60,6 +68,9 @@ class MedicalRecordShareAndPrintTest {
     @Autowired
     private ShareRecordMapper shareRecordMapper;
 
+    @MockitoBean
+    private MinioService minioService;
+
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -71,6 +82,9 @@ class MedicalRecordShareAndPrintTest {
 
     @BeforeEach
     void setUp() {
+        when(minioService.resolveFileUrl(anyString()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
         // Clean up
         shareRecordMapper.delete(null);
         medicalRecordMapper.delete(null);
@@ -238,7 +252,8 @@ class MedicalRecordShareAndPrintTest {
 
             // No auth header
             mockMvc.perform(get("/share/" + token))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value(401));
         }
 
         @Test
@@ -430,6 +445,31 @@ class MedicalRecordShareAndPrintTest {
     class PdfDownloadTests {
 
         @Test
+        @DisplayName("所有者可以下载包含分析页的 PDF")
+        void ownerCanDownloadPdfWithAnalysis() throws Exception {
+            byte[] sourcePdf;
+            try (PDDocument document = new PDDocument();
+                 ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+                document.addPage(new PDPage());
+                document.save(output);
+                sourcePdf = output.toByteArray();
+            }
+            when(minioService.downloadByUrl(record.getFileUrl())).thenReturn(sourcePdf);
+
+            byte[] result = mockMvc.perform(get("/medical-records/" + record.getId() + "/print")
+                            .param("includeAnalysis", "true")
+                            .header("Authorization", "Bearer " + ownerToken))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType("application/pdf"))
+                    .andExpect(header().string("Content-Disposition", org.hamcrest.Matchers.containsString(".pdf")))
+                    .andReturn().getResponse().getContentAsByteArray();
+
+            try (PDDocument downloaded = Loader.loadPDF(result)) {
+                assertThat(downloaded.getNumberOfPages()).isEqualTo(2);
+            }
+        }
+
+        @Test
         @DisplayName("已认证用户无法下载不属于自己的病历 PDF")
         void otherUserCannotDownloadPdf() throws Exception {
             mockMvc.perform(get("/medical-records/" + record.getId() + "/print")
@@ -441,7 +481,8 @@ class MedicalRecordShareAndPrintTest {
         @DisplayName("未认证用户无法下载 PDF")
         void unauthenticatedCannotDownloadPdf() throws Exception {
             mockMvc.perform(get("/medical-records/" + record.getId() + "/print"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value(401));
         }
     }
 }

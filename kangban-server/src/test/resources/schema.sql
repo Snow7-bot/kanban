@@ -155,6 +155,7 @@ CREATE TABLE IF NOT EXISTS dose_records (
 CREATE TABLE IF NOT EXISTS chat_sessions (
     id           BIGINT      AUTO_INCREMENT PRIMARY KEY,
     user_id      BIGINT      NOT NULL,
+    subject_user_id BIGINT,
     member_id    BIGINT,
     title        VARCHAR(200),
     patient_data TEXT,
@@ -173,7 +174,185 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     attachment_url      VARCHAR(500),
     reply_to_message_id BIGINT,
     client_message_id   VARCHAR(64),
+    citations_json      TEXT,
+    agent_tool_traces_json TEXT,
     created_at          TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (reply_to_message_id),
     UNIQUE (user_id, client_message_id)
+);
+
+CREATE TABLE IF NOT EXISTS family_groups (
+    id            BIGINT       AUTO_INCREMENT PRIMARY KEY,
+    name          VARCHAR(100) NOT NULL,
+    owner_user_id BIGINT       NOT NULL,
+    created_at    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    deleted_at    TIMESTAMP    NULL
+);
+
+CREATE TABLE IF NOT EXISTS family_group_members (
+    id         BIGINT      AUTO_INCREMENT PRIMARY KEY,
+    family_id  BIGINT      NOT NULL,
+    user_id    BIGINT      NOT NULL,
+    relation   VARCHAR(20),
+    role       VARCHAR(20) DEFAULT 'member',
+    status     VARCHAR(20) DEFAULT 'active',
+    joined_at  TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (family_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS family_invitations (
+    id                   BIGINT      AUTO_INCREMENT PRIMARY KEY,
+    family_id            BIGINT      NOT NULL,
+    inviter_user_id      BIGINT      NOT NULL,
+    invitee_user_id      BIGINT      NOT NULL,
+    relation             VARCHAR(20),
+    can_view_health      BOOLEAN     DEFAULT TRUE,
+    can_add_health       BOOLEAN     DEFAULT FALSE,
+    can_view_records     BOOLEAN     DEFAULT FALSE,
+    can_view_medications BOOLEAN     DEFAULT FALSE,
+    can_view_reports     BOOLEAN     DEFAULT TRUE,
+    can_use_ai           BOOLEAN     DEFAULT FALSE,
+    can_modify           BOOLEAN     DEFAULT FALSE,
+    can_delete           BOOLEAN     DEFAULT FALSE,
+    status               VARCHAR(20) DEFAULT 'pending',
+    expires_at           TIMESTAMP   NOT NULL,
+    responded_at         TIMESTAMP,
+    created_at           TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    updated_at           TIMESTAMP   DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS family_permissions (
+    id                   BIGINT      AUTO_INCREMENT PRIMARY KEY,
+    family_id            BIGINT      NOT NULL,
+    subject_user_id      BIGINT      NOT NULL,
+    grantee_user_id      BIGINT      NOT NULL,
+    can_view_health      BOOLEAN     DEFAULT FALSE,
+    can_add_health       BOOLEAN     DEFAULT FALSE,
+    can_view_records     BOOLEAN     DEFAULT FALSE,
+    can_view_medications BOOLEAN     DEFAULT FALSE,
+    can_view_reports     BOOLEAN     DEFAULT FALSE,
+    can_use_ai           BOOLEAN     DEFAULT FALSE,
+    can_modify           BOOLEAN     DEFAULT FALSE,
+    can_delete           BOOLEAN     DEFAULT FALSE,
+    status               VARCHAR(20) DEFAULT 'active',
+    created_at           TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    updated_at           TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    revoked_at           TIMESTAMP,
+    UNIQUE (family_id, subject_user_id, grantee_user_id)
+);
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id            BIGINT       AUTO_INCREMENT PRIMARY KEY,
+    user_id       BIGINT,
+    action        VARCHAR(100) NOT NULL,
+    resource_type VARCHAR(50),
+    resource_id   BIGINT,
+    detail        TEXT,
+    ip_address    VARCHAR(50),
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS knowledge_documents (
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title         VARCHAR(255) NOT NULL,
+    source        VARCHAR(255) NOT NULL,
+    source_url    VARCHAR(1000),
+    file_name     VARCHAR(255) NOT NULL,
+    media_type    VARCHAR(150),
+    file_sha256   VARCHAR(64) NOT NULL UNIQUE,
+    file_size     BIGINT NOT NULL,
+    version       INT NOT NULL DEFAULT 1,
+    status        VARCHAR(30) NOT NULL DEFAULT 'DRAFT',
+    raw_content   BLOB NOT NULL,
+    review_note   VARCHAR(1000),
+    created_by    BIGINT NOT NULL,
+    updated_by    BIGINT,
+    published_at  TIMESTAMP,
+    revoked_at    TIMESTAMP,
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at    TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS knowledge_chunks (
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    document_id     BIGINT NOT NULL,
+    chunk_index     INT NOT NULL,
+    page_number     INT,
+    section         VARCHAR(255),
+    content         TEXT NOT NULL,
+    token_count     INT NOT NULL,
+    embedding_json  TEXT,
+    embedding_model VARCHAR(100),
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (document_id, chunk_index)
+);
+
+CREATE TABLE IF NOT EXISTS ingestion_jobs (
+    id               BIGINT AUTO_INCREMENT PRIMARY KEY,
+    document_id      BIGINT NOT NULL,
+    job_type         VARCHAR(30) NOT NULL,
+    status           VARCHAR(30) NOT NULL DEFAULT 'PENDING',
+    total_chunks     INT NOT NULL DEFAULT 0,
+    processed_chunks INT NOT NULL DEFAULT 0,
+    error_message    VARCHAR(1000),
+    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at     TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS family_knowledge_documents (
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    medical_record_id  BIGINT NOT NULL UNIQUE,
+    owner_user_id     BIGINT NOT NULL,
+    subject_user_id   BIGINT NOT NULL,
+    family_id         BIGINT,
+    member_id         BIGINT,
+    title             VARCHAR(255) NOT NULL,
+    source            VARCHAR(255) NOT NULL DEFAULT '家庭私有病历',
+    version           INT NOT NULL DEFAULT 1,
+    status            VARCHAR(30) NOT NULL DEFAULT 'READY',
+    embedding_model   VARCHAR(100),
+    record_updated_at TIMESTAMP,
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    revoked_at        TIMESTAMP,
+    deleted_at        TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS family_knowledge_chunks (
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    document_id       BIGINT NOT NULL,
+    owner_user_id     BIGINT NOT NULL,
+    subject_user_id   BIGINT NOT NULL,
+    family_id         BIGINT,
+    member_id         BIGINT,
+    chunk_index       INT NOT NULL,
+    page_number       INT,
+    section           VARCHAR(255),
+    content           TEXT NOT NULL,
+    token_count       INT NOT NULL,
+    embedding_json    TEXT,
+    embedding_model   VARCHAR(100),
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (document_id, chunk_index)
+);
+
+CREATE TABLE IF NOT EXISTS knowledge_outbox_events (
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    event_key         VARCHAR(180) NOT NULL UNIQUE,
+    event_type        VARCHAR(50) NOT NULL,
+    medical_record_id  BIGINT NOT NULL,
+    owner_user_id     BIGINT NOT NULL,
+    subject_user_id   BIGINT NOT NULL,
+    family_id         BIGINT,
+    member_id         BIGINT,
+    status            VARCHAR(30) NOT NULL DEFAULT 'PENDING',
+    attempts          INT NOT NULL DEFAULT 0,
+    last_error        VARCHAR(1000),
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    processed_at      TIMESTAMP
 );

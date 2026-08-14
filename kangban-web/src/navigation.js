@@ -7,7 +7,7 @@ export const PAGE_IDS = [
   'home', 'profile', 'family', 'family-add', 'health-record',
   'health-report', 'trends', 'records', 'record-detail',
   'consultation', 'medications', 'medication-add',
-  'settings', 'login', 'register', 'password-reset',
+  'settings', 'knowledge-admin', 'login', 'register', 'password-reset',
   'shared-record',
 ];
 

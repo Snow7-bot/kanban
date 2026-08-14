@@ -26,6 +26,7 @@ import HealthReportPage from './pages/HealthReportPage.jsx';
 import RecordDetailPage from './pages/RecordDetailPage.jsx';
 import SharedRecordPage from './pages/SharedRecordPage.jsx';
 import MedicationAddPage from './pages/MedicationAddPage.jsx';
+import KnowledgeAdminPage from './pages/KnowledgeAdminPage.jsx';
 
 const PAGES = {
   home: HomePage, profile: ProfilePage, family: FamilyPage,
@@ -34,6 +35,7 @@ const PAGES = {
   consultation: ConsultationPage, records: MedicalRecordsPage,
   'record-detail': RecordDetailPage, 'shared-record': SharedRecordPage,
   medications: MedicationsPage, 'medication-add': MedicationAddPage, settings: SettingsPage,
+  'knowledge-admin': KnowledgeAdminPage,
   login: LoginPage, register: RegisterPage, 'password-reset': PasswordResetPage,
 };
 

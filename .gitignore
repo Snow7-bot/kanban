@@ -1,6 +1,12 @@
 # Local secrets
 kangban-server/.env
+kangban-server/.env.*
+!kangban-server/.env.example
+!kangban-server/.env.production.example
 kangban-web/.env.local
+kangban-web/.env.*
+!kangban-web/.env.example
+!kangban-web/.env.production.example
 
 # Local editor and OS files
 .DS_Store
@@ -9,6 +15,10 @@ kangban-web/.env.local
 **/.idea/
 *.iml
 *.log
+
+# Separate nested projects; they are not part of the Kangban application.
+/agent/
+/kangban-server/lumenx/
 
 # Build outputs
 kangban-server/target/

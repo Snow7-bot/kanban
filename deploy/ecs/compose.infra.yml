@@ -1,0 +1,33 @@
+services:
+  redis:
+    image: public.ecr.aws/docker/library/redis:7-alpine
+    container_name: kangban-redis-prod
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --requirepass
+      - ${KANGBAN_REDIS_PASSWORD}
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - kangban_redis_data:/data
+
+  minio:
+    image: minio/minio
+    container_name: kangban-minio-prod
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${KANGBAN_MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${KANGBAN_MINIO_SECRET_KEY}
+    command: server /data --console-address ":9001"
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - kangban_minio_data:/data
+
+volumes:
+  kangban_redis_data:
+  kangban_minio_data:

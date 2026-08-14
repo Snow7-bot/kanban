@@ -26,14 +26,14 @@ import java.util.Map;
 public class ConsultationController {
 
     private final ConsultationService consultationService;
-    private final com.kangban.security.JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "获取会话列表")
     @GetMapping("/sessions")
     public Result<List<ChatSession>> getSessions(@AuthenticationPrincipal UserDetails user,
+                                                 @RequestParam(required = false) Long subjectUserId,
                                                  @RequestParam(required = false) Long memberId) {
         Long userId = Long.parseLong(user.getUsername());
-        return consultationService.getSessions(userId, memberId);
+        return consultationService.getSessions(userId, subjectUserId, memberId);
     }
 
     @Operation(summary = "创建新会话")
@@ -72,31 +72,9 @@ public class ConsultationController {
     @Operation(summary = "流式获取AI回复 (SSE)")
     @GetMapping(value = "/sessions/{id}/stream", produces = "text/event-stream")
     public SseEmitter streamResponse(@PathVariable Long id,
-                                     @RequestParam(required = false) String token,
                                      @RequestParam Long messageId,
                                      @AuthenticationPrincipal UserDetails user) {
-        Long userId;
-        if (user != null) {
-            userId = Long.parseLong(user.getUsername());
-        } else if (token != null && !token.isEmpty()) {
-            // EventSource can't send Authorization header, fallback to query param
-            try {
-                userId = jwtTokenProvider.getUserIdFromToken(token);
-                if (!jwtTokenProvider.validateToken(token)) {
-                    SseEmitter err = new SseEmitter();
-                    err.completeWithError(new RuntimeException("invalid token"));
-                    return err;
-                }
-            } catch (Exception e) {
-                SseEmitter err = new SseEmitter();
-                err.completeWithError(e);
-                return err;
-            }
-        } else {
-            SseEmitter err = new SseEmitter();
-            err.completeWithError(new RuntimeException("unauthorized"));
-            return err;
-        }
+        Long userId = Long.parseLong(user.getUsername());
         return consultationService.streamAiResponse(userId, id, messageId);
     }
 

@@ -6,6 +6,7 @@ import com.kangban.entity.MedicalRecord;
 import com.kangban.entity.OcrAnalysisTask;
 import com.kangban.mapper.MedicalRecordMapper;
 import com.kangban.mapper.OcrAnalysisTaskMapper;
+import com.kangban.rag.PrivateKnowledgeIndexService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -24,6 +25,8 @@ public class OcrTaskRunner {
     private final MedicalRecordMapper medicalRecordMapper;
     private final OcrClient ocrClient;
     private final ObjectMapper objectMapper;
+    private final MinioService minioService;
+    private final PrivateKnowledgeIndexService privateKnowledgeIndexService;
 
     @Async("taskExecutor")
     public void processOcr(Long taskId) {
@@ -53,7 +56,8 @@ public class OcrTaskRunner {
             ocrAnalysisTaskMapper.updateById(task);
 
             // Delegate to OCR client
-            OcrClient.OcrResult result = ocrClient.analyze(taskId, record.getFileUrl(), record.getFileType());
+            String readableFileUrl = minioService.resolveFileUrl(record.getFileUrl());
+            OcrClient.OcrResult result = ocrClient.analyze(taskId, readableFileUrl, record.getFileType());
             if (result == null || !result.hasText()) {
                 updateTaskError(taskId, "OCR 未返回可用文本");
                 return;
@@ -80,6 +84,7 @@ public class OcrTaskRunner {
             record.setDiagnosisData(toJson(diagnosisData));
             record.setUpdatedAt(LocalDateTime.now());
             medicalRecordMapper.updateById(record);
+            privateKnowledgeIndexService.indexCompletedRecord(record.getId());
 
             long elapsed = System.currentTimeMillis() - start;
             log.info("OCR task done: taskId={}, elapsed={}ms, mock={}", taskId, elapsed, ocrClient.isMock());

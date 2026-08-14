@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: ${KANGBAN_DB_URL:jdbc:mysql://localhost:3306/kangban?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=utf8&createDatabaseIfNotExist=true}
+    username: ${KANGBAN_DB_USERNAME:root}
+    password: ${KANGBAN_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: ${KANGBAN_REDIS_HOST:localhost}
+      port: ${KANGBAN_REDIS_PORT:6379}
+      password: ${KANGBAN_REDIS_PASSWORD:}
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+app:
+  captcha:
+    secret: ${KANGBAN_CAPTCHA_SECRET:local-only-captcha-secret-change-me}

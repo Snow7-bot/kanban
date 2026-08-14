@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ChevronDown, Clock3, Edit3, Mic, Paperclip, Send, Sparkles, Stethoscope, Users } from 'lucide-react';
+import { ChevronDown, Clock3, Edit3, Mic, Paperclip, Send, ShieldAlert, Sparkles, Stethoscope, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import * as consultApi from '../api/consultation.js';
 import * as familyApi from '../api/family.js';
@@ -9,16 +9,42 @@ import { buildConsultationPayload } from '../api/contracts.js';
 import { Card, IconButton, StatusChip } from '../components/UI.jsx';
 import { getUserDisplayName } from '../data.js';
 
-function hasPersonalizedContext(session, selectedMemberId) {
+function hasPersonalizedContext(session, selectedTarget) {
   if (typeof session?.patientData !== 'string') return false;
   try {
     const context = JSON.parse(session.patientData);
     if (context?.contextVersion !== 'family-agent-v2') return false;
-    if (selectedMemberId == null) return context.selectedMemberId == null;
-    return Number(context.selectedMemberId) === Number(selectedMemberId);
+    if (!selectedTarget) return context.selectedMemberId == null && session.subjectUserId == null;
+    if (selectedTarget.kind === 'account') {
+      return Number(session.subjectUserId) === Number(selectedTarget.subjectUserId)
+        && context.selectedMemberId == null;
+    }
+    return Number(context.selectedMemberId) === Number(selectedTarget.memberId);
   } catch {
     return false;
   }
+}
+
+const AGENT_TOOL_LABELS = {
+  get_patient_health_snapshot: '健康档案',
+  get_health_metrics: '健康指标',
+  get_active_medications: '用药记录',
+  get_recent_medical_records: '病历摘要',
+};
+
+function readAgentToolTraces(message) {
+  if (Array.isArray(message?.agentToolTraces)) return message.agentToolTraces;
+  if (typeof message?.agentToolTracesJson !== 'string') return [];
+  try {
+    const parsed = JSON.parse(message.agentToolTracesJson);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function agentToolLabel(trace) {
+  return AGENT_TOOL_LABELS[trace?.toolName] || '授权健康数据';
 }
 
 export default function ConsultationPage() {
@@ -28,6 +54,8 @@ export default function ConsultationPage() {
   const [sending, setSending] = useState(false);
   const [streaming, setStreaming] = useState(false);
   const [streamingText, setStreamingText] = useState('');
+  const [streamingCitations, setStreamingCitations] = useState([]);
+  const [streamingToolTraces, setStreamingToolTraces] = useState([]);
   const [thinking, setThinking] = useState(false);
   const [thinkingText, setThinkingText] = useState('');
   const [sendError, setSendError] = useState(null);
@@ -50,19 +78,21 @@ export default function ConsultationPage() {
   const sendingRef = useRef(false);
   const failedMessageIdRef = useRef(null);
   const pendingSummaryMemberRef = useRef(null);
+  const streamingCitationsRef = useRef([]);
 
   useEffect(() => {
     let active = true;
+    const selectedTarget = familyMembers.find((member) => String(member.id) === String(selectedMemberId)) || null;
     Promise.all([
-      healthApi.getHealthTrends({ metric: 'heart_rate', days: 30, memberId: selectedMemberId }),
-      healthApi.getHealthTrends({ metric: 'blood_pressure', days: 30, memberId: selectedMemberId }),
+      healthApi.getHealthTrends({ metric: 'heart_rate', days: 30, memberId: selectedTarget?.memberId ?? null, subjectUserId: selectedTarget?.subjectUserId ?? null }),
+      healthApi.getHealthTrends({ metric: 'blood_pressure', days: 30, memberId: selectedTarget?.memberId ?? null, subjectUserId: selectedTarget?.subjectUserId ?? null }),
     ]).then(([heart, pressure]) => {
       if (active) setHealthOverview({ heart, pressure });
     }).catch(() => {
       if (active) setHealthOverview({});
     });
     return () => { active = false; };
-  }, [selectedMemberId]);
+  }, [selectedMemberId, familyMembers]);
 
   /* Normalise API response: accept array or { messages: […] } */
   const messages = Array.isArray(messagesData)
@@ -108,13 +138,15 @@ export default function ConsultationPage() {
       scrollChatToBottom(reduceMotion ? 'auto' : 'smooth');
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [messages.length, thinking, thinkingText, streaming, streamingText, sendError, scrollChatToBottom]);
+  }, [messages.length, thinking, thinkingText, streaming, streamingText, streamingToolTraces.length, sendError, scrollChatToBottom]);
 
   useEffect(() => {
     let active = true;
-    familyApi.getFamilyMembers()
+    familyApi.getPatientTargets()
       .then((items) => {
-        if (active) setFamilyMembers(Array.isArray(items) ? items : []);
+        if (active) setFamilyMembers(Array.isArray(items)
+          ? items.filter((item) => item.kind !== 'account' || item.permissions?.canUseAi)
+          : []);
       })
       .catch(() => {
         if (active) setFamilyMembers([]);
@@ -122,7 +154,7 @@ export default function ConsultationPage() {
     return () => { active = false; };
   }, []);
 
-  const selectedMember = familyMembers.find((member) => member.id === selectedMemberId) || null;
+  const selectedMember = familyMembers.find((member) => String(member.id) === String(selectedMemberId)) || null;
 
   /* ---- Sessions are isolated by selected patient ---- */
   useEffect(() => {
@@ -142,17 +174,23 @@ export default function ConsultationPage() {
     setThinking(false);
     setStreaming(false);
     setStreamingText('');
+    setStreamingCitations([]);
+    setStreamingToolTraces([]);
+    streamingCitationsRef.current = [];
     setSendError(null);
 
     (async () => {
       try {
         const selectedKey = selectedMemberId == null ? 'self' : String(selectedMemberId);
         const shouldAppendSummary = pendingSummaryMemberRef.current === selectedKey;
-        const sessions = await consultApi.getChatSessions(selectedMemberId);
+        const sessions = await consultApi.getChatSessions({
+          memberId: selectedMember?.memberId ?? null,
+          subjectUserId: selectedMember?.subjectUserId ?? null,
+        });
         const existing = Array.isArray(sessions)
           ? sessions.find((session) => (
               session.status === 'active'
-              && hasPersonalizedContext(session, selectedMemberId)
+              && hasPersonalizedContext(session, selectedMember)
             ))
           : null;
         let sid = existing?.id;
@@ -198,7 +236,7 @@ export default function ConsultationPage() {
       setMemberMenuOpen(false);
       return;
     }
-    const nextMember = familyMembers.find((member) => member.id === nextMemberId);
+    const nextMember = familyMembers.find((member) => String(member.id) === String(nextMemberId));
     const nextName = nextMember?.name || '本人';
     const confirmed = window.confirm(
       `即将切换至${nextName}的独立问诊，本次对话不会带入新会话。是否继续？`,
@@ -221,40 +259,74 @@ export default function ConsultationPage() {
     setThinking(true);
     setThinkingText('');
     setStreamingText('');
+    setStreamingCitations([]);
+    setStreamingToolTraces([]);
+    streamingCitationsRef.current = [];
 
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
-    const params = new URLSearchParams({
-      token: token || '',
-      messageId: String(messageId),
-    });
+    const params = new URLSearchParams({ messageId: String(messageId) });
     const url = `${API_CONFIG.BASE_URL}/consultation/sessions/${sessionId}/stream?${params}`;
-    const eventSource = new EventSource(url);
-    eventSourceRef.current = eventSource;
+    const controller = new AbortController();
+    const streamConnection = { close: () => controller.abort() };
+    eventSourceRef.current = streamConnection;
     let settled = false;
+    let receivedCitations = [];
+    let receivedToolTraces = [];
 
     const finish = () => {
       settled = true;
-      eventSource.close();
-      if (eventSourceRef.current === eventSource) eventSourceRef.current = null;
+      streamConnection.close();
+      if (eventSourceRef.current === streamConnection) eventSourceRef.current = null;
       sendingRef.current = false;
       setThinking(false);
       setStreaming(false);
       setSending(false);
     };
 
-    eventSource.addEventListener('thinking', (event) => {
-      setThinkingText(event.data);
-    });
-    eventSource.addEventListener('thinking_done', () => {
-      setThinking(false);
-      setStreaming(true);
-    });
-    eventSource.addEventListener('token', (event) => {
-      setStreamingText(event.data);
-    });
-    eventSource.addEventListener('done', (event) => {
+    const handleStreamEvent = (eventName, data) => {
+      if (eventName === 'thinking') {
+        setThinkingText(data);
+        return;
+      }
+      if (eventName === 'thinking_done') {
+        setThinking(false);
+        setStreaming(true);
+        return;
+      }
+      if (eventName === 'token') {
+        setStreamingText(data);
+        return;
+      }
+      if (eventName === 'ai_error') {
+        if (settled) return;
+        finish();
+        setSendError(data || 'AI 服务暂时不可用，请稍后重试');
+        return;
+      }
+      if (eventName === 'citation') {
+        try {
+          const citation = JSON.parse(data);
+          receivedCitations = [...receivedCitations, citation];
+          streamingCitationsRef.current = receivedCitations;
+          setStreamingCitations((previous) => [...previous, citation]);
+        } catch {
+          // Ignore malformed citation events; the answer itself remains available.
+        }
+        return;
+      }
+      if (eventName === 'agent_tool') {
+        try {
+          const toolTrace = JSON.parse(data);
+          receivedToolTraces = [...receivedToolTraces, toolTrace];
+          setStreamingToolTraces((previous) => [...previous, toolTrace]);
+        } catch {
+          // Ignore malformed trace events; the answer itself remains available.
+        }
+        return;
+      }
+      if (eventName !== 'done') return;
       if (settled) return;
-      const finalText = event.data;
+      const finalText = data;
       finish();
       failedMessageIdRef.current = null;
       setMessagesData((previous) => {
@@ -265,20 +337,63 @@ export default function ConsultationPage() {
           role: 'assistant',
           content: finalText,
           replyToMessageId: messageId,
+          citations: receivedCitations,
+          agentToolTraces: receivedToolTraces,
           createdAt: new Date().toISOString(),
         }];
       });
-    });
-    eventSource.addEventListener('ai_error', (event) => {
-      if (settled) return;
-      finish();
-      setSendError(event.data || 'AI 服务暂时不可用，请稍后重试');
-    });
-    eventSource.onerror = () => {
-      if (settled) return;
-      finish();
-      setSendError('连接中断，请重试');
     };
+
+    const consumeBlock = (block) => {
+      let eventName = 'message';
+      const dataLines = [];
+      block.split('\n').forEach((line) => {
+        if (line.startsWith('event:')) eventName = line.slice(6).trim();
+        if (line.startsWith('data:')) dataLines.push(line.slice(5).trimStart());
+      });
+      handleStreamEvent(eventName, dataLines.join('\n'));
+    };
+
+    const readStream = async () => {
+      try {
+        if (!token) throw new Error('登录状态已失效，请重新登录');
+        const response = await fetch(url, {
+          headers: {
+            Accept: 'text/event-stream',
+            Authorization: `Bearer ${token}`,
+          },
+          signal: controller.signal,
+        });
+        if (!response.ok || !response.body) {
+          throw new Error(response.status === 401 || response.status === 403
+            ? '登录状态已失效，请重新登录'
+            : 'AI 连接建立失败，请重试');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        while (!settled) {
+          const { value, done } = await reader.read();
+          buffer = (buffer + decoder.decode(value || new Uint8Array(), { stream: !done }))
+            .replace(/\r\n/g, '\n');
+          let boundary = buffer.indexOf('\n\n');
+          while (boundary >= 0 && !settled) {
+            consumeBlock(buffer.slice(0, boundary));
+            buffer = buffer.slice(boundary + 2);
+            boundary = buffer.indexOf('\n\n');
+          }
+          if (done) break;
+        }
+        if (!settled) throw new Error('AI 连接意外中断，请重试');
+      } catch (error) {
+        if (settled || error?.name === 'AbortError') return;
+        finish();
+        setSendError(error?.message || '连接中断，请重试');
+      }
+    };
+
+    readStream();
   }, [sessionId, setMessagesData]);
 
   const retryLastResponse = useCallback(() => {
@@ -419,12 +534,42 @@ export default function ConsultationPage() {
     const text = msg.text || msg.content || '';
     const id = msg.id || msg._id || Math.random();
     const isAssistant = role === 'assistant' || role === 'ai' || role === 'model';
+    let citations = Array.isArray(msg.citations) ? msg.citations : [];
+    if (citations.length === 0 && typeof msg.citationsJson === 'string') {
+      try {
+        const parsed = JSON.parse(msg.citationsJson);
+        citations = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        citations = [];
+      }
+    }
+    const toolTraces = readAgentToolTraces(msg);
 
     return isAssistant ? (
       <div key={id} className="message" style={{alignItems:'flex-start'}}>
         <DocIcon />
         <div>
           <div className="message-bubble">{text}</div>
+          {citations.length > 0 && (
+            <div className="message-citations" aria-label="回答依据">
+              {citations.map((citation, index) => (
+                <span className={`message-citation ${citation.scope === 'PRIVATE' ? 'private' : 'public'}`} key={`${citation.documentId || index}-${index}`}>
+                  {citation.scope === 'PRIVATE' ? '家庭私有病历' : '公共资料'} · {citation.title || `资料${index + 1}`}
+                  {citation.pageNumber ? ` · 第${citation.pageNumber}页` : ''}
+                </span>
+              ))}
+            </div>
+          )}
+          {toolTraces.length > 0 && (
+            <div className="message-agent-traces" aria-label="本轮已读取的数据">
+              <span className="message-agent-trace-title">已读取</span>
+              {toolTraces.map((trace, index) => (
+                <span className={`message-agent-trace ${trace.status === 'SUCCESS' ? 'success' : 'failed'}`} key={`${trace.toolName || index}-${index}`}>
+                  {trace.status === 'SUCCESS' ? '✓' : '!' } {agentToolLabel(trace)}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     ) : (
@@ -455,6 +600,15 @@ export default function ConsultationPage() {
                 {thinkingText || '正在分析...'}<span className="cursor-blink">|</span>
               </div>
             </div>
+          </div>
+        )}
+        {streamingToolTraces.length > 0 && (thinking || streaming) && (
+          <div className="message-agent-traces streaming-traces" aria-label="正在读取授权数据">
+            {streamingToolTraces.map((trace, index) => (
+              <span className="message-agent-trace success" key={`${trace.toolName || index}-${index}`}>
+                ✓ {agentToolLabel(trace)}
+              </span>
+            ))}
           </div>
         )}
         {streaming && streamingText && (
@@ -526,12 +680,12 @@ export default function ConsultationPage() {
                       type="button"
                       role="menuitem"
                       key={member.id}
-                      className={selectedMemberId === member.id ? 'selected' : ''}
+                      className={String(selectedMemberId) === String(member.id) ? 'selected' : ''}
                       onClick={() => handleMemberChange(member.id)}
                     >
                       <span>{member.name?.[0] || '家'}</span>
                       <strong>{member.name}</strong>
-                      <small>{member.relation || '家庭成员'}</small>
+                      <small>{member.kind === 'account' ? `${member.relation || '家庭成员'} · 共享账号` : (member.relation || '家庭成员')}</small>
                     </button>
                   ))}
                 </div>
@@ -722,8 +876,8 @@ export default function ConsultationPage() {
           )}
 
           <div className="chat-disclaimer">
-            <Sparkles size={10} />
-            🏥 当前分析仅使用{patientDisplay.name}的授权健康数据，AI 建议不替代专业医疗诊断。
+            <ShieldAlert size={10} />
+            <span>当前分析仅使用{patientDisplay.name}的授权健康数据；回答下方会标注引用资料。AI 不用于诊断、处方或调整剂量。若出现胸痛、呼吸困难、意识异常或大出血，请立即拨打 120 或前往急诊。</span>
           </div>
         </Card>
       </div>

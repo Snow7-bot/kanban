@@ -3,9 +3,10 @@ package com.kangban.controller;
 import com.kangban.common.Result;
 import com.kangban.dto.request.LoginRequest;
 import com.kangban.dto.request.RegisterRequest;
-import com.kangban.dto.request.ResetPasswordRequest;
 import com.kangban.dto.response.AuthResponse;
+import com.kangban.dto.response.CaptchaResponse;
 import com.kangban.service.AuthService;
+import com.kangban.service.CaptchaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -14,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Tag(name = "认证管理")
@@ -23,12 +25,12 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final CaptchaService captchaService;
 
-    @Operation(summary = "发送验证码")
-    @PostMapping("/code")
-    public Result<Void> sendCode(@RequestBody Map<String, String> body) {
-        authService.sendVerifyCode(body.get("phone"));
-        return Result.success("验证码已发送", null);
+    @Operation(summary = "获取本地图片人机验证")
+    @GetMapping("/captcha")
+    public Result<CaptchaResponse> captcha(HttpServletRequest request) {
+        return Result.success(captchaService.issue(request.getRemoteAddr()));
     }
 
     @Operation(summary = "用户注册")
@@ -68,17 +70,4 @@ public class AuthController {
         return authService.refreshToken(body.get("refreshToken"));
     }
 
-    @Operation(summary = "忘记密码")
-    @PostMapping("/forgot")
-    public Result<Void> forgot(@RequestBody Map<String, String> body) {
-        authService.forgotPassword(body.get("phone"));
-        return Result.success("重置验证码已发送", null);
-    }
-
-    @Operation(summary = "重置密码")
-    @PostMapping("/reset")
-    public Result<Void> reset(@Valid @RequestBody ResetPasswordRequest req) {
-        authService.resetPassword(req);
-        return Result.success("密码已重置", null);
-    }
 }

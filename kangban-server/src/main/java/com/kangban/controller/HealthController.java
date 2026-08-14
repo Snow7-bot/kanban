@@ -28,10 +28,11 @@ public class HealthController {
     public Result<Map<String, Object>> getTrends(@AuthenticationPrincipal UserDetails user,
                                                  @RequestParam(required = false) String metric,
                                                  @RequestParam(required = false) Integer days,
+                                                 @RequestParam(required = false) Long subjectUserId,
                                                  @RequestParam(required = false) Long memberId,
                                                  @RequestParam(required = false) String member) {
         Long userId = Long.parseLong(user.getUsername());
-        return healthService.getTrends(userId, metric, days, memberId, member);
+        return healthService.getTrends(userId, metric, days, subjectUserId, memberId, member);
     }
 
     @Operation(summary = "添加健康记录")
@@ -65,10 +66,11 @@ public class HealthController {
     @GetMapping("/report")
     public Result<Map<String, Object>> getReport(@AuthenticationPrincipal UserDetails user,
                                                  @RequestParam(required = false) String period,
+                                                 @RequestParam(required = false) Long subjectUserId,
                                                  @RequestParam(required = false) Long memberId,
                                                  @RequestParam(required = false) String member) {
         Long userId = Long.parseLong(user.getUsername());
-        return healthService.getReport(userId, period, memberId, member);
+        return healthService.getReport(userId, period, subjectUserId, memberId, member);
     }
 
     @Operation(summary = "获取可用指标类型")

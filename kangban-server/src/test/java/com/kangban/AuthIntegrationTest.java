@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(TestVerificationCodeConfig.class)
+@Import(TestCaptchaConfig.class)
 @DisplayName("P2-A: 认证集成测试")
 class AuthIntegrationTest {
 
@@ -83,11 +83,13 @@ class AuthIntegrationTest {
     class RegisterTests {
 
         @Test
-        @DisplayName("有效验证码注册成功，返回 token + refreshToken + user")
-        void registerWithValidCode() throws Exception {
+        @DisplayName("有效人机验证注册成功，返回 token + refreshToken + user")
+        void registerWithValidCaptcha() throws Exception {
             String body = objectMapper.writeValueAsString(Map.of(
+                    "username", "new_user",
                     "phone", "13900000102",
-                    "code", "888888",
+                    "captchaId", "test-captcha",
+                    "captchaAnswer", "ABCDE",
                     "password", "Test123456"));
 
             mockMvc.perform(post("/auth/register")
@@ -97,15 +99,17 @@ class AuthIntegrationTest {
                     .andExpect(jsonPath("$.code").value(0))
                     .andExpect(jsonPath("$.data.token").isNotEmpty())
                     .andExpect(jsonPath("$.data.refreshToken").isNotEmpty())
+                    .andExpect(jsonPath("$.data.user.username").value("new_user"))
                     .andExpect(jsonPath("$.data.user.phone").value("13900000102"));
         }
 
         @Test
-        @DisplayName("验证码错误 → 注册失败")
-        void registerWithWrongCode() throws Exception {
+        @DisplayName("人机验证错误 → 注册失败")
+        void registerWithWrongCaptcha() throws Exception {
             String body = objectMapper.writeValueAsString(Map.of(
-                    "phone", "13900000103",
-                    "code", "000000",
+                    "username", "wrong_captcha",
+                    "captchaId", "test-captcha",
+                    "captchaAnswer", "WRONG",
                     "password", "Test123456"));
 
             mockMvc.perform(post("/auth/register")
@@ -116,11 +120,12 @@ class AuthIntegrationTest {
         }
 
         @Test
-        @DisplayName("手机号已注册 → 拒绝")
-        void duplicatePhoneRejected() throws Exception {
+        @DisplayName("用户名已注册 → 拒绝")
+        void duplicateUsernameRejected() throws Exception {
             String body = objectMapper.writeValueAsString(Map.of(
-                    "phone", TEST_PHONE,
-                    "code", "888888",
+                    "username", "user_0101",
+                    "captchaId", "test-captcha",
+                    "captchaAnswer", "ABCDE",
                     "password", "Test123456"));
 
             mockMvc.perform(post("/auth/register")
@@ -133,7 +138,7 @@ class AuthIntegrationTest {
         @Test
         @DisplayName("缺少必填字段 → 400")
         void missingFieldsReturns400() throws Exception {
-            String body = objectMapper.writeValueAsString(Map.of("phone", "13900000104"));
+            String body = objectMapper.writeValueAsString(Map.of("username", "new_user"));
 
             mockMvc.perform(post("/auth/register")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -142,17 +147,31 @@ class AuthIntegrationTest {
         }
 
         @Test
-        @DisplayName("无效手机号格式 → 400")
-        void invalidPhoneFormat() throws Exception {
+        @DisplayName("手机号可省略")
+        void phoneIsOptional() throws Exception {
             String body = objectMapper.writeValueAsString(Map.of(
-                    "phone", "12345",
-                    "code", "888888",
+                    "username", "no_phone_user",
+                    "captchaId", "test-captcha",
+                    "captchaAnswer", "ABCDE",
                     "password", "Test123456"));
 
             mockMvc.perform(post("/auth/register")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(body))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.code").value(0))
+                    .andExpect(jsonPath("$.data.user.username").value("no_phone_user"))
+                    .andExpect(jsonPath("$.data.user.phone").doesNotExist());
+        }
+
+        @Test
+        @DisplayName("人机验证接口公开可用")
+        void captchaEndpointIsPublic() throws Exception {
+            mockMvc.perform(get("/auth/captcha"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.captchaId").value("test-captcha"))
+                    .andExpect(jsonPath("$.data.imageData").value("data:image/png;base64,dGVzdA=="))
+                    .andExpect(jsonPath("$.data.expiresInSeconds").value(120));
         }
     }
 
@@ -177,6 +196,21 @@ class AuthIntegrationTest {
                     .andExpect(jsonPath("$.data.token").isNotEmpty())
                     .andExpect(jsonPath("$.data.refreshToken").isNotEmpty())
                     .andExpect(jsonPath("$.data.user.phone").value(TEST_PHONE));
+        }
+
+        @Test
+        @DisplayName("用户名可以登录")
+        void usernameLoginSuccess() throws Exception {
+            String body = objectMapper.writeValueAsString(Map.of(
+                    "account", "user_0101",
+                    "password", TEST_PASSWORD));
+
+            mockMvc.perform(post("/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(body))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.code").value(0))
+                    .andExpect(jsonPath("$.data.user.username").value("user_0101"));
         }
 
         @Test
@@ -206,6 +240,21 @@ class AuthIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.code").value(500));
         }
+
+        @Test
+        @DisplayName("超长密码在进入认证流程前被拒绝")
+        void overlongPasswordReturns400() throws Exception {
+            String body = objectMapper.writeValueAsString(Map.of(
+                    "account", TEST_PHONE,
+                    "password", "A".repeat(21)));
+
+            mockMvc.perform(post("/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(body))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value(400))
+                    .andExpect(jsonPath("$.message").value("密码长度不能超过20位"));
+        }
     }
 
     // ==================== Token 与身份认证 ====================
@@ -234,10 +283,12 @@ class AuthIntegrationTest {
         }
 
         @Test
-        @DisplayName("无 Token → 403 Forbidden")
-        void noTokenReturns403() throws Exception {
+        @DisplayName("无 Token → 401 Unauthorized")
+        void noTokenReturns401() throws Exception {
             mockMvc.perform(get("/auth/me"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value(401))
+                    .andExpect(jsonPath("$.message").value("请先登录"));
         }
 
         @Test
@@ -389,7 +440,8 @@ class AuthIntegrationTest {
         @DisplayName("401 未登录 → 跳转登录页（前端约定）")
         void unauthenticatedTriggers401() throws Exception {
             mockMvc.perform(delete("/auth/logout"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value(401));
         }
     }
 }

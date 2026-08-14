@@ -4,8 +4,8 @@
 import { get, post, put } from './request.js';
 
 /** 获取会话历史列表 */
-export function getChatSessions(memberId = null) {
-  return get('/consultation/sessions', { params: { memberId } });
+export function getChatSessions({ memberId = null, subjectUserId = null } = {}) {
+  return get('/consultation/sessions', { params: { memberId, subjectUserId } });
 }
 
 /** 获取会话消息 */

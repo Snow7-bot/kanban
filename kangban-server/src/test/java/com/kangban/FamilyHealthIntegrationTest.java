@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(TestVerificationCodeConfig.class)
+@Import(TestCaptchaConfig.class)
 @DisplayName("P2-A: 家庭与健康集成测试")
 class FamilyHealthIntegrationTest {
 
@@ -295,7 +295,8 @@ class FamilyHealthIntegrationTest {
         @DisplayName("获取可用指标类型列表")
         void getMetrics() throws Exception {
             mockMvc.perform(get("/health/metrics"))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.code").value(401));
         }
     }
 

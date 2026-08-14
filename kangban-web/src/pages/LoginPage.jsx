@@ -13,7 +13,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }) {
     event.preventDefault();
     setError('');
     if (!account.trim() || !password.trim()) {
-      setError('请输入手机号/邮箱和密码');
+      setError('请输入用户名、手机号或邮箱和密码');
       return;
     }
     try {
@@ -33,7 +33,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }) {
     <main className="auth-panel">
       <form className="login-form" onSubmit={handleSubmit}>
         <header><h1>欢迎登录</h1><p>请输入您的信息以访问您的健康数据</p></header>
-        <label>手机号或邮箱<div><UserRound size={17} /><input aria-label="手机号或邮箱" placeholder="请输入手机号或邮箱" required value={account} onChange={e => { setAccount(e.target.value); setError(''); }} /></div></label>
+        <label>用户名、手机号或邮箱<div><UserRound size={17} /><input aria-label="用户名、手机号或邮箱" placeholder="请输入用户名、手机号或邮箱" required value={account} onChange={e => { setAccount(e.target.value); setError(''); }} /></div></label>
         <div className="auth-field">
           <div className="auth-field-heading"><label htmlFor="login-password">密码</label><button type="button" onClick={() => onNavigate('password-reset')}>忘记密码？</button></div>
           <div className="auth-input-wrap"><LockKeyhole size={17} /><input id="login-password" aria-label="密码" placeholder="请输入密码" type={showPassword ? 'text' : 'password'} required value={password} onChange={e => { setPassword(e.target.value); setError(''); }} /><button className="password-visibility-toggle" type="button" aria-label="显示密码" onClick={event => { event.preventDefault(); event.stopPropagation(); setShowPassword(value => !value); }}>{showPassword ? <Eye size={17} /> : <EyeOff size={17} />}</button></div>

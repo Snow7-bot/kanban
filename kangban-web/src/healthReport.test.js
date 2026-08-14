@@ -9,7 +9,8 @@ test('health report route and source preserve the Stitch weekly summary landmark
     readFile(new URL('./pages/HealthReportPage.jsx', import.meta.url), 'utf8'),
     readFile(new URL('./pages/HomePage.jsx', import.meta.url), 'utf8'),
   ]);
-  for (const landmark of ['本.*健康总结', 'AI 健康洞察', '心率趋势', '睡眠质量', '运动步数', '下次体检提醒']) assert.match(page, new RegExp(landmark));
+  for (const landmark of ['本.*健康总结', '健康数据摘要', '心率趋势', '睡眠质量', '运动步数', '下次体检提醒']) assert.match(page, new RegExp(landmark));
+  assert.doesNotMatch(page, /AI 健康洞察/);
   assert.match(home, /本周健康总结/);
   assert.match(home, /health-report/);
 });

@@ -34,6 +34,8 @@ jwt:
 
 app:
   base-url: http://localhost:5173
+  captcha:
+    secret: test-only-captcha-secret
   ai:
     provider: mock
 

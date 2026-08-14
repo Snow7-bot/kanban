@@ -27,11 +27,15 @@ public class HealthService {
 
     private final HealthRecordMapper healthRecordMapper;
     private final FamilyMemberMapper familyMemberMapper;
+    private final FamilyAccessService familyAccessService;
+    private final AuditService auditService;
 
     public Result<Map<String, Object>> addRecord(Long userId, AddHealthRecordRequest request) {
-        FamilyMember member = resolveMember(userId, request.getMemberId(), request.getMemberName());
+        Long subjectUserId = familyAccessService.require(
+                userId, request.getSubjectUserId(), FamilyAccessService.Scope.ADD_HEALTH);
+        FamilyMember member = resolveMember(subjectUserId, request.getMemberId(), request.getMemberName());
         HealthRecord record = new HealthRecord();
-        record.setUserId(userId);
+        record.setUserId(subjectUserId);
         record.setMemberId(member != null ? member.getId() : null);
         record.setMemberName(member != null ? member.getName() : null);
         record.setMetric(request.getMetric());
@@ -42,19 +46,22 @@ public class HealthService {
         record.setNote(request.getNote());
         record.setCreatedAt(LocalDateTime.now());
         healthRecordMapper.insert(record);
+        if (!userId.equals(subjectUserId)) {
+            auditService.record(userId, "SHARED_HEALTH_CREATE", "health_record",
+                    record.getId(), "为授权家庭账号录入健康指标");
+        }
 
         return Result.success("记录成功", toMap(record));
     }
 
     public void updateRecord(Long userId, Long id, UpdateHealthRecordRequest request) {
-        HealthRecord record = healthRecordMapper.selectOne(
-                new LambdaQueryWrapper<HealthRecord>()
-                        .eq(HealthRecord::getId, id)
-                        .eq(HealthRecord::getUserId, userId)
-                        .isNull(HealthRecord::getDeletedAt));
+        HealthRecord record = healthRecordMapper.selectOne(new LambdaQueryWrapper<HealthRecord>()
+                .eq(HealthRecord::getId, id)
+                .isNull(HealthRecord::getDeletedAt));
         if (record == null) {
             throw BusinessException.notFound("健康记录不存在");
         }
+        requireRecordAccess(userId, record.getUserId(), FamilyAccessService.Scope.MODIFY);
         if (request.getValue() != null) {
             record.setValue(request.getValue());
         }
@@ -74,22 +81,25 @@ public class HealthService {
     }
 
     public void deleteRecord(Long userId, Long id) {
-        HealthRecord record = healthRecordMapper.selectOne(
-                new LambdaQueryWrapper<HealthRecord>()
-                        .eq(HealthRecord::getId, id)
-                        .eq(HealthRecord::getUserId, userId)
-                        .isNull(HealthRecord::getDeletedAt));
+        HealthRecord record = healthRecordMapper.selectOne(new LambdaQueryWrapper<HealthRecord>()
+                .eq(HealthRecord::getId, id)
+                .isNull(HealthRecord::getDeletedAt));
         if (record == null) {
             throw BusinessException.notFound("健康记录不存在");
         }
+        requireRecordAccess(userId, record.getUserId(), FamilyAccessService.Scope.DELETE);
         record.setDeletedAt(LocalDateTime.now());
         healthRecordMapper.updateById(record);
     }
 
-    public Result<Map<String, Object>> getTrends(Long userId, String metric, Integer days, Long memberId, String legacyMember) {
-        FamilyMember member = resolveMember(userId, memberId, legacyMember);
+    public Result<Map<String, Object>> getTrends(Long userId, String metric, Integer days,
+                                                 Long requestedSubjectUserId, Long memberId,
+                                                 String legacyMember) {
+        Long subjectUserId = familyAccessService.require(
+                userId, requestedSubjectUserId, FamilyAccessService.Scope.VIEW_HEALTH);
+        FamilyMember member = resolveMember(subjectUserId, memberId, legacyMember);
         LambdaQueryWrapper<HealthRecord> wrapper = new LambdaQueryWrapper<HealthRecord>()
-                .eq(HealthRecord::getUserId, userId)
+                .eq(HealthRecord::getUserId, subjectUserId)
                 .isNull(HealthRecord::getDeletedAt);
 
         if (metric != null && !metric.isEmpty()) {
@@ -138,11 +148,20 @@ public class HealthService {
         result.put("days", days);
         result.put("memberId", member != null ? member.getId() : null);
         result.put("memberName", member != null ? member.getName() : null);
+        result.put("subjectUserId", subjectUserId);
+        if (!userId.equals(subjectUserId)) {
+            auditService.record(userId, "SHARED_HEALTH_VIEW", "user",
+                    subjectUserId, "查看授权家庭账号健康趋势");
+        }
         return Result.success(result);
     }
 
-    public Result<Map<String, Object>> getReport(Long userId, String period, Long memberId, String legacyMember) {
-        FamilyMember member = resolveMember(userId, memberId, legacyMember);
+    public Result<Map<String, Object>> getReport(Long userId, String period,
+                                                 Long requestedSubjectUserId, Long memberId,
+                                                 String legacyMember) {
+        Long subjectUserId = familyAccessService.require(
+                userId, requestedSubjectUserId, FamilyAccessService.Scope.VIEW_REPORTS);
+        FamilyMember member = resolveMember(subjectUserId, memberId, legacyMember);
         // Determine date range
         int days;
         if ("week".equalsIgnoreCase(period)) {
@@ -160,7 +179,7 @@ public class HealthService {
         LocalDate since = LocalDate.now().minus(days, ChronoUnit.DAYS);
 
         LambdaQueryWrapper<HealthRecord> wrapper = new LambdaQueryWrapper<HealthRecord>()
-                .eq(HealthRecord::getUserId, userId)
+                .eq(HealthRecord::getUserId, subjectUserId)
                 .isNull(HealthRecord::getDeletedAt)
                 .ge(HealthRecord::getRecordedDate, since);
 
@@ -195,6 +214,11 @@ public class HealthService {
         summary.put("dateRange", since + " - " + LocalDate.now());
         summary.put("insight", buildReportInsight(period, records.size(), metricStats));
         summary.put("generatedAt", LocalDateTime.now().toString());
+        summary.put("subjectUserId", subjectUserId);
+        if (!userId.equals(subjectUserId)) {
+            auditService.record(userId, "SHARED_REPORT_VIEW", "user",
+                    subjectUserId, "查看授权家庭账号健康报告");
+        }
 
         return Result.success(summary);
     }
@@ -321,5 +345,17 @@ public class HealthService {
             throw BusinessException.paramsError("请使用有效的家庭成员 ID 记录健康数据");
         }
         return members.get(0);
+    }
+
+    private void requireRecordAccess(Long actorUserId, Long subjectUserId,
+                                     FamilyAccessService.Scope scope) {
+        try {
+            familyAccessService.require(actorUserId, subjectUserId, scope);
+        } catch (BusinessException exception) {
+            if (exception.getCode() == 403) {
+                throw BusinessException.notFound("健康记录不存在");
+            }
+            throw exception;
+        }
     }
 }

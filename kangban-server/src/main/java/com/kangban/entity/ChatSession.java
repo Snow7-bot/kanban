@@ -17,6 +17,8 @@ public class ChatSession {
 
     private Long userId;
 
+    private Long subjectUserId;
+
     private Long memberId;
 
     private String title;

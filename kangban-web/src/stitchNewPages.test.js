@@ -23,6 +23,6 @@ test('the authentication pages retain their selected Stitch form actions', async
   assert.match(login, /欢迎登录/);
   assert.match(login, /立即注册/);
   assert.match(register, /创建康伴账号/);
-  assert.match(register, /获取验证码/);
+  assert.match(register, /人机验证/);
   assert.match(register, /用户服务协议/);
 });

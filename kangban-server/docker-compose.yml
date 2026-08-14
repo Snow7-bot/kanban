@@ -25,7 +25,7 @@ services:
     volumes:
       - redis-data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "redis-cli -a \"$${KANGBAN_REDIS_PASSWORD}\" ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,6 +54,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/kangban?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${KANGBAN_DB_PASSWORD}
@@ -63,8 +64,15 @@ services:
       KANGBAN_MINIO_ACCESS_KEY: ${KANGBAN_MINIO_ACCESS_KEY}
       KANGBAN_MINIO_SECRET_KEY: ${KANGBAN_MINIO_SECRET_KEY}
       KANGBAN_JWT_SECRET: ${KANGBAN_JWT_SECRET}
+      APP_BASE_URL: ${APP_BASE_URL}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS}
       APP_AI_PROVIDER: ${APP_AI_PROVIDER:-qwen}
       APP_AI_API_KEY: ${APP_AI_API_KEY:-}
+      APP_AGENT_ENABLED: ${APP_AGENT_ENABLED:-true}
+      APP_AGENT_CONTEXT_SECRET: ${APP_AGENT_CONTEXT_SECRET:-}
+      APP_RAG_ENABLED: ${APP_RAG_ENABLED:-false}
+      APP_RAG_PRIVATE_ENABLED: ${APP_RAG_PRIVATE_ENABLED:-true}
+      APP_RAG_VECTOR_STORE: ${APP_RAG_VECTOR_STORE:-mysql-jdbc}
     depends_on:
       mysql:
         condition: service_healthy

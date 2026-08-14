@@ -15,6 +15,9 @@ public class CreateSessionRequest {
     @Schema(description = "患者信息（JSON字符串）")
     private String patientData;
 
+    @Schema(description = "共享账号用户 ID；为空表示当前账号")
+    private Long subjectUserId;
+
     @Schema(description = "家庭成员ID；为空表示本人")
     private Long memberId;
 }

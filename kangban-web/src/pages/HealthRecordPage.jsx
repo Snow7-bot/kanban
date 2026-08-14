@@ -12,8 +12,8 @@ const metrics = [
 ];
 
 export default function HealthRecordPage({ onNavigate }) {
-  const [memberId, setMemberId] = useState(null);
-  const [members, setMembers] = useState([]);
+  const [selectedKey, setSelectedKey] = useState('self');
+  const [targets, setTargets] = useState([]);
   const [metric, setMetric] = useState('heart');
   const [value, setValue] = useState('');
   const [systolic, setSystolic] = useState('');
@@ -27,21 +27,25 @@ export default function HealthRecordPage({ onNavigate }) {
   const [trendData, setTrendData] = useState(null);
 
   const selected = metrics.find((item) => item.id === metric) ?? metrics[0];
-  const selectedMember = members.find((item) => item.id === memberId);
-  const memberName = selectedMember?.name || '自己';
+  const selectedTarget = targets.find((item) => item.key === selectedKey) || null;
+  const memberId = selectedTarget?.memberId ?? null;
+  const subjectUserId = selectedTarget?.subjectUserId ?? null;
+  const memberName = selectedTarget?.name || '自己';
 
   useEffect(() => {
-    familyApi.getFamilyMembers().then(setMembers).catch(() => setMembers([]));
+    familyApi.getPatientTargets()
+      .then((items) => setTargets(items.filter((item) => item.kind !== 'account' || item.permissions?.canAddHealth)))
+      .catch(() => setTargets([]));
   }, []);
 
   useEffect(() => {
     (async () => {
       try {
-        const data = await healthApi.getHealthTrends({ metric: selected.metricKey, memberId, days: 30 });
+        const data = await healthApi.getHealthTrends({ metric: selected.metricKey, memberId, subjectUserId, days: 30 });
         setTrendData(data);
       } catch { /* ignore */ }
     })();
-  }, [memberId, metric, selected.metricKey]);
+  }, [memberId, subjectUserId, metric, selected.metricKey]);
 
   function chooseMetric(next) {
     setMetric(next);
@@ -63,6 +67,7 @@ export default function HealthRecordPage({ onNavigate }) {
     setError('');
     try {
       const payload = buildHealthRecordPayload({
+        subjectUserId,
         memberId,
         metric: selected.metricKey,
         value: metric === 'pressure' ? `${systolic}/${diastolic}` : value,
@@ -93,8 +98,8 @@ export default function HealthRecordPage({ onNavigate }) {
     <div className="health-record-layout">
       <form className="health-record-form" onSubmit={handleSubmit}>
         <section className="record-block"><span>记录对象</span><div className="member-picker">
-          {[{ id: null, name: '自己' }, ...members].map((item) => <button type="button" key={item.id ?? 'self'} className={memberId === item.id ? 'selected' : ''} onClick={() => { setMemberId(item.id); setSaved(false); }}>
-            <img src="/stitch/PRD-UI-Prototype-Implementation/health-metrics-entry/assets/01.jpg" alt="" />{item.name}{memberId === item.id && <CheckCircle2 size={14} />}
+          {[{ key: 'self', name: '自己' }, ...targets].map((item) => <button type="button" key={item.key} className={selectedKey === item.key ? 'selected' : ''} onClick={() => { setSelectedKey(item.key); setSaved(false); }}>
+            <img src={item.avatarUrl || '/stitch/PRD-UI-Prototype-Implementation/health-metrics-entry/assets/01.jpg'} alt="" />{item.name}{item.kind === 'account' ? '（共享账号）' : ''}{selectedKey === item.key && <CheckCircle2 size={14} />}
           </button>)}
           <button type="button" className="add-member" onClick={() => onNavigate('family-add')}><Plus size={14} />添加成员</button>
         </div></section>

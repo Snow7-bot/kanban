@@ -1,27 +1,75 @@
 server:
   port: 8080
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
+  endpoint:
+    health:
+      show-details: never
+
 app:
-  base-url: http://localhost:5173
+  base-url: ${APP_BASE_URL:http://localhost:5173}
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}
   ai:
     # Real provider is opt-in so local development and tests never make paid calls.
-    provider: ${APP_AI_PROVIDER:qwen}
+    provider: ${APP_AI_PROVIDER:mock}
     api-url: ${APP_AI_API_URL:https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions}
     api-key: ${APP_AI_API_KEY:}
     ai-model: ${APP_AI_AI_MODEL:qwen3.7-plus-2026-05-26}
     ocr-model: ${APP_AI_OCR_MODEL:qwen3.5-ocr}
     connect-timeout: ${APP_AI_CONNECT_TIMEOUT:10000}
-    read-timeout: ${APP_AI_READ_TIMEOUT:60000}
+    read-timeout: ${APP_AI_READ_TIMEOUT:120000}
+  agent:
+    enabled: ${APP_AGENT_ENABLED:true}
+    model-tool-calling-enabled: ${APP_AGENT_MODEL_TOOL_CALLING_ENABLED:false}
+    context-ttl-seconds: ${APP_AGENT_CONTEXT_TTL_SECONDS:300}
+    max-iterations: ${APP_AGENT_MAX_ITERATIONS:5}
+    max-history-messages: ${APP_AGENT_MAX_HISTORY_MESSAGES:12}
+    max-history-tokens: ${APP_AGENT_MAX_HISTORY_TOKENS:6000}
+    max-history-message-characters: ${APP_AGENT_MAX_HISTORY_MESSAGE_CHARACTERS:4000}
+    core-pool-size: ${APP_AGENT_CORE_POOL_SIZE:2}
+    max-pool-size: ${APP_AGENT_MAX_POOL_SIZE:4}
+    queue-capacity: ${APP_AGENT_QUEUE_CAPACITY:20}
+    context-secret: ${APP_AGENT_CONTEXT_SECRET:}
+    rag:
+      enabled: ${APP_RAG_ENABLED:false}
+      private-enabled: ${APP_RAG_PRIVATE_ENABLED:true}
+      vector-store: ${APP_RAG_VECTOR_STORE:memory}
+      top-k: ${APP_RAG_TOP_K:5}
+      min-score: ${APP_RAG_MIN_SCORE:0.7}
+      max-context-tokens: ${APP_RAG_MAX_CONTEXT_TOKENS:6000}
+      admin-token: ${APP_KNOWLEDGE_ADMIN_TOKEN:}
+      embedding-provider: ${APP_RAG_EMBEDDING_PROVIDER:local}
+      embedding-api-url: ${APP_RAG_EMBEDDING_API_URL:https://dashscope.aliyuncs.com/compatible-mode/v1/embeddings}
+      embedding-model: ${APP_RAG_EMBEDDING_MODEL:local-hash-v1}
+      embedding-dimensions: ${APP_RAG_EMBEDDING_DIMENSIONS:128}
+      embedding-batch-size: ${APP_RAG_EMBEDDING_BATCH_SIZE:16}
+      max-file-bytes: ${APP_RAG_MAX_FILE_BYTES:10485760}
 
 spring:
   application:
     name: kangban-server
   profiles:
-    active: dev
+    default: local
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+
+minio:
+  endpoint: ${KANGBAN_MINIO_ENDPOINT:http://localhost:9000}
+  access-key: ${KANGBAN_MINIO_ACCESS_KEY}
+  secret-key: ${KANGBAN_MINIO_SECRET_KEY}
+  bucket: ${KANGBAN_MINIO_BUCKET:kangban-files}
+
+jwt:
+  secret: ${KANGBAN_JWT_SECRET}
+  expiration: ${KANGBAN_JWT_EXPIRATION:86400000}
+  refresh-expiration: ${KANGBAN_JWT_REFRESH_EXPIRATION:604800000}
 
 springdoc:
   api-docs:

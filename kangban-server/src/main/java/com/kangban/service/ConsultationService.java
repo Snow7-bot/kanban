@@ -6,10 +6,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kangban.common.BusinessException;
 import com.kangban.common.Result;
+import com.kangban.agent.AgentExecutionContext;
+import com.kangban.agent.AgentOrchestrator;
+import com.kangban.agent.AgentRequest;
+import com.kangban.agent.AgentResponse;
+import com.kangban.agent.AgentToolTrace;
+import com.kangban.agent.ConversationMessage;
 import com.kangban.dto.request.CreateSessionRequest;
 import com.kangban.dto.request.SendMessageRequest;
 import com.kangban.dto.request.UpdatePatientRequest;
-import com.kangban.client.AiConsultationClient;
 import com.kangban.client.AiClientException;
 import com.kangban.entity.ChatMessage;
 import com.kangban.entity.ChatSession;
@@ -38,10 +43,12 @@ public class ConsultationService {
     private final ChatSessionMapper chatSessionMapper;
     private final ChatMessageMapper chatMessageMapper;
     private final ObjectMapper objectMapper;
-    private final AiConsultationClient aiClient;
+    private final AgentOrchestrator agentOrchestrator;
     private final PatientHealthContextService patientHealthContextService;
+    private final FamilyAccessService familyAccessService;
+    private final AuditService auditService;
 
-    @Resource(name = "taskExecutor")
+    @Resource(name = "agentTaskExecutor")
     private Executor taskExecutor;
 
     private final Set<Long> activeMessageIds = ConcurrentHashMap.newKeySet();
@@ -49,13 +56,19 @@ public class ConsultationService {
     /**
      * 获取会话列表
      */
-    public Result<List<ChatSession>> getSessions(Long userId, Long memberId) {
-        // Building the snapshot also verifies that this family member belongs to the user.
-        patientHealthContextService.build(userId, memberId);
+    public Result<List<ChatSession>> getSessions(Long userId, Long requestedSubjectUserId, Long memberId) {
+        Long subjectUserId = familyAccessService.require(
+                userId, requestedSubjectUserId, FamilyAccessService.Scope.USE_AI);
+        patientHealthContextService.build(subjectUserId, memberId);
         LambdaQueryWrapper<ChatSession> query = new LambdaQueryWrapper<ChatSession>()
                 .eq(ChatSession::getUserId, userId)
                 .isNull(ChatSession::getDeletedAt)
                 .orderByDesc(ChatSession::getUpdatedAt);
+        if (userId.equals(subjectUserId)) {
+            query.isNull(ChatSession::getSubjectUserId);
+        } else {
+            query.eq(ChatSession::getSubjectUserId, subjectUserId);
+        }
         if (memberId == null) {
             query.isNull(ChatSession::getMemberId);
         } else {
@@ -70,11 +83,14 @@ public class ConsultationService {
      */
     @Transactional
     public Result<ChatSession> createSession(Long userId, CreateSessionRequest req) {
+        Long subjectUserId = familyAccessService.require(
+                userId, req.getSubjectUserId(), FamilyAccessService.Scope.USE_AI);
         PatientHealthContextService.Snapshot snapshot =
-                patientHealthContextService.build(userId, req.getMemberId());
+                patientHealthContextService.build(subjectUserId, req.getMemberId());
 
         ChatSession session = new ChatSession();
         session.setUserId(userId);
+        session.setSubjectUserId(userId.equals(subjectUserId) ? null : subjectUserId);
         session.setMemberId(req.getMemberId());
         session.setTitle(req.getTitle());
         // Never trust client-provided medical context. Build it from authorized database records.
@@ -92,6 +108,10 @@ public class ConsultationService {
         welcomeMessage.setContent(snapshot.initialMessage());
         welcomeMessage.setCreatedAt(LocalDateTime.now());
         chatMessageMapper.insert(welcomeMessage);
+        if (!userId.equals(subjectUserId)) {
+            auditService.record(userId, "SHARED_AI_SESSION_CREATE", "user",
+                    subjectUserId, "为授权家庭账号创建AI问诊会话");
+        }
 
         return Result.success("创建成功", session);
     }
@@ -110,6 +130,7 @@ public class ConsultationService {
         if (session == null) {
             return Result.error("会话不存在");
         }
+        requireSessionAccess(userId, session);
 
         List<ChatMessage> messages = chatMessageMapper.selectList(
                 new LambdaQueryWrapper<ChatMessage>()
@@ -133,12 +154,27 @@ public class ConsultationService {
         if (session == null) {
             throw BusinessException.notFound("会话不存在");
         }
+        Long subjectUserId = requireSessionAccess(userId, session);
 
         PatientHealthContextService.Snapshot snapshot =
-                patientHealthContextService.build(userId, session.getMemberId());
+                patientHealthContextService.build(subjectUserId, session.getMemberId());
         session.setPatientData(snapshot.contextJson());
         session.setUpdatedAt(LocalDateTime.now());
         chatSessionMapper.updateById(session);
+
+        ChatMessage latest = chatMessageMapper.selectOne(
+                new LambdaQueryWrapper<ChatMessage>()
+                        .eq(ChatMessage::getSessionId, sessionId)
+                        .orderByDesc(ChatMessage::getCreatedAt)
+                        .orderByDesc(ChatMessage::getId)
+                        .last("LIMIT 1")
+        );
+        if (latest != null
+                && "assistant".equals(latest.getRole())
+                && latest.getReplyToMessageId() == null
+                && snapshot.initialMessage().equals(latest.getContent())) {
+            return Result.success("健康概况无变化", latest);
+        }
 
         ChatMessage summary = new ChatMessage();
         summary.setSessionId(sessionId);
@@ -165,6 +201,7 @@ public class ConsultationService {
         if (session == null) {
             return Result.error("会话不存在");
         }
+        requireSessionAccess(userId, session);
 
         if (req.getClientMessageId() != null && !req.getClientMessageId().isBlank()) {
             ChatMessage existingMessage = chatMessageMapper.selectOne(
@@ -208,7 +245,7 @@ public class ConsultationService {
      * 流式生成AI回复 — SSE 端点使用。
      */
     public SseEmitter streamAiResponse(Long userId, Long sessionId, Long messageId) {
-        SseEmitter emitter = new SseEmitter(120_000L);
+        SseEmitter emitter = new SseEmitter(180_000L);
 
         ChatSession session = chatSessionMapper.selectOne(
                 new LambdaQueryWrapper<ChatSession>()
@@ -218,6 +255,13 @@ public class ConsultationService {
         );
         if (session == null) {
             failEmitter(emitter, "会话不存在或已失效。");
+            return emitter;
+        }
+        Long subjectUserId;
+        try {
+            subjectUserId = requireSessionAccess(userId, session);
+        } catch (BusinessException e) {
+            failEmitter(emitter, e.getMessage());
             return emitter;
         }
 
@@ -236,7 +280,8 @@ public class ConsultationService {
 
         ChatMessage existingReply = findReply(messageId);
         if (existingReply != null) {
-            replayCompletedResponse(emitter, existingReply.getContent());
+            replayCompletedResponse(emitter, existingReply.getContent(), existingReply.getCitationsJson(),
+                    existingReply.getAgentToolTracesJson());
             return emitter;
         }
 
@@ -251,18 +296,27 @@ public class ConsultationService {
                 log.info("SSE streaming start: sessionId={}, messageId={}", sessionId, messageId);
                 try {
                     emitter.send(SseEmitter.event().name("thinking").data("正在分析您的症状..."));
+                    familyAccessService.require(userId, subjectUserId, FamilyAccessService.Scope.USE_AI);
                     PatientHealthContextService.Snapshot currentSnapshot =
-                            patientHealthContextService.build(userId, session.getMemberId());
+                            patientHealthContextService.build(subjectUserId, session.getMemberId());
                     session.setPatientData(currentSnapshot.contextJson());
                     session.setUpdatedAt(LocalDateTime.now());
                     chatSessionMapper.updateById(session);
-                    String fullResponse = aiClient.consult(
-                            sessionId, userMsg.getContent(), currentSnapshot.contextJson());
+                    AgentExecutionContext context = agentOrchestrator.createContext(
+                            userId, subjectUserId, session.getMemberId(), sessionId);
+                    AgentResponse agentResponse = agentOrchestrator.run(new AgentRequest(
+                            context, userMsg.getContent(), currentSnapshot.contextJson(),
+                            loadConversationHistory(session, userMsg.getId())));
+                    String fullResponse = agentResponse.content();
+                    List<com.kangban.agent.Citation> citations = agentResponse.citations();
+                    List<AgentToolTrace> toolTraces = agentResponse.toolTraces();
 
                     // Save first: if the browser disconnects, retry can replay the same reply.
                     ChatMessage completedReply = findReply(messageId);
                     if (completedReply != null) {
                         fullResponse = completedReply.getContent();
+                        citations = readCitations(completedReply.getCitationsJson());
+                        toolTraces = readAgentToolTraces(completedReply.getAgentToolTracesJson());
                     } else {
                         ChatMessage aiMessage = new ChatMessage();
                         aiMessage.setSessionId(sessionId);
@@ -270,18 +324,26 @@ public class ConsultationService {
                         aiMessage.setRole("assistant");
                         aiMessage.setContent(fullResponse);
                         aiMessage.setReplyToMessageId(messageId);
+                        aiMessage.setCitationsJson(toJson(citations));
+                        aiMessage.setAgentToolTracesJson(toJson(toolTraces));
                         aiMessage.setCreatedAt(LocalDateTime.now());
                         chatMessageMapper.insert(aiMessage);
                     }
 
+                    for (AgentToolTrace toolTrace : toolTraces) {
+                        emitter.send(SseEmitter.event().name("agent_tool").data(toClientToolTrace(toolTrace)));
+                    }
                     emitter.send(SseEmitter.event().name("thinking_done").data(""));
+                    for (com.kangban.agent.Citation citation : citations) {
+                        emitter.send(SseEmitter.event().name("citation").data(citation));
+                    }
                     emitter.send(SseEmitter.event().name("token").data(fullResponse));
                     emitter.send(SseEmitter.event().name("done").data(fullResponse));
                     emitter.complete();
 
                     long elapsed = System.currentTimeMillis() - start;
-                    log.info("SSE streaming done: sessionId={}, messageId={}, elapsed={}ms",
-                            sessionId, messageId, elapsed);
+                    log.info("SSE streaming done: sessionId={}, messageId={}, runId={}, elapsed={}ms",
+                            sessionId, messageId, agentResponse.runId(), elapsed);
                 } catch (AiClientException e) {
                     log.warn("SSE AI provider failure: sessionId={}, messageId={}", sessionId, messageId);
                     failEmitter(emitter, e.getUserMessage());
@@ -314,14 +376,90 @@ public class ConsultationService {
         );
     }
 
-    private void replayCompletedResponse(SseEmitter emitter, String response) {
+    /**
+     * 只读取当前已授权会话的用户/助手消息，并排除本轮问题。工具结果存放在独立审计字段，
+     * 不会作为下一轮的对话记忆发送给模型。
+     */
+    private List<ConversationMessage> loadConversationHistory(ChatSession session, Long currentMessageId) {
+        List<ChatMessage> messages = chatMessageMapper.selectList(
+                new LambdaQueryWrapper<ChatMessage>()
+                        .eq(ChatMessage::getSessionId, session.getId())
+                        .eq(ChatMessage::getUserId, session.getUserId())
+                        .in(ChatMessage::getRole, List.of("user", "assistant"))
+                        .ne(ChatMessage::getId, currentMessageId)
+                        .orderByDesc(ChatMessage::getCreatedAt)
+                        .orderByDesc(ChatMessage::getId)
+                        .last("LIMIT 40")
+        );
+        if (messages == null || messages.isEmpty()) {
+            return List.of();
+        }
+        List<ConversationMessage> history = messages.stream()
+                .filter(message -> message.getId() == null || !message.getId().equals(currentMessageId))
+                .filter(message -> "user".equals(message.getRole()) || "assistant".equals(message.getRole()))
+                .filter(message -> message.getContent() != null && !message.getContent().isBlank())
+                .map(message -> new ConversationMessage(message.getRole(), message.getContent()))
+                .toList();
+        List<ConversationMessage> chronological = new ArrayList<>(history);
+        Collections.reverse(chronological);
+        return List.copyOf(chronological);
+    }
+
+    private void replayCompletedResponse(SseEmitter emitter, String response, String citationsJson,
+                                         String agentToolTracesJson) {
         try {
+            for (AgentToolTrace toolTrace : readAgentToolTraces(agentToolTracesJson)) {
+                emitter.send(SseEmitter.event().name("agent_tool").data(toClientToolTrace(toolTrace)));
+            }
             emitter.send(SseEmitter.event().name("thinking_done").data(""));
+            for (com.kangban.agent.Citation citation : readCitations(citationsJson)) {
+                emitter.send(SseEmitter.event().name("citation").data(citation));
+            }
             emitter.send(SseEmitter.event().name("token").data(response));
             emitter.send(SseEmitter.event().name("done").data(response));
             emitter.complete();
         } catch (IOException e) {
             emitter.complete();
+        }
+    }
+
+    private List<AgentToolTrace> readAgentToolTraces(String agentToolTracesJson) {
+        if (agentToolTracesJson == null || agentToolTracesJson.isBlank()) {
+            return List.of();
+        }
+        try {
+            return objectMapper.readValue(agentToolTracesJson,
+                    new TypeReference<List<AgentToolTrace>>() {});
+        } catch (JsonProcessingException ignored) {
+            return List.of();
+        }
+    }
+
+    private Map<String, Object> toClientToolTrace(AgentToolTrace trace) {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("toolName", trace.toolName());
+        payload.put("status", trace.status().name());
+        payload.put("iteration", trace.iteration());
+        return payload;
+    }
+
+    private List<com.kangban.agent.Citation> readCitations(String citationsJson) {
+        if (citationsJson == null || citationsJson.isBlank()) {
+            return List.of();
+        }
+        try {
+            return objectMapper.readValue(citationsJson,
+                    new TypeReference<List<com.kangban.agent.Citation>>() {});
+        } catch (JsonProcessingException ignored) {
+            return List.of();
+        }
+    }
+
+    private String toJson(Object value) {
+        try {
+            return objectMapper.writeValueAsString(value == null ? List.of() : value);
+        } catch (JsonProcessingException e) {
+            return "[]";
         }
     }
 
@@ -332,6 +470,12 @@ public class ConsultationService {
         } catch (IOException e) {
             emitter.complete();
         }
+    }
+
+    private Long requireSessionAccess(Long userId, ChatSession session) {
+        Long subjectUserId = session.getSubjectUserId() == null
+                ? userId : session.getSubjectUserId();
+        return familyAccessService.require(userId, subjectUserId, FamilyAccessService.Scope.USE_AI);
     }
 
     /**
@@ -345,7 +489,15 @@ public class ConsultationService {
                         .isNull(ChatSession::getDeletedAt)
                         .orderByDesc(ChatSession::getUpdatedAt)
         );
-        return Result.success(sessions);
+        List<ChatSession> authorizedSessions = sessions.stream().filter(session -> {
+            try {
+                requireSessionAccess(userId, session);
+                return true;
+            } catch (BusinessException exception) {
+                return false;
+            }
+        }).toList();
+        return Result.success(authorizedSessions);
     }
 
     /**
@@ -358,6 +510,7 @@ public class ConsultationService {
                 new LambdaQueryWrapper<ChatSession>()
                         .eq(ChatSession::getUserId, userId)
                         .eq(ChatSession::getStatus, "active")
+                        .isNull(ChatSession::getSubjectUserId)
                         .isNull(ChatSession::getMemberId)
                         .isNull(ChatSession::getDeletedAt)
                         .last("LIMIT 1")

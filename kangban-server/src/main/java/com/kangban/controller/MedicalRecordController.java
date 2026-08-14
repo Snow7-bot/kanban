@@ -68,6 +68,23 @@ public class MedicalRecordController {
         return Result.success(medicalRecordService.getAnalysisStatus(userId, id));
     }
 
+    @Operation(summary = "重建病历私有检索索引")
+    @PostMapping("/{id}/private-reindex")
+    public Result<Map<String, Object>> reindexPrivate(@AuthenticationPrincipal UserDetails user,
+                                                      @PathVariable Long id) {
+        Long userId = Long.parseLong(user.getUsername());
+        return Result.success(medicalRecordService.reindexPrivate(userId, id));
+    }
+
+    @Operation(summary = "批量重建历史病历私有检索索引")
+    @PostMapping("/private-reindex/batch")
+    public Result<Map<String, Object>> reindexPrivateBatch(@AuthenticationPrincipal UserDetails user,
+                                                            @RequestParam(required = false) Long memberId,
+                                                            @RequestParam(required = false) Integer limit) {
+        Long userId = Long.parseLong(user.getUsername());
+        return Result.success(medicalRecordService.reindexPrivateBatch(userId, memberId, limit));
+    }
+
     // ==================== 分享功能 ====================
 
     @Operation(summary = "生成分享链接")

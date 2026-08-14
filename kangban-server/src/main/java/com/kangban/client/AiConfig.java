@@ -32,5 +32,5 @@ public class AiConfig {
     private long connectTimeout = 10_000;
 
     /** Read timeout in ms */
-    private long readTimeout = 60_000;
+    private long readTimeout = 120_000;
 }

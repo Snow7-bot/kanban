@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AlarmClockPlus, ArrowLeft, CheckCircle2, ClipboardPlus, Copy, FileScan, HeartPulse, Info, Pencil, Pill, Printer, RefreshCw, Search, Share2, Trash2, X, ZoomIn } from 'lucide-react';
+import { AlarmClockPlus, ArrowLeft, CheckCircle2, ClipboardPlus, Copy, FileScan, HeartPulse, Info, Loader2, Pencil, Pill, Printer, RefreshCw, Search, Share2, Trash2, X, ZoomIn } from 'lucide-react';
 import * as recordsApi from '../api/medicalRecords.js';
 import { mapRecordDetail } from './recordDetailData.js';
 
@@ -16,6 +16,7 @@ export default function RecordDetailPage({ onNavigate }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [shareDialog, setShareDialog] = useState({ open: false, data: null, loading: false, error: null });
   const [shareCopied, setShareCopied] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState('');
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
@@ -76,12 +77,18 @@ export default function RecordDetailPage({ onNavigate }) {
     }
   };
 
-  const handleDownloadPdf = (includeAnalysis = false) => {
+  const handleDownloadPdf = async (includeAnalysis = false) => {
     const id = getIdFromHash();
-    if (!id) return;
-    recordsApi.downloadPdf(id, includeAnalysis)
-      .then(() => window.dispatchEvent(new CustomEvent('app:success', { detail: includeAnalysis ? 'PDF（含AI分析）已开始下载' : 'PDF 已开始下载' })))
-      .catch((err) => window.dispatchEvent(new CustomEvent('app:error', { detail: err.message || '下载失败' })));
+    if (!id || pdfLoading) return;
+    setPdfLoading(includeAnalysis ? 'analysis' : 'standard');
+    try {
+      await recordsApi.downloadPdf(id, includeAnalysis);
+      window.dispatchEvent(new CustomEvent('app:success', { detail: includeAnalysis ? 'PDF（含AI分析）已开始下载' : 'PDF 已开始下载' }));
+    } catch (err) {
+      window.dispatchEvent(new CustomEvent('app:error', { detail: err.message || '下载失败' }));
+    } finally {
+      setPdfLoading('');
+    }
   };
 
   const formatExpiry = (expiresAt) => {
@@ -117,8 +124,14 @@ export default function RecordDetailPage({ onNavigate }) {
       <div className="record-detail-actions">
         <button onClick={() => setStatus('编辑模式已开启')}><Pencil size={15} />编辑</button>
         <button onClick={() => setStatus('病历已重新解析')}><RefreshCw size={15} />重新解析</button>
-        <button onClick={() => handleDownloadPdf(false)} title="下载PDF"><Printer size={15} />导出PDF</button>
-        <button onClick={() => handleDownloadPdf(true)} title="下载PDF（含AI分析）"><Printer size={15} /><small style={{marginLeft:2}}>+AI</small></button>
+        <button onClick={() => handleDownloadPdf(false)} title="下载PDF" disabled={Boolean(pdfLoading)}>
+          {pdfLoading === 'standard' ? <Loader2 size={15} className="spin" /> : <Printer size={15} />}
+          {pdfLoading === 'standard' ? '导出中' : '导出PDF'}
+        </button>
+        <button onClick={() => handleDownloadPdf(true)} title="下载PDF（含AI分析）" disabled={Boolean(pdfLoading)}>
+          {pdfLoading === 'analysis' ? <Loader2 size={15} className="spin" /> : <Printer size={15} />}
+          <small style={{marginLeft:2}}>{pdfLoading === 'analysis' ? '生成中' : '+AI'}</small>
+        </button>
         <button onClick={openShareDialog} title="分享"><Share2 size={15} />分享</button>
         <button className="danger" aria-label="删除病历" onClick={() => setShowDeleteConfirm(true)}><Trash2 size={15} /></button>
       </div>

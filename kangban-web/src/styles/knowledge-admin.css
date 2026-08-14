@@ -1,0 +1,63 @@
+.knowledge-admin-page { max-width: 1240px; }
+.knowledge-admin-heading { align-items: flex-end; }
+.knowledge-admin-heading h1 { margin-top: 4px; }
+.knowledge-admin-heading p:not(.page-eyebrow) { color: var(--muted); margin-top: 7px; }
+.knowledge-admin-token { display: flex; align-items: center; gap: 12px; padding: 14px 16px; margin-bottom: 16px; }
+.knowledge-admin-token > div { min-width: 190px; flex: 1; }
+.knowledge-admin-token strong { display: block; font-size: 12px; }
+.knowledge-admin-token p { color: var(--muted); font-size: 10px; margin-top: 4px; }
+.knowledge-admin-token input, .knowledge-upload-card input, .knowledge-search-form input { min-height: 38px; border: 1px solid var(--line-strong); border-radius: 9px; padding: 0 11px; color: var(--ink); background: var(--surface); outline: 0; }
+.knowledge-admin-token input { width: min(340px, 42%); }
+.knowledge-admin-token input:focus, .knowledge-upload-card input:focus, .knowledge-search-form input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.knowledge-admin-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.knowledge-admin-stats .card { display: flex; align-items: center; justify-content: space-between; padding: 15px 17px; }
+.knowledge-admin-stats span { color: var(--muted); font-size: 11px; }
+.knowledge-admin-stats strong { font: 700 24px var(--font-head); }
+.knowledge-admin-grid { display: grid; grid-template-columns: minmax(270px, .8fr) minmax(0, 1.2fr); gap: 16px; margin-bottom: 16px; }
+.knowledge-upload-card, .knowledge-search-card, .knowledge-documents-card { padding: 20px; }
+.knowledge-section-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.knowledge-section-title > div { display: flex; align-items: center; gap: 7px; }
+.knowledge-section-title h2 { font: 700 15px var(--font-head); }
+.knowledge-section-title small { color: var(--muted); font-size: 10px; }
+.knowledge-upload-card form { display: grid; gap: 12px; }
+.knowledge-upload-card label { display: grid; gap: 6px; color: var(--muted); font-size: 10px; font-weight: 700; }
+.knowledge-upload-card input { width: 100%; }
+.knowledge-file-input { position: relative; }
+.knowledge-file-input input[type="file"] { position: absolute; inset: 22px 0 0; z-index: 1; opacity: 0; cursor: pointer; }
+.knowledge-file-input span { display: flex; align-items: center; min-height: 70px; padding: 12px; color: var(--muted); background: var(--canvas-soft); border: 1px dashed var(--line-strong); border-radius: 10px; font-size: 11px; }
+.knowledge-note { margin-top: 13px; color: var(--muted); font-size: 10px; line-height: 1.6; }
+.knowledge-search-form { display: flex; gap: 8px; }
+.knowledge-search-form input { min-width: 0; flex: 1; }
+.knowledge-search-result { margin-top: 14px; }
+.knowledge-search-result > p { color: var(--muted); font-size: 10px; }
+.knowledge-search-result pre { max-height: 220px; margin: 9px 0 0; padding: 13px; overflow: auto; color: var(--ink); background: var(--canvas-soft); border-radius: 10px; font: 11px/1.7 var(--font-body); white-space: pre-wrap; }
+.knowledge-search-error { margin-top: 14px; padding: 13px; color: #a32929; background: #fff3f3; border: 1px solid #ffd6d6; border-radius: 10px; font-size: 11px; line-height: 1.6; }
+.knowledge-empty { display: grid; place-items: center; min-height: 120px; color: var(--muted); font-size: 11px; text-align: center; }
+.knowledge-document-list { display: grid; gap: 8px; }
+.knowledge-document-row { display: flex; align-items: center; gap: 14px; padding: 13px; border: 1px solid var(--line); border-radius: 11px; }
+.knowledge-document-main { min-width: 0; flex: 1; }
+.knowledge-document-main strong { display: block; overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.knowledge-document-main p, .knowledge-document-main small { display: block; overflow: hidden; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.knowledge-document-main p { margin-top: 4px; }
+.knowledge-document-main small { margin-top: 4px; }
+.knowledge-document-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.knowledge-document-actions button { display: inline-flex; align-items: center; gap: 4px; min-height: 29px; padding: 0 8px; color: var(--muted); background: var(--canvas-soft); border-radius: 7px; font-size: 10px; }
+.knowledge-document-actions button:hover { color: var(--primary-dark); background: var(--primary-soft); }
+.spin { animation: knowledge-spin .8s linear infinite; }
+@keyframes knowledge-spin { to { transform: rotate(360deg); } }
+.knowledge-modal-backdrop { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 24px; background: rgb(20 24 45 / 28%); backdrop-filter: blur(5px); }
+.knowledge-chunks-modal { width: min(720px, 100%); max-height: min(720px, 90vh); padding: 20px; overflow: auto; background: var(--surface); border-radius: 18px; box-shadow: var(--shadow-float); }
+.knowledge-chunks-modal header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.knowledge-chunks-modal h2 { font: 700 16px var(--font-head); }
+.knowledge-chunks-modal header button { color: var(--muted); background: transparent; }
+.knowledge-chunks-modal article { padding: 12px 0; border-top: 1px solid var(--line); }
+.knowledge-chunks-modal article span { color: var(--primary-dark); font-size: 10px; font-weight: 700; }
+.knowledge-chunks-modal article p { margin-top: 7px; color: var(--ink); font-size: 11px; line-height: 1.7; white-space: pre-wrap; }
+@media (max-width: 760px) {
+  .knowledge-admin-token { align-items: stretch; flex-wrap: wrap; }
+  .knowledge-admin-token input { width: 100%; }
+  .knowledge-admin-stats { grid-template-columns: repeat(2, 1fr); }
+  .knowledge-admin-grid { grid-template-columns: 1fr; }
+  .knowledge-document-row { align-items: flex-start; flex-direction: column; }
+  .knowledge-document-actions { justify-content: flex-start; }
+}

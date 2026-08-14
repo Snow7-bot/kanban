@@ -15,6 +15,7 @@ test('authentication persists refresh tokens and retries one expired request', a
   assert.match(context, /setAuthReady\(true\)/);
   assert.match(request, /refreshAccessToken/);
   assert.match(request, /_authRetry/);
+  assert.match(request, /finally \{[\s\S]*clearTimeout\(timeoutId\)/);
 });
 
 test('login links to the password reset page', async () => {
@@ -31,17 +32,23 @@ test('login password controls are not nested in the forgot-password label', asyn
 });
 
 test('password visibility controls stay inside every password field', async () => {
-  const [login, register, reset, styles] = await Promise.all([
+  const [login, register, styles] = await Promise.all([
     readFile(new URL('./pages/LoginPage.jsx', import.meta.url), 'utf8'),
     readFile(new URL('./pages/RegisterPage.jsx', import.meta.url), 'utf8'),
-    readFile(new URL('./pages/PasswordResetPage.jsx', import.meta.url), 'utf8'),
     readFile(new URL('./styles/stitch-forms.css', import.meta.url), 'utf8'),
   ]);
 
-  for (const source of [login, register, reset]) {
+  for (const source of [login, register]) {
     assert.match(source, /className="password-visibility-toggle"/);
   }
   assert.match(styles, /\.login-form label > div > svg/);
   assert.match(styles, /\.password-visibility-toggle \{[^}]*position: absolute;[^}]*right: 8px;/);
   assert.match(styles, /\.password-visibility-toggle svg \{ position: static;/);
+});
+
+test('password recovery directs users to the configured administrator', async () => {
+  const source = await readFile(new URL('./pages/PasswordResetPage.jsx', import.meta.url), 'utf8');
+  assert.match(source, /请联系管理员/);
+  assert.match(source, /tel:13602060910/);
+  assert.doesNotMatch(source, /resetPassword|验证码已发送/);
 });

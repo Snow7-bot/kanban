@@ -162,13 +162,13 @@ export async function request(path, options = {}) {
   let lastError = null;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
+    let timeoutId = null;
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
+      timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
       fetchOptions.signal = controller.signal;
 
       const response = await fetch(url, fetchOptions);
-      clearTimeout(timeoutId);
 
       if (!skipLoading && _loadingCallback) {
         _loadingCallback(false);
@@ -228,6 +228,8 @@ export async function request(path, options = {}) {
         window.dispatchEvent(new CustomEvent('app:error', { detail: msg }));
       }
       throw new ApiError(msg, 0);
+    } finally {
+      if (timeoutId !== null) clearTimeout(timeoutId);
     }
   }
 

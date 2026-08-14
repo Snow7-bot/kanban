@@ -11,6 +11,7 @@ import com.kangban.entity.OcrAnalysisTask;
 import com.kangban.mapper.MedicalRecordMapper;
 import com.kangban.mapper.FamilyMemberMapper;
 import com.kangban.mapper.OcrAnalysisTaskMapper;
+import com.kangban.rag.PrivateKnowledgeIndexService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,17 +20,22 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -47,6 +53,7 @@ public class MedicalRecordService {
     private final MinioService minioService;
     private final OcrTaskRunner ocrTaskRunner;
     private final FamilyMemberMapper familyMemberMapper;
+    private final PrivateKnowledgeIndexService privateKnowledgeIndexService;
 
     public PageResult<Map<String, Object>> list(Long userId, Integer page, Integer pageSize, Long memberId) {
         validateMemberAccess(userId, memberId);
@@ -97,19 +104,20 @@ public class MedicalRecordService {
         if (!ALLOWED_EXTENSIONS.contains(ext)) {
             throw BusinessException.paramsError("仅支持PDF、JPG、PNG格式文件");
         }
+        validateFileSignature(file, ext);
 
         // Upload to MinIO
-        String fileUrl = minioService.uploadFile(file, userId);
+        String fileObject = minioService.uploadObject(file, userId);
 
         // Create medical record
         MedicalRecord record = new MedicalRecord();
         record.setUserId(userId);
         record.setMemberId(memberId);
-        record.setRecordName(originalName != null ? originalName : "未命名病历");
+        record.setRecordName(MinioService.sanitizeFilename(originalName));
         record.setRecordType(ext.toUpperCase());
-        record.setFileUrl(fileUrl);
+        record.setFileUrl(fileObject);
         record.setFileSize(file.getSize());
-        record.setFileType(file.getContentType());
+        record.setFileType(canonicalContentType(ext));
         record.setStatus("pending");
         record.setCreatedAt(LocalDateTime.now());
         medicalRecordMapper.insert(record);
@@ -143,6 +151,84 @@ public class MedicalRecordService {
         }
         record.setDeletedAt(LocalDateTime.now());
         medicalRecordMapper.updateById(record);
+        privateKnowledgeIndexService.revokeRecord(id, userId);
+        minioService.deleteFile(record.getFileUrl());
+    }
+
+    /** 为历史 OCR 完成病历补建私有检索索引；不触发 OCR。 */
+    public Map<String, Object> reindexPrivate(Long userId, Long id) {
+        MedicalRecord record = medicalRecordMapper.selectOne(
+                new LambdaQueryWrapper<MedicalRecord>()
+                        .eq(MedicalRecord::getId, id)
+                        .eq(MedicalRecord::getUserId, userId)
+                        .isNull(MedicalRecord::getDeletedAt));
+        if (record == null) {
+            throw BusinessException.notFound("病历记录不存在");
+        }
+        privateKnowledgeIndexService.indexCompletedRecord(id);
+        if (!isIndexable(record)) {
+            return Map.of("recordId", id, "status", "skipped", "reason", "病历尚未完成 OCR 或没有可检索文本");
+        }
+        return Map.of("recordId", id, "status", "indexed");
+    }
+
+    /**
+     * 显式补建当前账号的历史病历索引，不在应用启动时自动执行。
+     */
+    public Map<String, Object> reindexPrivateBatch(Long userId, Long memberId, Integer requestedLimit) {
+        validateMemberAccess(userId, memberId);
+        int limit = requestedLimit == null ? 100 : requestedLimit;
+        if (limit < 1 || limit > 500) {
+            throw BusinessException.paramsError("批量重建数量必须在1到500之间");
+        }
+
+        LambdaQueryWrapper<MedicalRecord> wrapper = new LambdaQueryWrapper<MedicalRecord>()
+                .eq(MedicalRecord::getUserId, userId)
+                .isNull(MedicalRecord::getDeletedAt)
+                .orderByAsc(MedicalRecord::getId)
+                .last("LIMIT " + limit);
+        if (memberId == null) {
+            wrapper.isNull(MedicalRecord::getMemberId);
+        } else {
+            wrapper.eq(MedicalRecord::getMemberId, memberId);
+        }
+
+        List<MedicalRecord> records = medicalRecordMapper.selectList(wrapper);
+        int indexed = 0;
+        int skipped = 0;
+        int failed = 0;
+        for (MedicalRecord record : records) {
+            try {
+                privateKnowledgeIndexService.indexCompletedRecord(record.getId());
+                if (isIndexable(record)) {
+                    indexed++;
+                } else {
+                    skipped++;
+                }
+            } catch (RuntimeException exception) {
+                failed++;
+                log.warn("Private record reindex failed: recordId={}, errorType={}",
+                        record.getId(), exception.getClass().getSimpleName());
+            }
+        }
+        return Map.of(
+                "scanned", records.size(),
+                "indexed", indexed,
+                "skipped", skipped,
+                "failed", failed,
+                "limit", limit,
+                "memberId", memberId == null ? "self" : memberId
+        );
+    }
+
+    private boolean isIndexable(MedicalRecord record) {
+        return record != null
+                && "completed".equalsIgnoreCase(record.getStatus())
+                && String.join("\n\n",
+                Optional.ofNullable(record.getOcrText()).orElse(""),
+                Optional.ofNullable(record.getDiagnosisData()).orElse(""),
+                Optional.ofNullable(record.getMedicationsData()).orElse(""),
+                Optional.ofNullable(record.getAdvicesData()).orElse("")).trim().length() > 0;
     }
 
     public Map<String, Object> getAnalysisStatus(Long userId, Long id) {
@@ -219,7 +305,7 @@ public class MedicalRecordService {
                (record.getOcrText() != null && !record.getOcrText().isEmpty());
     }
 
-    private byte[] mergePdfWithAnalysis(byte[] originalPdfBytes, MedicalRecord record) throws Exception {
+    byte[] mergePdfWithAnalysis(byte[] originalPdfBytes, MedicalRecord record) throws Exception {
         try (PDDocument doc = Loader.loadPDF(originalPdfBytes)) {
             addAnalysisPage(doc, record);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -265,86 +351,91 @@ public class MedicalRecordService {
         PDPage page = new PDPage(PDRectangle.A4);
         doc.addPage(page);
 
-        try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {
-            float margin = 50;
-            float y = PDRectangle.A4.getHeight() - margin;
-            float lineHeight = 18;
+        int imageWidth = 1240;
+        int imageHeight = 1754;
+        int margin = 90;
+        BufferedImage analysisImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = analysisImage.createGraphics();
+        try {
+            graphics.setColor(Color.WHITE);
+            graphics.fillRect(0, 0, imageWidth, imageHeight);
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            graphics.setColor(new Color(20, 27, 45));
 
-            // Title
-            cs.beginText();
-            cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 16);
-            cs.newLineAtOffset(margin, y);
-            cs.showText("AI \u5206\u6790\u62a5\u544a");
-            cs.endText();
-            y -= lineHeight * 2;
+            int y = margin;
+            graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 34));
+            graphics.drawString("病历文本提取报告", margin, y);
+            y += 58;
 
-            // Metadata line
             StringBuilder meta = new StringBuilder();
-            if (record.getHospital() != null) meta.append("\u533b\u9662: ").append(record.getHospital()).append("  ");
-            if (record.getDepartment() != null) meta.append("\u79d1\u5ba4: ").append(record.getDepartment()).append("  ");
-            if (record.getRecordDate() != null) meta.append("\u65e5\u671f: ").append(record.getRecordDate());
-            if (meta.length() > 0) {
-                cs.beginText();
-                cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 10);
-                cs.newLineAtOffset(margin, y);
-                cs.showText(meta.toString().trim());
-                cs.endText();
-                y -= lineHeight * 2;
+            if (record.getHospital() != null) meta.append("医院：").append(record.getHospital()).append("  ");
+            if (record.getDepartment() != null) meta.append("科室：").append(record.getDepartment()).append("  ");
+            if (record.getRecordDate() != null) meta.append("日期：").append(record.getRecordDate());
+            graphics.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 19));
+            if (!meta.isEmpty()) {
+                graphics.setColor(new Color(83, 91, 111));
+                graphics.drawString(meta.toString().trim(), margin, y);
+                y += 55;
             }
 
-            // OCR text section
-            if (record.getOcrText() != null && !record.getOcrText().isEmpty()) {
-                cs.beginText();
-                cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 11);
-                cs.newLineAtOffset(margin, y);
-                cs.showText("OCR \u8bc6\u522b\u6587\u672c:");
-                cs.endText();
-                y -= lineHeight;
-
-                String ocrText = record.getOcrText();
-                int maxChars = 80;
-                for (int i = 0; i < ocrText.length() && y > margin + 40; i += maxChars) {
-                    int end = Math.min(i + maxChars, ocrText.length());
-                    cs.beginText();
-                    cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 9);
-                    cs.newLineAtOffset(margin, y);
-                    cs.showText(ocrText.substring(i, end));
-                    cs.endText();
-                    y -= lineHeight;
-                }
-                y -= lineHeight;
+            graphics.setColor(new Color(20, 27, 45));
+            if (record.getOcrText() != null && !record.getOcrText().isBlank()) {
+                graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 23));
+                graphics.drawString("OCR 识别文本（需人工核对）", margin, y);
+                y += 38;
+                graphics.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18));
+                y = drawWrappedText(graphics, record.getOcrText(), margin, y,
+                        imageWidth - margin * 2, 30, imageHeight - 260);
+                y += 34;
             }
 
-            // Diagnosis data section
-            if (record.getDiagnosisData() != null && !record.getDiagnosisData().isEmpty()) {
-                cs.beginText();
-                cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 11);
-                cs.newLineAtOffset(margin, y);
-                cs.showText("\u8bca\u65ad\u6570\u636e:");
-                cs.endText();
-                y -= lineHeight;
-
-                String diag = record.getDiagnosisData();
-                int maxChars = 80;
-                for (int i = 0; i < diag.length() && y > margin + 40; i += maxChars) {
-                    int end = Math.min(i + maxChars, diag.length());
-                    cs.beginText();
-                    cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 9);
-                    cs.newLineAtOffset(margin, y);
-                    cs.showText(diag.substring(i, end));
-                    cs.endText();
-                    y -= lineHeight;
-                }
-                y -= lineHeight;
+            if (record.getDiagnosisData() != null && !record.getDiagnosisData().isBlank()
+                    && y < imageHeight - 320) {
+                graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 23));
+                graphics.drawString("结构化提取数据", margin, y);
+                y += 38;
+                graphics.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18));
+                drawWrappedText(graphics, record.getDiagnosisData(), margin, y,
+                        imageWidth - margin * 2, 30, imageHeight - 220);
             }
 
-            // Footer
-            cs.beginText();
-            cs.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE), 8);
-            cs.newLineAtOffset(margin, margin);
-            cs.showText("\u7531\u5eb7\u4f34\u667a\u80fd\u533b\u7597\u52a9\u624b\u751f\u6210 \u2014 \u4ec5\u4f9b\u53c2\u8003\uff0c\u4e0d\u6784\u6210\u533b\u7597\u5efa\u8bae");
-            cs.endText();
+            graphics.setColor(new Color(104, 112, 132));
+            graphics.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
+            graphics.drawString("由康伴生成，仅展示 OCR 提取内容；请核对原始病历，不构成医疗建议。",
+                    margin, imageHeight - margin);
+        } finally {
+            graphics.dispose();
         }
+
+        try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {
+            PDImageXObject image = LosslessFactory.createFromImage(doc, analysisImage);
+            cs.drawImage(image, 0, 0, PDRectangle.A4.getWidth(), PDRectangle.A4.getHeight());
+        }
+    }
+
+    private int drawWrappedText(Graphics2D graphics, String text, int x, int startY,
+                                int maxWidth, int lineHeight, int maxY) {
+        FontMetrics metrics = graphics.getFontMetrics();
+        int y = startY;
+        for (String paragraph : text.replace("\r", "").split("\n", -1)) {
+            StringBuilder line = new StringBuilder();
+            for (int index = 0; index < paragraph.length() && y <= maxY; index++) {
+                char character = paragraph.charAt(index);
+                if (!line.isEmpty() && metrics.stringWidth(line.toString() + character) > maxWidth) {
+                    graphics.drawString(line.toString(), x, y);
+                    y += lineHeight;
+                    line.setLength(0);
+                }
+                line.append(character);
+            }
+            if (!line.isEmpty() && y <= maxY) {
+                graphics.drawString(line.toString(), x, y);
+                y += lineHeight;
+            }
+            y += lineHeight / 2;
+        }
+        return y;
     }
 
     private void writePdfResponse(HttpServletResponse response, byte[] pdfBytes, String filename) throws Exception {
@@ -368,7 +459,7 @@ public class MedicalRecordService {
         map.put("department", record.getDepartment());
         map.put("doctor", record.getDoctor());
         map.put("recordDate", record.getRecordDate());
-        map.put("fileUrl", record.getFileUrl());
+        map.put("fileUrl", minioService.resolveFileUrl(record.getFileUrl()));
         map.put("fileSize", record.getFileSize());
         map.put("fileType", record.getFileType());
         map.put("status", record.getStatus());
@@ -392,6 +483,44 @@ public class MedicalRecordService {
         if (count == 0) {
             throw BusinessException.notFound("家庭成员不存在或无权访问");
         }
+    }
+
+    private void validateFileSignature(MultipartFile file, String extension) {
+        try (InputStream input = file.getInputStream()) {
+            byte[] header = input.readNBytes(8);
+            boolean valid = switch (extension) {
+                case "pdf" -> startsWith(header, new byte[]{'%', 'P', 'D', 'F', '-'});
+                case "png" -> startsWith(header, new byte[]{
+                        (byte) 0x89, 'P', 'N', 'G', '\r', '\n', (byte) 0x1A, '\n'});
+                case "jpg", "jpeg" -> header.length >= 3
+                        && header[0] == (byte) 0xFF
+                        && header[1] == (byte) 0xD8
+                        && header[2] == (byte) 0xFF;
+                default -> false;
+            };
+            if (!valid) {
+                throw BusinessException.paramsError("文件内容与扩展名不匹配");
+            }
+        } catch (IOException exception) {
+            throw BusinessException.paramsError("无法读取上传文件");
+        }
+    }
+
+    private boolean startsWith(byte[] value, byte[] prefix) {
+        if (value.length < prefix.length) return false;
+        for (int index = 0; index < prefix.length; index++) {
+            if (value[index] != prefix[index]) return false;
+        }
+        return true;
+    }
+
+    private String canonicalContentType(String extension) {
+        return switch (extension) {
+            case "pdf" -> "application/pdf";
+            case "png" -> "image/png";
+            case "jpg", "jpeg" -> "image/jpeg";
+            default -> "application/octet-stream";
+        };
     }
 
 }

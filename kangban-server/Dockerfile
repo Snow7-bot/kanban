@@ -12,6 +12,8 @@ RUN mvn package -DskipTests
 # ---- Run stage ----
 FROM eclipse-temurin:17-jre-alpine
 
+RUN apk add --no-cache font-noto-cjk
+
 LABEL version="1.0.0" description="康伴智能医疗助手"
 
 WORKDIR /app
